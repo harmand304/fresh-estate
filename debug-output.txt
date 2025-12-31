@@ -1,0 +1,47 @@
+=== ALL PROPERTIES ===
+Total: 15
+1. purpose="SALE", price=0, projectId=null, type="House"
+2. purpose="SALE", price=1332, projectId=null, type="House"
+3. purpose="SALE", price=0, projectId=null, type="House"
+4. purpose="SALE", price=0, projectId=null, type="House"
+5. purpose="SALE", price=0, projectId=null, type="House"
+6. purpose="SALE", price=0, projectId=null, type="House"
+7. purpose="SALE", price=0, projectId=null, type="House"
+8. purpose="SALE", price=0, projectId=null, type="House"
+9. purpose="SALE", price=100000, projectId=null, type="House"
+10. purpose="SALE", price=0, projectId=null, type="House"
+11. purpose="SALE", price=200000, projectId=null, type="House"
+12. purpose="SALE", price=5, projectId=null, type="House"
+13. purpose="SALE", price=12333, projectId=null, type="House"
+14. purpose="SALE", price=300000, projectId=null, type="Apartment"
+15. purpose="SALE", price=250000, projectId=null, type="House"
+
+=== USER PREFERENCES ===
+User Admin User: purpose=BOTH, type=BOTH, style=BOTH, price=0-130000
+User Normal User: purpose=BOTH, type=BOTH, style=BOTH, price=0-500000
+User mohamad husen: purpose=BUY, type=HOUSE, style=BOTH, price=0-500000
+User hawkar husen: purpose=BUY, type=HOUSE, style=BOTH, price=0-500000
+User mohamad: purpose=BUY, type=HOUSE, style=NORMAL, price=0-500000
+
+=== SIMULATING FILTER ===
+Filtering for: hawkar husen
+Preferences: purpose=BUY, type=HOUSE, style=BOTH
+Price range: 0 - 500000
+
+MATCH: price=0, purpose=SALE, type=House, projectId=null
+MATCH: price=1332, purpose=SALE, type=House, projectId=null
+MATCH: price=0, purpose=SALE, type=House, projectId=null
+MATCH: price=0, purpose=SALE, type=House, projectId=null
+MATCH: price=0, purpose=SALE, type=House, projectId=null
+MATCH: price=0, purpose=SALE, type=House, projectId=null
+MATCH: price=0, purpose=SALE, type=House, projectId=null
+MATCH: price=0, purpose=SALE, type=House, projectId=null
+MATCH: price=100000, purpose=SALE, type=House, projectId=null
+MATCH: price=0, purpose=SALE, type=House, projectId=null
+MATCH: price=200000, purpose=SALE, type=House, projectId=null
+MATCH: price=5, purpose=SALE, type=House, projectId=null
+MATCH: price=12333, purpose=SALE, type=House, projectId=null
+SKIP: price=300000, purpose=SALE - type Apartment != House
+MATCH: price=250000, purpose=SALE, type=House, projectId=null
+
+=== TOTAL MATCHES: 14 ===

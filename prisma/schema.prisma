@@ -1,0 +1,426 @@
+// Prisma schema for FreshEstate
+// https://pris.ly/d/prisma-schema
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+// User roles
+enum Role {
+  USER
+  ADMIN
+  AGENT
+}
+
+// Deal status
+enum DealStatus {
+  PENDING
+  COMPLETED
+  CANCELLED
+}
+
+// Project status
+enum ProjectStatus {
+  PRE_SELLING
+  COMPLETED
+  HOT_DEAL
+  COMMERCIAL
+  RESALE
+  COMING_SOON
+}
+
+// Users table for authentication
+model User {
+  id        Int        @id @default(autoincrement())
+  email     String     @unique @db.VarChar(255)
+  password  String     @db.VarChar(255)
+  name      String?    @db.VarChar(150)
+  role      Role       @default(USER)
+  createdAt DateTime   @default(now()) @map("created_at")
+  pageViews PageView[]
+  agent     Agent?     // Link to agent profile if role is AGENT
+  favorites Favorite[]
+  preference UserPreference?
+  inquiries Inquiry[]
+  events    UserEvent[]
+  locationReviews LocationReview[]
+
+
+
+  @@map("users")
+}
+
+// User Favorites (properties saved by users)
+model Favorite {
+  id         Int      @id @default(autoincrement())
+  userId     Int      @map("user_id")
+  propertyId String   @map("property_id") @db.Uuid
+  createdAt  DateTime @default(now()) @map("created_at")
+  user       User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@unique([userId, propertyId])
+  @@index([userId])
+  @@map("favorites")
+}
+
+// Analytics - Page Views
+model PageView {
+  id        Int      @id @default(autoincrement())
+  path      String   @db.VarChar(255)
+  sessionId String?  @map("session_id") @db.VarChar(100)
+  userId    Int?     @map("user_id")
+  createdAt DateTime @default(now()) @map("created_at")
+  user      User?    @relation(fields: [userId], references: [id], onDelete: SetNull)
+
+  @@index([createdAt])
+  @@index([path])
+  @@map("page_views")
+}
+
+// User Preferences for personalized property suggestions
+model UserPreference {
+  id           Int      @id @default(autoincrement())
+  userId       Int      @unique @map("user_id")
+  purpose      String   @db.VarChar(10) // BUY, RENT, BOTH
+  cityId       Int?     @map("city_id")
+  propertyType String   @map("property_type") @db.VarChar(20) // HOUSE, APARTMENT, BOTH
+  propertyStyle String  @map("property_style") @db.VarChar(20) // NORMAL, PROJECT, BOTH
+  minPrice     Decimal  @default(0) @map("min_price") @db.Decimal(15, 2)
+  maxPrice     Decimal  @default(10000000) @map("max_price") @db.Decimal(15, 2)
+  createdAt    DateTime @default(now()) @map("created_at")
+  updatedAt    DateTime @updatedAt @map("updated_at")
+  user         User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  city         City?    @relation(fields: [cityId], references: [id])
+
+  @@map("user_preferences")
+}
+
+
+// Cities table
+model City {
+  id              Int              @id @default(autoincrement())
+  name            String           @unique @db.VarChar(100)
+  createdAt       DateTime         @default(now()) @map("created_at")
+  locations       Location[]
+  agents          Agent[]
+  userPreferences UserPreference[]
+
+  @@map("cities")
+}
+
+// Location Reviews (Feedback for areas)
+model LocationReview {
+  id        Int      @id @default(autoincrement())
+  locationId Int     @map("location_id")
+  userId    Int?     @map("user_id")
+  rating    Int      @default(5)
+  comment   String?  @db.Text
+  createdAt DateTime @default(now()) @map("created_at")
+
+  location  Location @relation(fields: [locationId], references: [id], onDelete: Cascade)
+  user      User?    @relation(fields: [userId], references: [id], onDelete: SetNull)
+
+  @@index([locationId])
+  @@map("location_reviews")
+}
+
+
+// Locations table (neighborhoods/areas)
+model Location {
+  id         Int        @id @default(autoincrement())
+  name       String     @db.VarChar(150)
+  cityId     Int        @map("city_id")
+  createdAt  DateTime   @default(now()) @map("created_at")
+  city       City       @relation(fields: [cityId], references: [id], onDelete: Cascade)
+  properties Property[]
+  reviews    LocationReview[]
+
+
+  @@unique([name, cityId])
+  @@map("locations")
+}
+
+// Agents table
+model Agent {
+  id              Int                   @id @default(autoincrement())
+  name            String                @db.VarChar(150)
+  phone           String?               @db.VarChar(50)
+  email           String?               @db.VarChar(255)
+  bio             String?               @db.Text
+  image           String?               @db.Text
+  website         String?               @db.VarChar(255)
+  experience      Int?                  @default(0)
+  rating          Float?                @default(0)
+  reviewCount     Int?                  @default(0) @map("review_count")
+  specialties     String?               @db.Text
+  officeAddress   String?               @map("office_address") @db.VarChar(255)
+  officeLat       Float?                @map("office_lat")
+  officeLng       Float?                @map("office_lng")
+  isTopAgent      Boolean               @default(false) @map("is_top_agent")
+  cityId          Int?                  @map("city_id")
+  userId          Int?                  @unique @map("user_id")
+  createdAt       DateTime              @default(now()) @map("created_at")
+  city            City?                 @relation(fields: [cityId], references: [id], onDelete: SetNull)
+  user            User?                 @relation(fields: [userId], references: [id], onDelete: SetNull)
+  properties      Property[]
+  reviews         Review[]
+  deals           Deal[]
+  inquiries       Inquiry[]
+  languages       AgentLanguage[]
+  specializations AgentSpecialization[]
+
+  @@map("agents")
+}
+
+// Languages table
+model Language {
+  id        Int             @id @default(autoincrement())
+  name      String          @unique @db.VarChar(50)
+  createdAt DateTime        @default(now()) @map("created_at")
+  agents    AgentLanguage[]
+
+  @@map("languages")
+}
+
+// Junction table: Agent <-> Language (many-to-many)
+model AgentLanguage {
+  id         Int      @id @default(autoincrement())
+  agentId    Int      @map("agent_id")
+  languageId Int      @map("language_id")
+  createdAt  DateTime @default(now()) @map("created_at")
+  agent      Agent    @relation(fields: [agentId], references: [id], onDelete: Cascade)
+  language   Language @relation(fields: [languageId], references: [id], onDelete: Cascade)
+
+  @@unique([agentId, languageId])
+  @@map("agent_languages")
+}
+
+// Specializations table
+model Specialization {
+  id        Int                   @id @default(autoincrement())
+  name      String                @unique @db.VarChar(100)
+  createdAt DateTime              @default(now()) @map("created_at")
+  agents    AgentSpecialization[]
+
+  @@map("specializations")
+}
+
+// Junction table: Agent <-> Specialization (many-to-many)
+model AgentSpecialization {
+  id               Int            @id @default(autoincrement())
+  agentId          Int            @map("agent_id")
+  specializationId Int            @map("specialization_id")
+  createdAt        DateTime       @default(now()) @map("created_at")
+  agent            Agent          @relation(fields: [agentId], references: [id], onDelete: Cascade)
+  specialization   Specialization @relation(fields: [specializationId], references: [id], onDelete: Cascade)
+
+  @@unique([agentId, specializationId])
+  @@map("agent_specializations")
+}
+
+// Client reviews for agents
+model Review {
+  id        Int      @id @default(autoincrement())
+  agentId   Int      @map("agent_id")
+  name      String   @db.VarChar(150)
+  rating    Int      @default(5)
+  text      String   @db.Text
+  createdAt DateTime @default(now()) @map("created_at")
+  agent     Agent    @relation(fields: [agentId], references: [id], onDelete: Cascade)
+
+  @@map("reviews")
+}
+
+// Deals - Track property sales and rentals
+model Deal {
+  id          Int         @id @default(autoincrement())
+  propertyId  String      @map("property_id") @db.Uuid
+  agentId     Int         @map("agent_id")
+  clientName  String      @map("client_name") @db.VarChar(150)
+  clientPhone String?     @map("client_phone") @db.VarChar(50)
+  clientEmail String?     @map("client_email") @db.VarChar(255)
+  dealType    String      @map("deal_type") @db.VarChar(10) // SALE or RENT
+  price       Decimal     @db.Decimal(15, 2)
+  status      DealStatus  @default(PENDING)
+  notes       String?     @db.Text
+  createdAt   DateTime    @default(now()) @map("created_at")
+  completedAt DateTime?   @map("completed_at")
+  property    Property    @relation(fields: [propertyId], references: [id], onDelete: Cascade)
+  agent       Agent       @relation(fields: [agentId], references: [id], onDelete: Cascade)
+
+  @@index([agentId])
+  @@index([status])
+  @@map("deals")
+}
+
+// Property types table
+model PropertyType {
+  id         Int        @id @default(autoincrement())
+  name       String     @unique @db.VarChar(50)
+  createdAt  DateTime   @default(now()) @map("created_at")
+  properties Property[]
+
+  @@map("property_types")
+}
+
+// Projects table (groups of properties)
+model Project {
+  id          Int           @id @default(autoincrement())
+  name        String        @db.VarChar(255)
+  description String?       @db.Text
+  image       String?       @db.Text
+  status      ProjectStatus @default(PRE_SELLING)
+  location    String?       @db.VarChar(255)
+  priceRange  String?       @map("price_range") @db.VarChar(100)
+  bedRange    String?       @map("bed_range") @db.VarChar(50)
+  bathRange   String?       @map("bath_range") @db.VarChar(50)
+  sqftRange   String?       @map("sqft_range") @db.VarChar(50)
+  createdAt   DateTime      @default(now()) @map("created_at")
+  updatedAt   DateTime      @default(now()) @map("updated_at")
+  properties  Property[]
+
+  @@map("projects")
+}
+
+// Properties table (main table)
+model Property {
+  id             String       @id @default(uuid()) @db.Uuid
+  projectName    String?      @map("project_name") @db.VarChar(255)
+  title          String       @db.VarChar(255)
+  description    String?      @db.Text
+  shortDescription String?    @map("short_description") @db.VarChar(255)
+  price          Decimal      @db.Decimal(15, 2)
+  purpose        String       @db.VarChar(10)
+  areaSqm        Int?         @map("area_sqm")
+  bedrooms       Int          @default(0)
+  rooms          Int          @default(0)
+  bathrooms      Int          @default(0)
+  hasGarage      Boolean      @default(false) @map("has_garage")
+  hasBalcony     Boolean      @default(false) @map("has_balcony")
+  imageUrl       String?      @map("image_url") @db.Text
+  sourceUrl      String?      @map("source_url") @db.Text
+  locationId     Int?         @map("location_id")
+  agentId        Int?         @map("agent_id")
+  propertyTypeId Int?         @map("property_type_id")
+  projectId      Int?         @map("project_id")
+  createdAt      DateTime     @default(now()) @map("created_at")
+  updatedAt      DateTime     @default(now()) @map("updated_at")
+  location       Location?    @relation(fields: [locationId], references: [id], onDelete: SetNull)
+  agent          Agent?       @relation(fields: [agentId], references: [id], onDelete: SetNull)
+  propertyType   PropertyType? @relation(fields: [propertyTypeId], references: [id], onDelete: SetNull)
+  project        Project?     @relation(fields: [projectId], references: [id], onDelete: SetNull)
+  deals          Deal[]
+  inquiries      Inquiry[]
+  images         PropertyImage[]
+  amenities      PropertyAmenity[]
+  events         UserEvent[]
+
+
+  @@index([locationId], map: "idx_properties_city")
+  @@index([purpose], map: "idx_properties_purpose")
+  @@index([price], map: "idx_properties_price")
+  @@index([propertyTypeId], map: "idx_properties_type")
+  @@index([projectId], map: "idx_properties_project")
+  @@map("properties")
+}
+
+
+// Amenities (e.g., Swimming Pool, Gym, WiFi, etc.)
+model Amenity {
+  id         Int               @id @default(autoincrement())
+  name       String            @db.VarChar(100)
+  icon       String?           @db.VarChar(50)  // Icon name for frontend
+  category   String?           @db.VarChar(50)  // e.g., "Indoor", "Outdoor", "Security"
+  createdAt  DateTime          @default(now()) @map("created_at")
+  properties PropertyAmenity[]
+
+  @@map("amenities")
+}
+
+// Junction table: Property <-> Amenity (many-to-many)
+model PropertyAmenity {
+  id         Int      @id @default(autoincrement())
+  propertyId String   @map("property_id") @db.Uuid
+  amenityId  Int      @map("amenity_id")
+  property   Property @relation(fields: [propertyId], references: [id], onDelete: Cascade)
+  amenity    Amenity  @relation(fields: [amenityId], references: [id], onDelete: Cascade)
+  createdAt  DateTime @default(now()) @map("created_at")
+
+  @@unique([propertyId, amenityId])
+  @@index([propertyId], map: "idx_property_amenities_property")
+  @@index([amenityId], map: "idx_property_amenities_amenity")
+  @@map("property_amenities")
+}
+
+// Property Images table (1-10 images per property)
+model PropertyImage {
+  id          Int      @id @default(autoincrement())
+  propertyId  String   @map("property_id") @db.Uuid
+  imageKey    String   @map("image_key") @db.Text
+  sortOrder   Int      @default(0) @map("sort_order")
+  createdAt   DateTime @default(now()) @map("created_at")
+  property    Property @relation(fields: [propertyId], references: [id], onDelete: Cascade)
+
+  @@index([propertyId], map: "idx_property_images_property")
+  @@map("property_images")
+}
+
+// Property Inquiries (Tour requests and messages from potential buyers/renters)
+model Inquiry {
+  id          Int       @id @default(autoincrement())
+  propertyId  String    @map("property_id") @db.Uuid
+  agentId     Int       @map("agent_id")
+  name        String    @db.VarChar(150)
+  email       String    @db.VarChar(255)
+  phone       String?   @db.VarChar(50)
+  message     String    @db.Text
+  type        String    @default("TOUR") @db.VarChar(20) // TOUR or MESSAGE
+  status      String    @default("PENDING") @db.VarChar(20) // PENDING, RESPONDED, CLOSED
+  createdAt   DateTime  @default(now()) @map("created_at")
+  userId      Int?      @map("user_id")
+  property    Property  @relation(fields: [propertyId], references: [id], onDelete: Cascade)
+  agent       Agent     @relation(fields: [agentId], references: [id], onDelete: Cascade)
+  user        User?     @relation(fields: [userId], references: [id], onDelete: SetNull)
+
+  @@index([agentId], map: "idx_inquiries_agent")
+  @@index([userId], map: "idx_inquiries_user")
+  @@index([status], map: "idx_inquiries_status")
+  @@map("inquiries")
+}
+
+// User Events for AI Ranking / Analytics
+model UserEvent {
+  id        Int      @id @default(autoincrement())
+  userId    Int?     @map("user_id")
+  sessionId String?  @map("session_id") @db.VarChar(100) // For anonymous tracking
+  eventType String   @map("event_type") @db.VarChar(50) // VIEW_PHONE, SHARE_WHATSAPP, VIEW_GALLERY, DISMISS
+  propertyId String? @map("property_id") @db.Uuid
+  metadata  String?  @db.Text // JSON string for extra details
+  createdAt DateTime @default(now()) @map("created_at")
+
+  user      User?     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  property  Property? @relation(fields: [propertyId], references: [id], onDelete: SetNull)
+
+  @@index([userId])
+  @@index([propertyId])
+  @@index([eventType])
+  @@map("user_events")
+
+}
+// Website reviews / Testimonials
+model WebsiteReview {
+  id        Int      @id @default(autoincrement())
+  name      String   @db.VarChar(100)
+  role      String   @db.VarChar(100) // e.g. "Homeowner", "Tenant"
+  rating    Int      @default(5)
+  text      String   @db.Text
+  image     String?  @db.Text
+  createdAt DateTime @default(now()) @map("created_at")
+
+  @@map("website_reviews")
+}
