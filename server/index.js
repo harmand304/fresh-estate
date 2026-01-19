@@ -1,5 +1,5 @@
-import express from 'express';
 import cors from 'cors';
+import express from 'express';
 import cookieParser from 'cookie-parser';
 import dotenv from 'dotenv';
 
@@ -30,6 +30,11 @@ import agentDashboardRoutes from './routes/agentDashboard.js';
 import { prisma, PORT } from './config/db.js';
 
 const app = express();
+
+app.use(cors({
+  origin: 'https://fresh-estate.netlify.app', // Your actual Netlify URL
+  credentials: true
+}));
 
 // Middleware
 const allowedOrigins = [
