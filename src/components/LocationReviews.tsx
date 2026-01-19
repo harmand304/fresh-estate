@@ -5,6 +5,7 @@ import { Button } from "@/components/ui/button";
 import { Textarea } from "@/components/ui/textarea";
 import { toast } from "sonner";
 import { useAuth } from "@/contexts/AuthContext";
+import { API_URL } from "@/config";
 
 interface Review {
   id: number;
@@ -28,9 +29,6 @@ export const LocationReviews = ({ locationId, locationName }: LocationReviewsPro
   const [comment, setComment] = useState("");
   const [showForm, setShowForm] = useState(false);
   const [isSubmitting, setIsSubmitting] = useState(false);
-
-  // Dynamic API URL based on current hostname
-  import { API_URL } from "@/config";
 
   const { data: reviews = [] } = useQuery<Review[]>({
     queryKey: ["location-reviews", locationId],
