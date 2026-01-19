@@ -49,7 +49,7 @@ interface Language {
   name: string;
 }
 
-const API_URL = `http://${window.location.hostname}:3001`;
+const API_URL = "https://fresh-estate.onrender.com";
 
 const SPECIALTY_OPTIONS = [
   "Luxury Homes",
@@ -640,8 +640,8 @@ const AdminAgents = () => {
                     type="button"
                     onClick={() => toggleSpecialty(specialty)}
                     className={`px-3 py-1 rounded-lg text-sm font-medium transition-colors ${formData.specialties.includes(specialty)
-                        ? 'bg-primary text-white'
-                        : 'bg-slate-100 text-slate-600 hover:bg-slate-200'
+                      ? 'bg-primary text-white'
+                      : 'bg-slate-100 text-slate-600 hover:bg-slate-200'
                       }`}
                   >
                     {specialty}
@@ -661,8 +661,8 @@ const AdminAgents = () => {
                     type="button"
                     onClick={() => toggleLanguage(lang.id)}
                     className={`px-3 py-1 rounded-lg text-sm font-medium transition-colors ${formData.languages.includes(lang.id)
-                        ? 'bg-blue-500 text-white'
-                        : 'bg-slate-100 text-slate-600 hover:bg-slate-200'
+                      ? 'bg-blue-500 text-white'
+                      : 'bg-slate-100 text-slate-600 hover:bg-slate-200'
                       }`}
                   >
                     {lang.name}
