@@ -1,3 +1,4 @@
+import { API_URL } from "@/config";
 import { useEffect, useState } from "react";
 import { Building2, Users, MapPin, Globe, TrendingUp } from "lucide-react";
 
@@ -19,7 +20,6 @@ const AdminDashboard = () => {
   const [recentProperties, setRecentProperties] = useState<RecentProperty[]>([]);
   const [loading, setLoading] = useState(true);
 
-  import { API_URL } from "@/config";
 
   useEffect(() => {
     fetch(`${API_URL}/api/admin/stats`)
