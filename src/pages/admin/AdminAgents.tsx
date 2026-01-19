@@ -73,7 +73,7 @@ const AdminAgents = () => {
   const [editingAgent, setEditingAgent] = useState<Agent | null>(null);
   const [uploading, setUploading] = useState(false);
   const [imagePreview, setImagePreview] = useState<string | null>(null);
-  
+
   const [formData, setFormData] = useState({
     name: "",
     phone: "",
@@ -188,12 +188,12 @@ const AdminAgents = () => {
 
   const openEditDialog = (agent: Agent) => {
     setEditingAgent(agent);
-    
+
     // Backend now sends array, but handle safely
-    const specialties = Array.isArray(agent.specialties) 
-      ? agent.specialties 
+    const specialties = Array.isArray(agent.specialties)
+      ? agent.specialties
       : [];
-    
+
     // Map language names (strings) back to IDs for the form
     const currentLangIds = (agent.languages || [])
       .map(name => languages.find(l => l.name === name)?.id)
@@ -209,7 +209,7 @@ const AdminAgents = () => {
       experience: agent.experience?.toString() || "",
       rating: agent.rating?.toString() || "",
       specialties: Array.isArray(specialties) ? specialties : [],
-      languages: currentLangIds, 
+      languages: currentLangIds,
       officeAddress: agent.officeAddress || "",
       isTopAgent: agent.isTopAgent || false,
       cityId: agent.cityId?.toString() || "",
@@ -310,7 +310,7 @@ const AdminAgents = () => {
       const url = editingAgent
         ? `${API_URL}/api/agents/${editingAgent.id}`
         : `${API_URL}/api/agents`;
-      
+
       const res = await fetch(url, {
         method: editingAgent ? "PUT" : "POST",
         headers: { "Content-Type": "application/json" },
@@ -332,7 +332,7 @@ const AdminAgents = () => {
 
   const handleDelete = async (id: number) => {
     if (!confirm("Are you sure you want to delete this agent?")) return;
-    
+
     try {
       const res = await fetch(`${API_URL}/api/agents/${id}`, {
         method: "DELETE",
@@ -464,7 +464,7 @@ const AdminAgents = () => {
           <DialogHeader>
             <DialogTitle>{editingAgent ? "Edit Agent" : "Add New Agent"}</DialogTitle>
           </DialogHeader>
-          
+
           <div className="grid gap-6 py-4">
             {/* Profile Image Upload */}
             <div className="flex items-start gap-6">
@@ -583,7 +583,7 @@ const AdminAgents = () => {
             </div>
 
             {/* Stats */}
-            <div className="grid grid-cols-3 gap-4">
+            <div className="grid grid-cols-2 gap-4">
               <div>
                 <Label>Years of Experience</Label>
                 <Input
@@ -592,18 +592,6 @@ const AdminAgents = () => {
                   onChange={(e) => setFormData({ ...formData, experience: e.target.value })}
                   placeholder="0"
                   min="0"
-                />
-              </div>
-              <div>
-                <Label>Rating (0-5)</Label>
-                <Input
-                  type="number"
-                  value={formData.rating}
-                  onChange={(e) => setFormData({ ...formData, rating: e.target.value })}
-                  placeholder="4.5"
-                  min="0"
-                  max="5"
-                  step="0.1"
                 />
               </div>
               <div>
@@ -651,11 +639,10 @@ const AdminAgents = () => {
                     key={specialty}
                     type="button"
                     onClick={() => toggleSpecialty(specialty)}
-                    className={`px-3 py-1 rounded-lg text-sm font-medium transition-colors ${
-                      formData.specialties.includes(specialty)
+                    className={`px-3 py-1 rounded-lg text-sm font-medium transition-colors ${formData.specialties.includes(specialty)
                         ? 'bg-primary text-white'
                         : 'bg-slate-100 text-slate-600 hover:bg-slate-200'
-                    }`}
+                      }`}
                   >
                     {specialty}
                   </button>
@@ -673,11 +660,10 @@ const AdminAgents = () => {
                     key={lang.id}
                     type="button"
                     onClick={() => toggleLanguage(lang.id)}
-                    className={`px-3 py-1 rounded-lg text-sm font-medium transition-colors ${
-                      formData.languages.includes(lang.id)
+                    className={`px-3 py-1 rounded-lg text-sm font-medium transition-colors ${formData.languages.includes(lang.id)
                         ? 'bg-blue-500 text-white'
                         : 'bg-slate-100 text-slate-600 hover:bg-slate-200'
-                    }`}
+                      }`}
                   >
                     {lang.name}
                   </button>

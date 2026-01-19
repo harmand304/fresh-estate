@@ -2,9 +2,9 @@ import { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import Navbar from '@/components/Navbar';
 import Footer from '@/components/Footer';
-import { 
+import {
   Search,
-  Star, 
+  Star,
   Building2,
   Calendar,
   User,
@@ -56,13 +56,7 @@ const SPECIALIZATIONS = [
   "Vacation Homes"
 ];
 
-const LANGUAGES = [
-  "English",
-  "Kurdish",
-  "Arabic",
-  "Turkish",
-  "Persian"
-];
+
 
 const EXPERIENCE_OPTIONS = [
   { label: "Any Experience", value: "any" },
@@ -75,10 +69,11 @@ const EXPERIENCE_OPTIONS = [
 const Agents = () => {
   const [agents, setAgents] = useState<Agent[]>([]);
   const [filteredAgents, setFilteredAgents] = useState<Agent[]>([]);
+  const [languages, setLanguages] = useState<string[]>([]);
   const [loading, setLoading] = useState(true);
   const [searchQuery, setSearchQuery] = useState('');
   const [visibleCount, setVisibleCount] = useState(6);
-  
+
   // Filter states
   const [filters, setFilters] = useState({
     specialization: 'all',
@@ -89,22 +84,33 @@ const Agents = () => {
   });
 
   useEffect(() => {
-    const fetchAgents = async () => {
+    const fetchData = async () => {
       try {
-        const response = await fetch(`${API_URL}/api/agents`);
-        if (response.ok) {
-          const data = await response.json();
-          setAgents(data);
-          setFilteredAgents(data);
+        const [agentsRes, languagesRes] = await Promise.all([
+          fetch(`${API_URL}/api/agents`),
+          fetch(`${API_URL}/api/languages`)
+        ]);
+
+        if (agentsRes.ok) {
+          const agentsData = await agentsRes.json();
+          setAgents(agentsData);
+          setFilteredAgents(agentsData);
+        }
+
+        if (languagesRes.ok) {
+          const languagesData = await languagesRes.json();
+          if (Array.isArray(languagesData)) {
+            setLanguages(languagesData.map((l: any) => l.name));
+          }
         }
       } catch (error) {
-        console.error('Error fetching agents:', error);
+        console.error('Error fetching data:', error);
       } finally {
         setLoading(false);
       }
     };
 
-    fetchAgents();
+    fetchData();
   }, []);
 
   // Filter agents when search or filters change
@@ -114,7 +120,7 @@ const Agents = () => {
     // Search filter
     if (searchQuery.trim()) {
       const query = searchQuery.toLowerCase();
-      result = result.filter(agent => 
+      result = result.filter(agent =>
         agent.name?.toLowerCase().includes(query) ||
         agent.cityName?.toLowerCase().includes(query) ||
         agent.specialties?.some(s => s.toLowerCase().includes(query))
@@ -123,14 +129,14 @@ const Agents = () => {
 
     // Specialization filter
     if (filters.specialization !== 'all') {
-      result = result.filter(agent => 
+      result = result.filter(agent =>
         agent.specialties?.some(s => s.toLowerCase() === filters.specialization.toLowerCase())
       );
     }
 
     // Languages filter
     if (filters.language !== 'all') {
-      result = result.filter(agent => 
+      result = result.filter(agent =>
         agent.languages?.some(lang => lang.toLowerCase() === filters.language.toLowerCase())
       );
     }
@@ -173,12 +179,12 @@ const Agents = () => {
     setSearchQuery('');
   };
 
-  const hasActiveFilters = filters.specialization !== 'all' || 
-                           filters.language !== 'all' || 
-                           filters.experience !== 'any' || 
-                           filters.minRating > 0 ||
-                           filters.topRated ||
-                           searchQuery.trim() !== '';
+  const hasActiveFilters = filters.specialization !== 'all' ||
+    filters.language !== 'all' ||
+    filters.experience !== 'any' ||
+    filters.minRating > 0 ||
+    filters.topRated ||
+    searchQuery.trim() !== '';
 
   // Handle star click with half-star support
   const handleStarClick = (starIndex: number, e: React.MouseEvent<HTMLButtonElement>) => {
@@ -187,7 +193,7 @@ const Agents = () => {
     const isLeftHalf = clickX < rect.width / 2;
     const newRating = isLeftHalf ? starIndex - 0.5 : starIndex;
     // Toggle off if clicking same rating
-    setFilters({...filters, minRating: filters.minRating === newRating ? 0 : newRating});
+    setFilters({ ...filters, minRating: filters.minRating === newRating ? 0 : newRating });
   };
 
   const loadMore = () => {
@@ -209,7 +215,7 @@ const Agents = () => {
   return (
     <div className="min-h-screen flex flex-col bg-[#f8faf8]">
       <Navbar />
-      
+
       <main className="flex-1 pt-32 pb-16">
         <div className="container mx-auto px-4 max-w-6xl">
           {/* Header */}
@@ -240,7 +246,7 @@ const Agents = () => {
             <div className="flex flex-wrap items-center justify-between gap-4">
               <div className="flex flex-wrap items-center gap-3">
                 <span className="text-sm text-slate-600 font-medium">Filter by:</span>
-                
+
                 {/* Specialization Filter */}
                 <Popover>
                   <PopoverTrigger asChild>
@@ -252,20 +258,18 @@ const Agents = () => {
                   <PopoverContent className="w-56 p-2" align="start">
                     <div className="space-y-1">
                       <button
-                        onClick={() => setFilters({...filters, specialization: 'all'})}
-                        className={`w-full text-left px-3 py-2 rounded-lg text-sm transition-colors ${
-                          filters.specialization === 'all' ? 'bg-primary text-white' : 'hover:bg-slate-100'
-                        }`}
+                        onClick={() => setFilters({ ...filters, specialization: 'all' })}
+                        className={`w-full text-left px-3 py-2 rounded-lg text-sm transition-colors ${filters.specialization === 'all' ? 'bg-primary text-white' : 'hover:bg-slate-100'
+                          }`}
                       >
                         All Specializations
                       </button>
                       {SPECIALIZATIONS.map((spec) => (
                         <button
                           key={spec}
-                          onClick={() => setFilters({...filters, specialization: spec})}
-                          className={`w-full text-left px-3 py-2 rounded-lg text-sm transition-colors ${
-                            filters.specialization === spec ? 'bg-primary text-white' : 'hover:bg-slate-100'
-                          }`}
+                          onClick={() => setFilters({ ...filters, specialization: spec })}
+                          className={`w-full text-left px-3 py-2 rounded-lg text-sm transition-colors ${filters.specialization === spec ? 'bg-primary text-white' : 'hover:bg-slate-100'
+                            }`}
                         >
                           {spec}
                         </button>
@@ -285,20 +289,18 @@ const Agents = () => {
                   <PopoverContent className="w-48 p-2" align="start">
                     <div className="space-y-1">
                       <button
-                        onClick={() => setFilters({...filters, language: 'all'})}
-                        className={`w-full text-left px-3 py-2 rounded-lg text-sm transition-colors ${
-                          filters.language === 'all' ? 'bg-primary text-white' : 'hover:bg-slate-100'
-                        }`}
+                        onClick={() => setFilters({ ...filters, language: 'all' })}
+                        className={`w-full text-left px-3 py-2 rounded-lg text-sm transition-colors ${filters.language === 'all' ? 'bg-primary text-white' : 'hover:bg-slate-100'
+                          }`}
                       >
                         All Languages
                       </button>
-                      {LANGUAGES.map((lang) => (
+                      {languages.map((lang) => (
                         <button
                           key={lang}
-                          onClick={() => setFilters({...filters, language: lang})}
-                          className={`w-full text-left px-3 py-2 rounded-lg text-sm transition-colors ${
-                            filters.language === lang ? 'bg-primary text-white' : 'hover:bg-slate-100'
-                          }`}
+                          onClick={() => setFilters({ ...filters, language: lang })}
+                          className={`w-full text-left px-3 py-2 rounded-lg text-sm transition-colors ${filters.language === lang ? 'bg-primary text-white' : 'hover:bg-slate-100'
+                            }`}
                         >
                           {lang}
                         </button>
@@ -320,10 +322,9 @@ const Agents = () => {
                       {EXPERIENCE_OPTIONS.map((opt) => (
                         <button
                           key={opt.value}
-                          onClick={() => setFilters({...filters, experience: opt.value})}
-                          className={`w-full text-left px-3 py-2 rounded-lg text-sm transition-colors ${
-                            filters.experience === opt.value ? 'bg-primary text-white' : 'hover:bg-slate-100'
-                          }`}
+                          onClick={() => setFilters({ ...filters, experience: opt.value })}
+                          className={`w-full text-left px-3 py-2 rounded-lg text-sm transition-colors ${filters.experience === opt.value ? 'bg-primary text-white' : 'hover:bg-slate-100'
+                            }`}
                         >
                           {opt.label}
                         </button>
@@ -371,7 +372,7 @@ const Agents = () => {
                         <input
                           type="checkbox"
                           checked={filters.topRated}
-                          onChange={(e) => setFilters({...filters, topRated: e.target.checked})}
+                          onChange={(e) => setFilters({ ...filters, topRated: e.target.checked })}
                           className="w-4 h-4 accent-primary"
                         />
                         <span className="text-sm">Top Rated Only</span>
@@ -408,14 +409,14 @@ const Agents = () => {
                 {filteredAgents.slice(0, visibleCount).map((agent) => (
                   <div
                     key={agent.id}
-                    className="bg-white rounded-2xl shadow-sm overflow-hidden hover:shadow-lg transition-all border border-slate-100"
+                    className="bg-white rounded-2xl shadow-sm overflow-hidden hover:shadow-lg transition-all border border-slate-100 flex flex-col h-full"
                   >
                     {/* Agent Photo */}
                     <div className="relative aspect-[4/3] bg-slate-100">
                       {agent.image ? (
-                        <img 
-                          src={agent.image} 
-                          alt={agent.name} 
+                        <img
+                          src={agent.image}
+                          alt={agent.name}
                           className="w-full h-full object-cover"
                         />
                       ) : (
@@ -423,7 +424,7 @@ const Agents = () => {
                           <User className="w-20 h-20 text-primary/30" />
                         </div>
                       )}
-                      
+
                       {/* Rating Badge */}
                       {agent.rating > 0 && (
                         <div className="absolute top-3 right-3 flex items-center gap-1 px-2 py-1 bg-white/95 backdrop-blur-sm rounded-lg shadow-sm">
@@ -434,12 +435,12 @@ const Agents = () => {
                     </div>
 
                     {/* Agent Info */}
-                    <div className="p-5">
+                    <div className="p-5 flex flex-col flex-1">
                       <h3 className="text-lg font-bold text-slate-900">{agent.name}</h3>
                       <p className="text-primary text-sm font-medium mt-0.5">
                         {Array.isArray(agent.specialties) ? (agent.specialties[0] || 'Real Estate Agent') : (agent.specialties || 'Real Estate Agent')}
                       </p>
-                      
+
                       {/* Bio */}
                       <p className="text-slate-600 text-sm mt-3 line-clamp-2">
                         {agent.bio || `Helping clients find their perfect home in ${agent.cityName || 'Kurdistan'}.`}
@@ -460,9 +461,9 @@ const Agents = () => {
                       </div>
 
                       {/* Buttons */}
-                      <div className="flex gap-3 mt-5">
-                        <Button 
-                          variant="outline" 
+                      <div className="flex gap-3 mt-auto pt-5">
+                        <Button
+                          variant="outline"
                           className="flex-1 rounded-lg border-primary text-primary hover:bg-primary/5"
                           asChild
                         >
@@ -470,7 +471,7 @@ const Agents = () => {
                         </Button>
                         <Popover>
                           <PopoverTrigger asChild>
-                            <Button 
+                            <Button
                               className="flex-1 rounded-lg"
                             >
                               CONTACT
@@ -478,59 +479,59 @@ const Agents = () => {
                           </PopoverTrigger>
                           <PopoverContent className="w-80 p-0 rounded-xl overflow-hidden shadow-xl border-slate-100" align="end" sideOffset={8}>
                             <div className="flex flex-col animate-in fade-in zoom-in-95 duration-200">
-                               {/* Phone Section */}
-                               <div className="p-4 hover:bg-emerald-50/50 transition-colors border-b border-slate-100 group">
-                                  <div className="flex items-center gap-3 mb-3">
-                                     <div className="w-10 h-10 rounded-full bg-emerald-100 flex items-center justify-center text-emerald-600 group-hover:scale-110 transition-transform duration-300 shadow-sm">
-                                        <Phone className="w-5 h-5" />
-                                     </div>
-                                     <div className="flex-1 overflow-hidden">
-                                        <p className="text-[10px] text-slate-500 font-bold uppercase tracking-wider mb-0.5">Call Agent</p>
-                                        <p className="text-slate-900 font-medium truncate text-sm" title={agent.phone}>{agent.phone}</p>
-                                     </div>
-                                     <Button 
-                                      variant="ghost" 
-                                      size="icon" 
-                                      className="h-8 w-8 text-slate-400 hover:text-emerald-600 hover:bg-emerald-100"
-                                      onClick={() => {
-                                        navigator.clipboard.writeText(agent.phone);
-                                        toast.success("Phone number copied!");
-                                      }}
-                                     >
-                                        <Copy className="w-4 h-4" />
-                                     </Button>
+                              {/* Phone Section */}
+                              <div className="p-4 hover:bg-emerald-50/50 transition-colors border-b border-slate-100 group">
+                                <div className="flex items-center gap-3 mb-3">
+                                  <div className="w-10 h-10 rounded-full bg-emerald-100 flex items-center justify-center text-emerald-600 group-hover:scale-110 transition-transform duration-300 shadow-sm">
+                                    <Phone className="w-5 h-5" />
                                   </div>
-                                  <Button className="w-full h-9 bg-white border border-emerald-200 text-emerald-700 hover:bg-emerald-600 hover:text-white hover:border-emerald-600 transition-all shadow-sm" variant="outline" asChild>
-                                     <a href={`tel:${agent.phone}`}>Call Now</a>
+                                  <div className="flex-1 overflow-hidden">
+                                    <p className="text-[10px] text-slate-500 font-bold uppercase tracking-wider mb-0.5">Call Agent</p>
+                                    <p className="text-slate-900 font-medium truncate text-sm" title={agent.phone}>{agent.phone}</p>
+                                  </div>
+                                  <Button
+                                    variant="ghost"
+                                    size="icon"
+                                    className="h-8 w-8 text-slate-400 hover:text-emerald-600 hover:bg-emerald-100"
+                                    onClick={() => {
+                                      navigator.clipboard.writeText(agent.phone);
+                                      toast.success("Phone number copied!");
+                                    }}
+                                  >
+                                    <Copy className="w-4 h-4" />
                                   </Button>
-                               </div>
+                                </div>
+                                <Button className="w-full h-9 bg-white border border-emerald-200 text-emerald-700 hover:bg-emerald-600 hover:text-white hover:border-emerald-600 transition-all shadow-sm" variant="outline" asChild>
+                                  <a href={`tel:${agent.phone}`}>Call Now</a>
+                                </Button>
+                              </div>
 
-                               {/* Email Section */}
-                               <div className="p-4 hover:bg-blue-50/50 transition-colors group">
-                                  <div className="flex items-center gap-3 mb-3">
-                                     <div className="w-10 h-10 rounded-full bg-blue-100 flex items-center justify-center text-blue-600 group-hover:scale-110 transition-transform duration-300 shadow-sm">
-                                        <Mail className="w-5 h-5" />
-                                     </div>
-                                     <div className="flex-1 overflow-hidden">
-                                        <p className="text-[10px] text-slate-500 font-bold uppercase tracking-wider mb-0.5">Email Agent</p>
-                                        <p className="text-slate-900 font-medium truncate text-sm" title={agent.email}>{agent.email}</p>
-                                     </div>
-                                     <Button 
-                                      variant="ghost" 
-                                      size="icon" 
-                                      className="h-8 w-8 text-slate-400 hover:text-blue-600 hover:bg-blue-100"
-                                      onClick={() => {
-                                        navigator.clipboard.writeText(agent.email);
-                                        toast.success("Email copied!");
-                                      }}
-                                     >
-                                        <Copy className="w-4 h-4" />
-                                     </Button>
+                              {/* Email Section */}
+                              <div className="p-4 hover:bg-blue-50/50 transition-colors group">
+                                <div className="flex items-center gap-3 mb-3">
+                                  <div className="w-10 h-10 rounded-full bg-blue-100 flex items-center justify-center text-blue-600 group-hover:scale-110 transition-transform duration-300 shadow-sm">
+                                    <Mail className="w-5 h-5" />
                                   </div>
-                                  <Button className="w-full h-9 bg-white border border-blue-200 text-blue-700 hover:bg-blue-600 hover:text-white hover:border-blue-600 transition-all shadow-sm" variant="outline" asChild>
-                                     <a href={`mailto:${agent.email}`}>Send Email</a>
+                                  <div className="flex-1 overflow-hidden">
+                                    <p className="text-[10px] text-slate-500 font-bold uppercase tracking-wider mb-0.5">Email Agent</p>
+                                    <p className="text-slate-900 font-medium truncate text-sm" title={agent.email}>{agent.email}</p>
+                                  </div>
+                                  <Button
+                                    variant="ghost"
+                                    size="icon"
+                                    className="h-8 w-8 text-slate-400 hover:text-blue-600 hover:bg-blue-100"
+                                    onClick={() => {
+                                      navigator.clipboard.writeText(agent.email);
+                                      toast.success("Email copied!");
+                                    }}
+                                  >
+                                    <Copy className="w-4 h-4" />
                                   </Button>
-                               </div>
+                                </div>
+                                <Button className="w-full h-9 bg-white border border-blue-200 text-blue-700 hover:bg-blue-600 hover:text-white hover:border-blue-600 transition-all shadow-sm" variant="outline" asChild>
+                                  <a href={`mailto:${agent.email}`}>Send Email</a>
+                                </Button>
+                              </div>
                             </div>
                           </PopoverContent>
                         </Popover>
@@ -543,8 +544,8 @@ const Agents = () => {
               {/* Load More Button */}
               {visibleCount < filteredAgents.length && (
                 <div className="text-center mt-10">
-                  <Button 
-                    variant="outline" 
+                  <Button
+                    variant="outline"
                     onClick={loadMore}
                     className="rounded-lg px-8 gap-2"
                   >

@@ -6,6 +6,11 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { toast } from "sonner";
+import erbilBg from "@/assets/abt-bg.jpg";
+import bakoImg from "@/assets/bako.jpg";
+import mohammedImg from "@/assets/mohammed.jpeg";
+import harmandImg from "@/assets/harmand.jpg";
+import alanImg from "@/assets/alan.jpg";
 
 const About = () => {
   const [loading, setLoading] = useState(false);
@@ -13,7 +18,7 @@ const About = () => {
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     setLoading(true);
-    
+
     setTimeout(() => {
       setLoading(false);
       toast.success("Message sent successfully!", {
@@ -31,18 +36,18 @@ const About = () => {
         {/* Hero Section */}
         <section className="relative h-[60vh] pt-20 flex items-center justify-center overflow-hidden">
           <div className="absolute inset-0 bg-black/60 z-10" />
-          <div 
+          <div
             className="absolute inset-0 bg-cover bg-center"
-            style={{ 
-              backgroundImage: "url('https://images.unsplash.com/photo-1486406146926-c627a92ad1ab?auto=format&fit=crop&q=80')" 
-            }} 
+            style={{
+              backgroundImage: `url(${erbilBg})`
+            }}
           />
           <div className="relative z-20 text-center px-4 max-w-4xl mx-auto">
             <h1 className="text-4xl md:text-6xl font-display font-bold text-white mb-6 animate-fade-in-up">
               Building Trust, Creating Homes
             </h1>
             <p className="text-xl text-white/90 font-light max-w-2xl mx-auto animate-fade-in-up delay-100">
-              At Mood Real Estate, we believe in more than just transactions. We believe in finding the perfect space where your life's best memories will unfold.
+              At Fresh Estate, we believe in more than just transactions. We believe in finding the perfect space where your life's best memories will unfold.
             </p>
           </div>
         </section>
@@ -55,7 +60,7 @@ const About = () => {
               <p className="text-muted-foreground text-lg leading-relaxed mb-8">
                 To revolutionize the real estate experience in the region by providing transparent, efficient, and personalized services. We strive to empower our clients with market insights and exceptional support, ensuring every decision is made with confidence.
               </p>
-              
+
               <h2 className="text-3xl font-display font-bold mb-6 text-foreground">Our Vision</h2>
               <p className="text-muted-foreground text-lg leading-relaxed">
                 To be the most trusted and innovative real estate partner in the Middle East, known for integrity, excellence, and a deep commitment to community growth and development.
@@ -63,26 +68,26 @@ const About = () => {
             </div>
             <div className="grid grid-cols-2 gap-4">
               <div className="space-y-4">
-                <img 
-                  src="https://images.unsplash.com/photo-1560518883-ce09059eeffa?auto=format&fit=crop&q=80" 
-                  alt="Modern Office" 
+                <img
+                  src="https://images.unsplash.com/photo-1560518883-ce09059eeffa?auto=format&fit=crop&q=80"
+                  alt="Modern Office"
                   className="rounded-2xl shadow-lg w-full h-64 object-cover"
                 />
-                <img 
-                  src="https://images.unsplash.com/photo-1556761175-5973dc0f32e7?auto=format&fit=crop&q=80" 
-                  alt="Team Meeting" 
+                <img
+                  src="https://images.unsplash.com/photo-1556761175-5973dc0f32e7?auto=format&fit=crop&q=80"
+                  alt="Team Meeting"
                   className="rounded-2xl shadow-lg w-full h-48 object-cover"
                 />
               </div>
               <div className="space-y-4 pt-8">
-                <img 
-                  src="https://images.unsplash.com/photo-1577412647305-991150c7d163?auto=format&fit=crop&q=80" 
-                  alt="Handshake" 
+                <img
+                  src="https://images.unsplash.com/photo-1577412647305-991150c7d163?auto=format&fit=crop&q=80"
+                  alt="Handshake"
                   className="rounded-2xl shadow-lg w-full h-48 object-cover"
                 />
-                <img 
-                  src="https://images.unsplash.com/photo-1600880292203-757bb62b4baf?auto=format&fit=crop&q=80" 
-                  alt="Happy Clients" 
+                <img
+                  src="https://images.unsplash.com/photo-1600880292203-757bb62b4baf?auto=format&fit=crop&q=80"
+                  alt="Happy Clients"
                   className="rounded-2xl shadow-lg w-full h-64 object-cover"
                 />
               </div>
@@ -127,29 +132,34 @@ const About = () => {
             </p>
           </div>
 
-          <div className="grid md:grid-cols-3 gap-8">
+          <div className="grid md:grid-cols-4 gap-8">
             {[
               {
-                name: "Karim Ahmed",
-                role: "CEO & Founder",
-                image: "https://images.unsplash.com/photo-1560250097-0b93528c311a?auto=format&fit=crop&q=80"
+                name: "Mohammed Hussein",
+                role: "Co-Founder",
+                image: mohammedImg
               },
               {
-                name: "Sara Hassan",
-                role: "Senior Broker",
-                image: "https://images.unsplash.com/photo-1573496359142-b8d87734a5a2?auto=format&fit=crop&q=80"
+                name: "Harmand Zahir",
+                role: "Co-Founder",
+                image: harmandImg
               },
               {
-                name: "Mohammed Ali",
-                role: "Property Consultant",
-                image: "https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?auto=format&fit=crop&q=80"
-              }
+                name: "Bako Abdullah",
+                role: "Co-Founder",
+                image: bakoImg
+              },
+              {
+                name: "Alan Omed",
+                role: "Co-Founder",
+                image: alanImg
+              },
             ].map((member) => (
               <div key={member.name} className="group relative overflow-hidden rounded-2xl bg-white shadow-lg">
                 <div className="aspect-[3/4] overflow-hidden">
-                  <img 
-                    src={member.image} 
-                    alt={member.name} 
+                  <img
+                    src={member.image}
+                    alt={member.name}
                     className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105"
                   />
                 </div>
@@ -210,8 +220,8 @@ const About = () => {
                       <h3 className="font-bold text-xl mb-1">Office</h3>
                       <p className="text-muted-foreground mb-2">Come visit us at our HQ</p>
                       <address className="not-italic text-foreground">
-                        Dream City, Villa 245<br/>
-                        Erbil, Kurdistan Region<br/>
+                        Dream City, Villa 245<br />
+                        Erbil, Kurdistan Region<br />
                         Iraq
                       </address>
                     </div>
@@ -220,9 +230,9 @@ const About = () => {
 
                 {/* Map Placeholder */}
                 <div className="rounded-3xl overflow-hidden h-64 shadow-lg bg-slate-100 relative group">
-                  <img 
-                    src="https://images.unsplash.com/photo-1524661135-423995f22d0b?auto=format&fit=crop&q=80" 
-                    alt="Map Location" 
+                  <img
+                    src="https://images.unsplash.com/photo-1524661135-423995f22d0b?auto=format&fit=crop&q=80"
+                    alt="Map Location"
                     className="w-full h-full object-cover opacity-80 group-hover:opacity-100 transition-opacity"
                   />
                   <div className="absolute inset-0 flex items-center justify-center">
@@ -247,7 +257,7 @@ const About = () => {
                       <Input required placeholder="Doe" className="bg-background" />
                     </div>
                   </div>
-                  
+
                   <div className="space-y-2">
                     <label className="text-sm font-medium">Email Address</label>
                     <Input required type="email" placeholder="john@example.com" className="bg-background" />
@@ -260,10 +270,10 @@ const About = () => {
 
                   <div className="space-y-2">
                     <label className="text-sm font-medium">Message</label>
-                    <Textarea 
-                      required 
-                      placeholder="I'm interested in viewing a property..." 
-                      className="min-h-[150px] bg-background resize-none" 
+                    <Textarea
+                      required
+                      placeholder="I'm interested in viewing a property..."
+                      className="min-h-[150px] bg-background resize-none"
                     />
                   </div>
 

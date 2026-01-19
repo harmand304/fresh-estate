@@ -23,7 +23,7 @@ const useCountUp = (end: number, duration: number = 2000, delay: number = 0) => 
 
         const elapsed = currentTime - startTimeRef.current;
         const progress = Math.min(elapsed / duration, 1);
-        
+
         // Easing function for smooth animation (ease-out-cubic)
         const easeOutCubic = 1 - Math.pow(1 - progress, 3);
         const currentCount = Math.floor(easeOutCubic * end);
@@ -131,21 +131,19 @@ const Hero = () => {
         <div className="flex border-b border-slate-200 mb-6">
           <button
             onClick={() => setPurpose("sale")}
-            className={`px-6 py-3 text-sm font-semibold transition-all border-b-2 -mb-[2px] ${
-              purpose === "sale"
-                ? "text-primary border-primary"
-                : "text-slate-500 border-transparent hover:text-slate-700"
-            }`}
+            className={`px-6 py-3 text-sm font-semibold transition-all border-b-2 -mb-[2px] ${purpose === "sale"
+              ? "text-primary border-primary"
+              : "text-slate-500 border-transparent hover:text-slate-700"
+              }`}
           >
             Sell
           </button>
           <button
             onClick={() => setPurpose("rent")}
-            className={`px-6 py-3 text-sm font-semibold transition-all border-b-2 -mb-[2px] ${
-              purpose === "rent"
-                ? "text-primary border-primary"
-                : "text-slate-500 border-transparent hover:text-slate-700"
-            }`}
+            className={`px-6 py-3 text-sm font-semibold transition-all border-b-2 -mb-[2px] ${purpose === "rent"
+              ? "text-primary border-primary"
+              : "text-slate-500 border-transparent hover:text-slate-700"
+              }`}
           >
             Rent
           </button>
@@ -164,7 +162,7 @@ const Hero = () => {
               className="w-full h-12 pl-12 pr-4 bg-slate-50 rounded-xl border border-slate-200 text-slate-700 font-medium placeholder:text-slate-400 focus:ring-2 focus:ring-primary/20 focus:border-primary/30 focus:bg-white transition-all"
             />
           </div>
-          <Button 
+          <Button
             onClick={handleSearch}
             className="h-12 px-6 rounded-xl bg-primary hover:bg-primary/90 text-white font-semibold shadow-lg shadow-primary/30 transition-all hover:shadow-xl hover:shadow-primary/40"
           >
