@@ -481,8 +481,8 @@ const Properties = () => {
                             key={bed}
                             onClick={() => setFilters({ ...filters, bedrooms: bed })}
                             className={`flex-1 py-2 text-xs rounded-lg border transition-colors ${filters.bedrooms === bed
-                                ? "bg-primary text-white border-primary"
-                                : "border-gray-200 hover:bg-gray-50"
+                              ? "bg-primary text-white border-primary"
+                              : "border-gray-200 hover:bg-gray-50"
                               }`}
                           >
                             {bed === "any" ? "Any" : bed}
@@ -498,8 +498,8 @@ const Properties = () => {
                             key={bath}
                             onClick={() => setFilters({ ...filters, bathrooms: bath })}
                             className={`flex-1 py-2 text-xs rounded-lg border transition-colors ${filters.bathrooms === bath
-                                ? "bg-primary text-white border-primary"
-                                : "border-gray-200 hover:bg-gray-50"
+                              ? "bg-primary text-white border-primary"
+                              : "border-gray-200 hover:bg-gray-50"
                               }`}
                           >
                             {bath === "any" ? "Any" : bath}
@@ -552,8 +552,8 @@ const Properties = () => {
               <button
                 onClick={() => { setShowFavoritesOnly(!showFavoritesOnly); setShowForYou(false); }}
                 className={`flex items-center gap-2 px-4 py-2 rounded-lg border transition-all ${showFavoritesOnly
-                    ? 'bg-red-500 text-white border-red-500'
-                    : 'bg-white text-gray-700 border-gray-200 hover:border-red-300 hover:text-red-500'
+                  ? 'bg-red-500 text-white border-red-500'
+                  : 'bg-white text-gray-700 border-gray-200 hover:border-red-300 hover:text-red-500'
                   }`}
               >
                 <Heart className={`w-4 h-4 ${showFavoritesOnly ? 'fill-current' : ''}`} />
@@ -572,8 +572,8 @@ const Properties = () => {
                   }
                 }}
                 className={`flex items-center gap-2 px-4 py-2 rounded-lg border transition-all ${showForYou
-                    ? 'bg-gradient-to-r from-emerald-500 to-teal-500 text-white border-emerald-500'
-                    : 'bg-white text-gray-700 border-gray-200 hover:border-emerald-300 hover:text-emerald-600'
+                  ? 'bg-gradient-to-r from-emerald-500 to-teal-500 text-white border-emerald-500'
+                  : 'bg-white text-gray-700 border-gray-200 hover:border-emerald-300 hover:text-emerald-600'
                   }`}
               >
                 <Sparkles className={`w-4 h-4 ${showForYou ? 'fill-current' : ''}`} />
@@ -722,8 +722,8 @@ const Properties = () => {
                         size="sm"
                         onClick={() => handlePageChange(page)}
                         className={`w-10 h-10 rounded-lg transition-all duration-150 ${currentPage === page
-                            ? "bg-primary shadow-[0_4px_0_0_#15803d] translate-y-0 hover:shadow-[0_2px_0_0_#15803d] hover:translate-y-[2px] active:shadow-none active:translate-y-[4px]"
-                            : "hover:bg-gray-50"
+                          ? "bg-primary shadow-[0_4px_0_0_#15803d] translate-y-0 hover:shadow-[0_2px_0_0_#15803d] hover:translate-y-[2px] active:shadow-none active:translate-y-[4px]"
+                          : "hover:bg-gray-50"
                           }`}
                       >
                         {page}

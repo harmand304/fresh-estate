@@ -1,3 +1,4 @@
+const API_URL = "https://fresh-estate.onrender.com";
 import { useState } from "react";
 import { Plus, Pencil, Trash2, ArrowLeft } from "lucide-react";
 import { Link } from "react-router-dom";

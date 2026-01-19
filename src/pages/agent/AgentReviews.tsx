@@ -1,3 +1,4 @@
+const API_URL = "https://fresh-estate.onrender.com";
 import { useState, useEffect } from "react";
 import { MessageSquare, Star, User, Calendar, Loader2 } from "lucide-react";
 

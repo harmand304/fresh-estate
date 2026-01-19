@@ -1,3 +1,4 @@
+const API_URL = `http://${window.location.hostname}:3001`;
 import { useEffect, useState } from "react";
 import { Plus, Pencil, Trash2, Search, Upload, Star, Award, X, Image } from "lucide-react";
 import { Button } from "@/components/ui/button";

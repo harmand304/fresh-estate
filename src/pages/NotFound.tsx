@@ -1,3 +1,4 @@
+const API_URL = "https://fresh-estate.onrender.com";
 import { useLocation } from "react-router-dom";
 import { useEffect } from "react";
 

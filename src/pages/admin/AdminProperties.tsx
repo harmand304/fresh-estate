@@ -1,3 +1,4 @@
+const API_URL = "https://fresh-estate.onrender.com";
 import { useEffect, useState, useRef } from "react";
 import { Plus, Pencil, Trash2, Search, Upload, X } from "lucide-react";
 import { Button } from "@/components/ui/button";
@@ -65,9 +66,9 @@ const AdminProperties = () => {
   const [amenities, setAmenities] = useState<any[]>([]);
   const [selectedAmenities, setSelectedAmenities] = useState<number[]>([]);
   const [uploading, setUploading] = useState(false);
-  const [uploadedImages, setUploadedImages] = useState<{key: string; signedUrl: string; dbId?: number}[]>([]);
+  const [uploadedImages, setUploadedImages] = useState<{ key: string; signedUrl: string; dbId?: number }[]>([]);
   const fileInputRef = useRef<HTMLInputElement>(null);
-  
+
   const [formData, setFormData] = useState<FormData>({
     title: "",
     description: "",
@@ -160,12 +161,12 @@ const AdminProperties = () => {
       agentId: property.agentId?.toString() || "",
       propertyTypeId: property.propertyTypeId?.toString() || "",
     });
-    
+
     // Fetch all images, description, and amenities for this property
     try {
       const res = await fetch(`http://localhost:3001/api/properties/${property.id}`);
       const data = await res.json();
-      
+
       // Update description from API
       if (data.description) {
         setFormData(prev => ({ ...prev, description: data.description }));
@@ -173,7 +174,7 @@ const AdminProperties = () => {
       if (data.shortDescription) {
         setFormData(prev => ({ ...prev, shortDescription: data.shortDescription }));
       }
-      
+
       // Load images
       if (data.images && data.images.length > 0 && data.imageKeys) {
         // Map images with their database IDs for deletion
@@ -188,7 +189,7 @@ const AdminProperties = () => {
       } else {
         setUploadedImages([]);
       }
-      
+
       // Load amenities
       if (data.amenities && data.amenities.length > 0) {
         setSelectedAmenities(data.amenities.map((a: any) => a.id));
@@ -200,7 +201,7 @@ const AdminProperties = () => {
       setUploadedImages(property.image ? [{ key: property.imageKey || '', signedUrl: property.image }] : []);
       setSelectedAmenities([]);
     }
-    
+
     setIsDialogOpen(true);
   };
 
@@ -227,7 +228,7 @@ const AdminProperties = () => {
         body: formDataUpload,
       });
       const data = await res.json();
-      
+
       if (data.success) {
         setUploadedImages((prev) => [...prev, ...data.images]);
         // Set first image as main imageKey
@@ -248,7 +249,7 @@ const AdminProperties = () => {
 
   const removeImage = async (index: number) => {
     const imageToRemove = uploadedImages[index];
-    
+
     // Delete from database if it has a dbId
     if (imageToRemove.dbId) {
       try {
@@ -259,7 +260,7 @@ const AdminProperties = () => {
         console.error('Error deleting image:', err);
       }
     }
-    
+
     const newImages = uploadedImages.filter((_, i) => i !== index);
     setUploadedImages(newImages);
     // Update main imageKey to first remaining image
@@ -289,7 +290,7 @@ const AdminProperties = () => {
       const url = editingProperty
         ? `http://localhost:3001/api/properties/${editingProperty.id}`
         : "http://localhost:3001/api/properties";
-      
+
       const res = await fetch(url, {
         method: editingProperty ? "PUT" : "POST",
         headers: { "Content-Type": "application/json" },
@@ -338,7 +339,7 @@ const AdminProperties = () => {
 
   const handleDelete = async (id: string) => {
     if (!confirm("Are you sure you want to delete this property?")) return;
-    
+
     try {
       const res = await fetch(`http://localhost:3001/api/properties/${id}`, {
         method: "DELETE",
@@ -424,11 +425,10 @@ const AdminProperties = () => {
                   <td className="p-4 text-slate-600">{property.type}</td>
                   <td className="p-4">
                     <span
-                      className={`px-2 py-1 rounded-lg text-xs font-medium ${
-                        property.purpose === "SALE"
+                      className={`px-2 py-1 rounded-lg text-xs font-medium ${property.purpose === "SALE"
                           ? "bg-amber-100 text-amber-700"
                           : "bg-blue-100 text-blue-700"
-                      }`}
+                        }`}
                     >
                       {property.purpose}
                     </span>
@@ -468,7 +468,7 @@ const AdminProperties = () => {
               {editingProperty ? "Edit Property" : "Add New Property"}
             </DialogTitle>
           </DialogHeader>
-          
+
           <div className="grid grid-cols-2 gap-4 py-4">
             <div className="col-span-2">
               <label className="text-sm font-medium text-slate-700">Title</label>
@@ -502,7 +502,7 @@ const AdminProperties = () => {
                 className="mt-1"
               />
             </div>
-            
+
             <div>
               <label className="text-sm font-medium text-slate-700">Price ($)</label>
               <Input
@@ -512,7 +512,7 @@ const AdminProperties = () => {
                 placeholder="100000"
               />
             </div>
-            
+
             <div>
               <label className="text-sm font-medium text-slate-700">Purpose</label>
               <Select
@@ -627,7 +627,7 @@ const AdminProperties = () => {
                 />
                 <span className="text-sm font-medium text-slate-700">Has Garage</span>
               </label>
-              
+
               <label className="flex items-center gap-2 cursor-pointer">
                 <input
                   type="checkbox"
@@ -645,7 +645,7 @@ const AdminProperties = () => {
                 <label className="text-sm font-medium text-slate-700">Property Images (up to 10)</label>
                 <span className="text-xs text-slate-400">{uploadedImages.length}/10</span>
               </div>
-              
+
               {/* Image Previews Grid */}
               {uploadedImages.length > 0 && (
                 <div className="grid grid-cols-5 gap-2 mb-3">
@@ -670,7 +670,7 @@ const AdminProperties = () => {
                   ))}
                 </div>
               )}
-              
+
               {/* Upload Button */}
               {uploadedImages.length < 10 && (
                 <div
@@ -682,7 +682,7 @@ const AdminProperties = () => {
                   <p className="text-xs text-slate-400">Select multiple files</p>
                 </div>
               )}
-              
+
               <input
                 ref={fileInputRef}
                 type="file"
@@ -691,7 +691,7 @@ const AdminProperties = () => {
                 onChange={handleImageUpload}
                 className="hidden"
               />
-              
+
               {uploading && (
                 <p className="text-sm text-primary mt-2 animate-pulse">Uploading...</p>
               )}
@@ -706,11 +706,10 @@ const AdminProperties = () => {
                 {amenities.map((amenity) => (
                   <label
                     key={amenity.id}
-                    className={`flex items-center gap-2 p-2 rounded-lg cursor-pointer border transition-colors ${
-                      selectedAmenities.includes(amenity.id)
+                    className={`flex items-center gap-2 p-2 rounded-lg cursor-pointer border transition-colors ${selectedAmenities.includes(amenity.id)
                         ? "bg-primary/10 border-primary"
                         : "bg-white border-gray-200 hover:bg-gray-50"
-                    }`}
+                      }`}
                   >
                     <input
                       type="checkbox"

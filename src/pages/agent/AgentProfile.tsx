@@ -1,9 +1,9 @@
+const API_URL = "https://fresh-estate.onrender.com";
 import { useEffect, useState } from "react";
 import { User, Upload, Save, X } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { toast } from "sonner";
-import { API_URL } from "@/config";
 
 interface AgentProfile {
   id: number;
