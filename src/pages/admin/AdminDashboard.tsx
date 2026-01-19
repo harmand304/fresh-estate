@@ -19,7 +19,7 @@ const AdminDashboard = () => {
   const [recentProperties, setRecentProperties] = useState<RecentProperty[]>([]);
   const [loading, setLoading] = useState(true);
 
-  const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:3001';
+  import { API_URL } from "@/config";
 
   useEffect(() => {
     fetch(`${API_URL}/api/admin/stats`)

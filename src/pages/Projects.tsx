@@ -4,12 +4,12 @@ import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
-import { 
-  Search, 
-  MapPin, 
-  Bed, 
-  Bath, 
-  Square, 
+import {
+  Search,
+  MapPin,
+  Bed,
+  Bath,
+  Square,
   Heart,
   ChevronDown
 } from "lucide-react";
@@ -19,7 +19,7 @@ import {
   PopoverTrigger,
 } from "@/components/ui/popover";
 
-const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:3001';
+import { API_URL } from "@/config";
 
 interface Project {
   id: number;
@@ -83,9 +83,9 @@ const Projects = () => {
   // Filter projects
   const filteredProjects = projects.filter(project => {
     const searchLower = searchQuery.toLowerCase().trim();
-    const matchesSearch = !searchLower || 
-                          project.name.toLowerCase().includes(searchLower) ||
-                          project.location?.toLowerCase().includes(searchLower);
+    const matchesSearch = !searchLower ||
+      project.name.toLowerCase().includes(searchLower) ||
+      project.location?.toLowerCase().includes(searchLower);
     const matchesLocation = locationFilter === "all" || project.location === locationFilter;
     return matchesSearch && matchesLocation;
   });
@@ -97,7 +97,7 @@ const Projects = () => {
   return (
     <div className="min-h-screen flex flex-col bg-[#f8faf8]">
       <Navbar />
-      
+
       {/* Loading Spinner Overlay */}
       {initialLoading && (
         <div className="fixed inset-0 z-40 flex items-center justify-center bg-white">
@@ -138,7 +138,7 @@ const Projects = () => {
           `}</style>
         </div>
       )}
-      
+
       <main className="flex-1 pt-32 pb-16">
         <div className="max-w-7xl mx-auto px-6">
           {/* Header */}
@@ -163,7 +163,7 @@ const Projects = () => {
                 className="pl-12 border-0 focus-visible:ring-0 text-base"
               />
             </div>
-            
+
             <Popover>
               <PopoverTrigger asChild>
                 <Button className="rounded-full bg-primary hover:bg-primary/90 text-white gap-2 px-5">
@@ -175,9 +175,8 @@ const Projects = () => {
                 <div className="space-y-1">
                   <button
                     onClick={() => setLocationFilter("all")}
-                    className={`w-full text-left px-3 py-2 rounded-lg text-sm transition-colors ${
-                      locationFilter === "all" ? "bg-primary text-white" : "hover:bg-gray-100"
-                    }`}
+                    className={`w-full text-left px-3 py-2 rounded-lg text-sm transition-colors ${locationFilter === "all" ? "bg-primary text-white" : "hover:bg-gray-100"
+                      }`}
                   >
                     All Locations
                   </button>
@@ -185,9 +184,8 @@ const Projects = () => {
                     <button
                       key={loc}
                       onClick={() => setLocationFilter(loc!)}
-                      className={`w-full text-left px-3 py-2 rounded-lg text-sm transition-colors ${
-                        locationFilter === loc ? "bg-primary text-white" : "hover:bg-gray-100"
-                      }`}
+                      className={`w-full text-left px-3 py-2 rounded-lg text-sm transition-colors ${locationFilter === loc ? "bg-primary text-white" : "hover:bg-gray-100"
+                        }`}
                     >
                       {loc}
                     </button>
@@ -244,7 +242,7 @@ const Projects = () => {
               </div>
               <h3 className="text-xl font-semibold text-gray-700 mb-2">No Projects Found</h3>
               <p className="text-gray-500">
-                {searchQuery || locationFilter !== "all" 
+                {searchQuery || locationFilter !== "all"
                   ? "Try adjusting your search or filters"
                   : "Check back soon for new developments"}
               </p>
@@ -256,17 +254,17 @@ const Projects = () => {
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
               {filteredProjects.map((project) => {
                 const statusInfo = statusColors[project.status] || statusColors.PRE_SELLING;
-                
+
                 return (
-                  <div 
+                  <div
                     key={project.id}
                     className="bg-white rounded-2xl shadow-md overflow-hidden hover:shadow-xl transition-shadow duration-300 group"
                   >
                     {/* Image */}
                     <div className="relative h-52 overflow-hidden">
                       {project.image ? (
-                        <img 
-                          src={project.image} 
+                        <img
+                          src={project.image}
                           alt={project.name}
                           className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
                         />
@@ -275,7 +273,7 @@ const Projects = () => {
                           <Square className="w-16 h-16 text-gray-400" />
                         </div>
                       )}
-                      
+
                       {/* Status Badge */}
                       <div className={`absolute top-4 left-4 px-3 py-1 rounded-lg text-white text-xs font-semibold ${statusInfo.bg}`}>
                         {statusInfo.text}
@@ -335,7 +333,7 @@ const Projects = () => {
                       </div>
 
                       {/* View Button */}
-                      <Button 
+                      <Button
                         onClick={() => handleViewProperties(project.id)}
                         className="w-full bg-primary hover:bg-primary/90 rounded-lg"
                       >

@@ -71,7 +71,7 @@ interface Agent {
   reviews: Review[];
 }
 
-const API_URL = `http://${window.location.hostname}:3001`;
+import { API_URL } from "@/config";
 
 const AgentProfile = () => {
   const { id } = useParams();
@@ -109,15 +109,15 @@ const AgentProfile = () => {
     };
 
     const checkReviewPermission = async () => {
-       try {
-         const res = await fetch(`${API_URL}/api/agents/${id}/can-review`, {
-           credentials: 'include'
-         });
-         const data = await res.json();
-         setCanReview(data.canReview);
-       } catch (error) {
-         console.error('Error checking permission:', error);
-       }
+      try {
+        const res = await fetch(`${API_URL}/api/agents/${id}/can-review`, {
+          credentials: 'include'
+        });
+        const data = await res.json();
+        setCanReview(data.canReview);
+      } catch (error) {
+        console.error('Error checking permission:', error);
+      }
     };
 
     fetchAgent();
@@ -126,7 +126,7 @@ const AgentProfile = () => {
 
   const handleContactSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    
+
     if (!contactForm.name || !contactForm.email || !contactForm.message) {
       toast.error('Please fill in all required fields');
       return;
@@ -237,7 +237,7 @@ const AgentProfile = () => {
   return (
     <div className="min-h-screen flex flex-col bg-slate-50">
       <Navbar />
-      
+
       <main className="flex-1 pt-24 pb-16">
         <div className="container mx-auto px-4">
           {/* Agent Hero */}
@@ -284,12 +284,12 @@ const AgentProfile = () => {
                       } catch (err) {
                         console.error("Share failed:", err);
                         if (err instanceof Error && err.name !== 'AbortError') {
-                           try {
-                             await navigator.clipboard.writeText(window.location.href);
-                             toast.success("Profile link copied!");
-                           } catch (clipboardErr) {
-                             toast.error("Failed to share link");
-                           }
+                          try {
+                            await navigator.clipboard.writeText(window.location.href);
+                            toast.success("Profile link copied!");
+                          } catch (clipboardErr) {
+                            toast.error("Failed to share link");
+                          }
                         }
                       }
                     }}
@@ -297,7 +297,7 @@ const AgentProfile = () => {
                     <Share2 className="w-4 h-4" />
                   </Button>
                 </div>
-                
+
                 <p className="text-primary font-medium mt-1">{agent.cityName} Real Estate Specialist</p>
 
                 {/* Stats */}
@@ -395,9 +395,8 @@ const AgentProfile = () => {
                               className="w-full h-full object-cover group-hover:scale-105 transition-transform"
                             />
                           )}
-                          <span className={`absolute top-2 left-2 px-2 py-1 text-xs font-semibold rounded ${
-                            property.purpose === 'SALE' ? 'bg-primary text-white' : 'bg-blue-500 text-white'
-                          }`}>
+                          <span className={`absolute top-2 left-2 px-2 py-1 text-xs font-semibold rounded ${property.purpose === 'SALE' ? 'bg-primary text-white' : 'bg-blue-500 text-white'
+                            }`}>
                             FOR {property.purpose}
                           </span>
                         </div>
@@ -458,7 +457,7 @@ const AgentProfile = () => {
                   </div>
                 )}
               </div>
-              
+
               {/* Add Feedback Form - Only for VERIFIED CLIENTS */}
               {!isAgent && (
                 <div className="bg-white rounded-2xl shadow-lg p-6 mt-6">
@@ -466,7 +465,7 @@ const AgentProfile = () => {
                     <Star className="w-5 h-5 text-primary" />
                     Add Your Feedback
                   </h2>
-                  
+
                   {canReview ? (
                     <form onSubmit={handleReviewSubmit} className="space-y-4">
                       {/* ... form content ... */}
@@ -481,7 +480,7 @@ const AgentProfile = () => {
                           required
                         />
                       </div>
-                      
+
                       <div>
                         <Label>Rating</Label>
                         <div className="flex gap-1 mt-1">
@@ -490,9 +489,8 @@ const AgentProfile = () => {
                               key={star}
                               type="button"
                               onClick={() => setReviewForm({ ...reviewForm, rating: star })}
-                              className={`focus:outline-none transition-colors ${
-                                star <= reviewForm.rating ? 'text-yellow-400' : 'text-gray-300'
-                              }`}
+                              className={`focus:outline-none transition-colors ${star <= reviewForm.rating ? 'text-yellow-400' : 'text-gray-300'
+                                }`}
                             >
                               <Star className="w-6 h-6 fill-current" />
                             </button>
@@ -548,66 +546,66 @@ const AgentProfile = () => {
                 </div>
                 <div className="p-6">
 
-                {/* Contact Info */}
-                <div className="space-y-4">
-                  {agent.phone && (
-                    <a 
-                      href={`tel:${agent.phone}`} 
-                      className="flex items-center gap-3 p-3 bg-slate-50 rounded-xl hover:bg-primary/10 transition-colors group"
-                    >
-                      <div className="w-10 h-10 bg-primary/10 rounded-lg flex items-center justify-center group-hover:bg-primary group-hover:text-white transition-colors">
-                        <Phone className="w-5 h-5 text-primary group-hover:text-white" />
-                      </div>
-                      <div>
-                        <p className="text-xs text-slate-500">Phone</p>
-                        <p className="font-medium text-slate-900">{agent.phone}</p>
-                      </div>
-                    </a>
-                  )}
-                  {agent.email && (
-                    <a 
-                      href={`mailto:${agent.email}`} 
-                      className="flex items-center gap-3 p-3 bg-slate-50 rounded-xl hover:bg-primary/10 transition-colors group"
-                    >
-                      <div className="w-10 h-10 bg-primary/10 rounded-lg flex items-center justify-center group-hover:bg-primary group-hover:text-white transition-colors">
-                        <Mail className="w-5 h-5 text-primary group-hover:text-white" />
-                      </div>
-                      <div>
-                        <p className="text-xs text-slate-500">Email</p>
-                        <p className="font-medium text-slate-900">{agent.email}</p>
-                      </div>
-                    </a>
-                  )}
-                  {agent.website && (
-                    <a 
-                      href={agent.website} 
-                      target="_blank" 
-                      rel="noopener noreferrer" 
-                      className="flex items-center gap-3 p-3 bg-slate-50 rounded-xl hover:bg-primary/10 transition-colors group"
-                    >
-                      <div className="w-10 h-10 bg-primary/10 rounded-lg flex items-center justify-center group-hover:bg-primary group-hover:text-white transition-colors">
-                        <Globe className="w-5 h-5 text-primary group-hover:text-white" />
-                      </div>
-                      <div>
-                        <p className="text-xs text-slate-500">Website</p>
-                        <p className="font-medium text-slate-900">Visit Website</p>
-                      </div>
-                    </a>
-                  )}
-                </div>
+                  {/* Contact Info */}
+                  <div className="space-y-4">
+                    {agent.phone && (
+                      <a
+                        href={`tel:${agent.phone}`}
+                        className="flex items-center gap-3 p-3 bg-slate-50 rounded-xl hover:bg-primary/10 transition-colors group"
+                      >
+                        <div className="w-10 h-10 bg-primary/10 rounded-lg flex items-center justify-center group-hover:bg-primary group-hover:text-white transition-colors">
+                          <Phone className="w-5 h-5 text-primary group-hover:text-white" />
+                        </div>
+                        <div>
+                          <p className="text-xs text-slate-500">Phone</p>
+                          <p className="font-medium text-slate-900">{agent.phone}</p>
+                        </div>
+                      </a>
+                    )}
+                    {agent.email && (
+                      <a
+                        href={`mailto:${agent.email}`}
+                        className="flex items-center gap-3 p-3 bg-slate-50 rounded-xl hover:bg-primary/10 transition-colors group"
+                      >
+                        <div className="w-10 h-10 bg-primary/10 rounded-lg flex items-center justify-center group-hover:bg-primary group-hover:text-white transition-colors">
+                          <Mail className="w-5 h-5 text-primary group-hover:text-white" />
+                        </div>
+                        <div>
+                          <p className="text-xs text-slate-500">Email</p>
+                          <p className="font-medium text-slate-900">{agent.email}</p>
+                        </div>
+                      </a>
+                    )}
+                    {agent.website && (
+                      <a
+                        href={agent.website}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="flex items-center gap-3 p-3 bg-slate-50 rounded-xl hover:bg-primary/10 transition-colors group"
+                      >
+                        <div className="w-10 h-10 bg-primary/10 rounded-lg flex items-center justify-center group-hover:bg-primary group-hover:text-white transition-colors">
+                          <Globe className="w-5 h-5 text-primary group-hover:text-white" />
+                        </div>
+                        <div>
+                          <p className="text-xs text-slate-500">Website</p>
+                          <p className="font-medium text-slate-900">Visit Website</p>
+                        </div>
+                      </a>
+                    )}
+                  </div>
 
-                {/* Office Location */}
-                {agent.officeAddress && (
-                  <div className="mt-6 pt-6 border-t">
-                    <p className="font-semibold text-slate-900 mb-2">Office Location</p>
-                    <div className="bg-slate-100 rounded-lg p-3 h-32 flex items-center justify-center">
-                      <div className="text-center">
-                        <MapPin className="w-6 h-6 mx-auto text-slate-400 mb-1" />
-                        <p className="text-sm text-slate-600">{agent.officeAddress}</p>
+                  {/* Office Location */}
+                  {agent.officeAddress && (
+                    <div className="mt-6 pt-6 border-t">
+                      <p className="font-semibold text-slate-900 mb-2">Office Location</p>
+                      <div className="bg-slate-100 rounded-lg p-3 h-32 flex items-center justify-center">
+                        <div className="text-center">
+                          <MapPin className="w-6 h-6 mx-auto text-slate-400 mb-1" />
+                          <p className="text-sm text-slate-600">{agent.officeAddress}</p>
+                        </div>
                       </div>
                     </div>
-                  </div>
-                )}
+                  )}
                 </div>
               </div>
             </div>

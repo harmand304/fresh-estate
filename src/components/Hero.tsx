@@ -4,7 +4,7 @@ import { Button } from "@/components/ui/button";
 import { Search, MapPin } from "lucide-react";
 import heroBg from "@/assets/hero-bg.jpg";
 
-const API_URL = `http://${window.location.hostname}:3001/api`;
+import { API_URL } from "@/config";
 
 // Custom hook for counting animation
 const useCountUp = (end: number, duration: number = 2000, delay: number = 0) => {

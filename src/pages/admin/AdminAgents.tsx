@@ -49,7 +49,7 @@ interface Language {
   name: string;
 }
 
-const API_URL = "https://fresh-estate.onrender.com";
+import { API_URL } from "@/config";
 
 const SPECIALTY_OPTIONS = [
   "Luxury Homes",

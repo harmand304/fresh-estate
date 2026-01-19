@@ -40,7 +40,7 @@ interface Agent {
   languages: string[];
 }
 
-const API_URL = `http://${window.location.hostname}:3001`;
+import { API_URL } from "@/config";
 
 // Static data for filters (will be dynamic later)
 const SPECIALIZATIONS = [

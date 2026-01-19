@@ -22,7 +22,7 @@ export interface Property {
   shortDescription?: string;
 }
 
-const API_URL = `${import.meta.env.VITE_API_URL || `http://${window.location.hostname}:3001`}/api`;
+import { API_URL } from "@/config";
 
 export const useProperties = () => {
   const [properties, setProperties] = useState<Property[]>([]);

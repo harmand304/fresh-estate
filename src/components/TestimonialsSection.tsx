@@ -13,7 +13,7 @@ interface Review {
   createdAt: string;
 }
 
-const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:3001';
+import { API_URL } from "@/config";
 
 const TestimonialsSection = () => {
   const [reviews, setReviews] = useState<Review[]>([]);
@@ -105,10 +105,10 @@ const TestimonialsSection = () => {
         </div>
 
         <div className="text-center">
-          <Button 
-            asChild 
-            variant="secondary" 
-            size="lg" 
+          <Button
+            asChild
+            variant="secondary"
+            size="lg"
             className="bg-white text-emerald-600 hover:bg-slate-100 font-bold rounded-full px-8 shadow-lg hover:shadow-xl transition-all"
           >
             <Link to="/testimonials">

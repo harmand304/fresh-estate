@@ -1,9 +1,9 @@
 import { useEffect, useState } from "react";
 import { useParams, Link, useNavigate } from "react-router-dom";
-import { 
+import {
   MapPin, Bed, Bath, Maximize, Car, Home, Star, ChevronRight,
-  Waves, Dumbbell, Snowflake, Wifi, Sun, Plug, Shield, Flame, 
-  Shirt, ChefHat, Flower2, DoorOpen, PawPrint, ArrowUpDown, 
+  Waves, Dumbbell, Snowflake, Wifi, Sun, Plug, Shield, Flame,
+  Shirt, ChefHat, Flower2, DoorOpen, PawPrint, ArrowUpDown,
   Bell, Building, Archive, UserCircle, Loader2, Share2
 } from "lucide-react";
 import Navbar from "@/components/Navbar";
@@ -16,6 +16,7 @@ import { Textarea } from "@/components/ui/textarea";
 import { PropertyDetailsSkeleton } from "@/components/PropertyDetailsSkeleton";
 import { LocationReviews } from "@/components/LocationReviews";
 import { toast } from "sonner";
+import { API_URL } from "@/config";
 
 
 // Icon mapping based on database seed values
@@ -67,7 +68,7 @@ const PropertyDetails = () => {
   useEffect(() => {
     const fetchProperty = async () => {
       try {
-        const res = await fetch(`http://localhost:3001/api/properties/${id}`);
+        const res = await fetch(`${API_URL}/api/properties/${id}`);
         if (res.ok) {
           const data = await res.json();
           setProperty(data);
@@ -95,7 +96,7 @@ const PropertyDetails = () => {
 
     setSubmitting(true);
     try {
-      const res = await fetch('http://localhost:3001/api/inquiries', {
+      const res = await fetch(`${API_URL}/api/inquiries`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
@@ -110,8 +111,8 @@ const PropertyDetails = () => {
       });
 
       if (res.ok) {
-        toast.success(type === 'TOUR' 
-          ? 'Tour request sent successfully! The agent will contact you soon.' 
+        toast.success(type === 'TOUR'
+          ? 'Tour request sent successfully! The agent will contact you soon.'
           : 'Message sent successfully!');
         setFormData({ name: '', email: '', phone: '', message: 'Hello, I am interested in this property...' });
       } else {
@@ -152,14 +153,14 @@ const PropertyDetails = () => {
   const truncatedDescription = description.slice(0, 400);
 
   // Estimated payment calculation
-  const monthlyPayment = property.purpose === 'RENT' 
-    ? property.price 
+  const monthlyPayment = property.purpose === 'RENT'
+    ? property.price
     : Math.round(property.price / 360); // 30-year mortgage rough estimate
 
   return (
     <div className="min-h-screen flex flex-col bg-[#f8faf8]">
       <Navbar />
-      
+
       {/* Loading Spinner Overlay */}
       {initialLoading && (
         <div className="fixed inset-0 z-40 flex items-center justify-center bg-white">
@@ -200,11 +201,11 @@ const PropertyDetails = () => {
           `}</style>
         </div>
       )}
-      
+
       <main className="flex-1 pt-32 pb-16">
         <div className="container mx-auto px-4">
           {/* Breadcrumb */}
-          <Breadcrumb 
+          <Breadcrumb
             items={[
               { label: "Home", href: "/" },
               { label: property.purpose === 'SALE' ? "Buy" : "Rent", href: "/properties" },
@@ -215,9 +216,9 @@ const PropertyDetails = () => {
           />
 
           {/* Image Gallery */}
-          <ImageGallery 
-            images={property.images || (property.image ? [property.image] : [])} 
-            title={property.title} 
+          <ImageGallery
+            images={property.images || (property.image ? [property.image] : [])}
+            title={property.title}
           />
 
           {/* Content Grid */}
@@ -231,11 +232,10 @@ const PropertyDetails = () => {
                     {formattedPrice}
                     {property.purpose === "RENT" && <span className="text-lg text-muted-foreground font-normal">/mo</span>}
                   </span>
-                  <span className={`px-3 py-1 text-sm font-medium rounded-lg ${
-                    property.dealStatus === 'COMPLETED'
+                  <span className={`px-3 py-1 text-sm font-medium rounded-lg ${property.dealStatus === 'COMPLETED'
                       ? "bg-red-500 text-white"
                       : property.purpose === 'SALE' ? "bg-primary/10 text-primary" : "bg-blue-500 text-white"
-                  }`}>
+                    }`}>
                     {property.dealStatus === 'COMPLETED'
                       ? (property.completedDealType === 'SALE' ? "Sold" : "Rented")
                       : (property.purpose === 'SALE' ? 'Active Listing' : 'For Rent')
@@ -247,7 +247,7 @@ const PropertyDetails = () => {
                     </span>
                   )}
                 </div>
-                
+
                 <div className="flex justify-between items-start gap-4">
                   <div>
                     <h1 className="text-2xl font-bold text-foreground mb-1">
@@ -281,12 +281,12 @@ const PropertyDetails = () => {
                         console.error("Share failed:", err);
                         // Fallback to clipboard if share fails (e.g. user cancelled)
                         if (err instanceof Error && err.name !== 'AbortError') {
-                           try {
-                             await navigator.clipboard.writeText(window.location.href);
-                             toast.success("Link copied to clipboard!");
-                           } catch (clipboardErr) {
-                             toast.error("Failed to share link");
-                           }
+                          try {
+                            await navigator.clipboard.writeText(window.location.href);
+                            toast.success("Link copied to clipboard!");
+                          } catch (clipboardErr) {
+                            toast.error("Failed to share link");
+                          }
                         }
                       }
                     }}
@@ -307,7 +307,7 @@ const PropertyDetails = () => {
                     <p className="text-sm text-muted-foreground uppercase">Bedrooms</p>
                   </div>
                 </div>
-                
+
                 <div className="flex items-center gap-3">
                   <div className="w-12 h-12 bg-slate-100 rounded-xl flex items-center justify-center">
                     <Bath className="w-6 h-6 text-slate-600" />
@@ -317,7 +317,7 @@ const PropertyDetails = () => {
                     <p className="text-sm text-muted-foreground uppercase">Bathrooms</p>
                   </div>
                 </div>
-                
+
                 <div className="flex items-center gap-3">
                   <div className="w-12 h-12 bg-slate-100 rounded-xl flex items-center justify-center">
                     <Maximize className="w-6 h-6 text-slate-600" />
@@ -327,7 +327,7 @@ const PropertyDetails = () => {
                     <p className="text-sm text-muted-foreground uppercase">m²</p>
                   </div>
                 </div>
-                
+
                 {property.hasGarage && (
                   <div className="flex items-center gap-3">
                     <div className="w-12 h-12 bg-slate-100 rounded-xl flex items-center justify-center">
@@ -350,7 +350,7 @@ const PropertyDetails = () => {
                     {description.length > 400 && !showFullDescription && "..."}
                   </div>
                   {description.length > 400 && (
-                    <button 
+                    <button
                       onClick={() => setShowFullDescription(!showFullDescription)}
                       className="text-primary font-medium mt-3 hover:underline"
                     >
@@ -406,9 +406,9 @@ const PropertyDetails = () => {
 
               {/* Location Reviews */}
               {property.locationId && (
-                <LocationReviews 
-                  locationId={property.locationId} 
-                  locationName={property.area || "this location"} 
+                <LocationReviews
+                  locationId={property.locationId}
+                  locationName={property.area || "this location"}
                 />
               )}
             </div>
@@ -421,9 +421,9 @@ const PropertyDetails = () => {
                 <Link to={`/agents/${property.agentId}`} className="flex items-center gap-3 mb-6 hover:bg-slate-50 -mx-2 px-2 py-2 rounded-lg transition-colors">
                   <div className="w-12 h-12 bg-primary/10 rounded-lg flex items-center justify-center overflow-hidden">
                     {property.agentImage ? (
-                      <img 
-                        src={property.agentImage} 
-                        alt={property.agent} 
+                      <img
+                        src={property.agentImage}
+                        alt={property.agent}
                         className="w-full h-full object-cover"
                       />
                     ) : (
@@ -445,45 +445,45 @@ const PropertyDetails = () => {
 
                 {/* Contact Form */}
                 <form className="space-y-3" onSubmit={(e) => e.preventDefault()}>
-                  <Input 
-                    placeholder="Name" 
-                    className="h-11" 
+                  <Input
+                    placeholder="Name"
+                    className="h-11"
                     value={formData.name}
                     onChange={(e) => setFormData({ ...formData, name: e.target.value })}
                     disabled={submitting}
                   />
-                  <Input 
-                    placeholder="Email" 
-                    type="email" 
-                    className="h-11" 
+                  <Input
+                    placeholder="Email"
+                    type="email"
+                    className="h-11"
                     value={formData.email}
                     onChange={(e) => setFormData({ ...formData, email: e.target.value })}
                     disabled={submitting}
                   />
-                  <Input 
-                    placeholder="Phone" 
-                    type="tel" 
-                    className="h-11" 
+                  <Input
+                    placeholder="Phone"
+                    type="tel"
+                    className="h-11"
                     value={formData.phone}
                     onChange={(e) => setFormData({ ...formData, phone: e.target.value })}
                     disabled={submitting}
                   />
-                  <Textarea 
+                  <Textarea
                     placeholder="Hello, I am interested in this property..."
                     className="min-h-[80px] resize-none"
                     value={formData.message}
                     onChange={(e) => setFormData({ ...formData, message: e.target.value })}
                     disabled={submitting}
                   />
-                  <Button 
+                  <Button
                     className="w-full h-12 text-base font-semibold rounded-xl bg-primary hover:bg-primary/90"
                     onClick={() => handleSubmit('TOUR')}
                     disabled={submitting}
                   >
                     {submitting ? <Loader2 className="w-5 h-5 animate-spin" /> : 'Request a Tour'}
                   </Button>
-                  <Button 
-                    variant="outline" 
+                  <Button
+                    variant="outline"
                     className="w-full h-12 text-base font-semibold rounded-xl"
                     onClick={() => handleSubmit('MESSAGE')}
                     disabled={submitting}

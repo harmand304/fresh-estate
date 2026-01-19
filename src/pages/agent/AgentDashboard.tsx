@@ -27,7 +27,7 @@ interface ReportData {
   totalRevenue: number;
 }
 
-const API_URL = `http://${window.location.hostname}:3001`;
+import { API_URL } from "@/config";
 
 const AgentDashboard = () => {
   const [stats, setStats] = useState<DashboardStats | null>(null);
@@ -151,7 +151,7 @@ const AgentDashboard = () => {
           <h1 className="text-3xl font-bold text-slate-900">Agent Dashboard</h1>
           <p className="text-slate-600 mt-1">Welcome back! Here's your performance overview.</p>
         </div>
-        <Button 
+        <Button
           onClick={() => setShowReport(true)}
           className="flex items-center gap-2"
         >
@@ -202,23 +202,21 @@ const AgentDashboard = () => {
                     <td className="px-6 py-4 font-medium text-slate-900">{deal.propertyTitle}</td>
                     <td className="px-6 py-4 text-slate-600">{deal.clientName}</td>
                     <td className="px-6 py-4">
-                      <span className={`px-2 py-1 rounded-lg text-xs font-medium ${
-                        deal.dealType === "SALE" 
-                          ? "bg-emerald-100 text-emerald-700" 
-                          : "bg-blue-100 text-blue-700"
-                      }`}>
+                      <span className={`px-2 py-1 rounded-lg text-xs font-medium ${deal.dealType === "SALE"
+                        ? "bg-emerald-100 text-emerald-700"
+                        : "bg-blue-100 text-blue-700"
+                        }`}>
                         {deal.dealType}
                       </span>
                     </td>
                     <td className="px-6 py-4 text-slate-900 font-medium">${deal.price.toLocaleString()}</td>
                     <td className="px-6 py-4">
-                      <span className={`px-2 py-1 rounded-lg text-xs font-medium ${
-                        deal.status === "COMPLETED" 
-                          ? "bg-green-100 text-green-700" 
-                          : deal.status === "PENDING"
+                      <span className={`px-2 py-1 rounded-lg text-xs font-medium ${deal.status === "COMPLETED"
+                        ? "bg-green-100 text-green-700"
+                        : deal.status === "PENDING"
                           ? "bg-yellow-100 text-yellow-700"
                           : "bg-red-100 text-red-700"
-                      }`}>
+                        }`}>
                         {deal.status}
                       </span>
                     </td>
@@ -247,7 +245,7 @@ const AgentDashboard = () => {
                 </div>
                 <h2 className="text-xl font-bold text-slate-900">Performance Report</h2>
               </div>
-              <button 
+              <button
                 onClick={() => setShowReport(false)}
                 className="w-8 h-8 flex items-center justify-center rounded-full hover:bg-red-50 transition-colors"
               >
@@ -262,11 +260,10 @@ const AgentDashboard = () => {
                   <button
                     key={period}
                     onClick={() => setReportPeriod(period)}
-                    className={`px-4 py-2 rounded-lg font-medium transition-all ${
-                      reportPeriod === period 
-                        ? 'bg-primary text-white shadow-[0_4px_0_0_#15803d] hover:shadow-[0_2px_0_0_#15803d] hover:translate-y-[2px]' 
-                        : 'bg-slate-100 text-slate-600 hover:bg-slate-200'
-                    }`}
+                    className={`px-4 py-2 rounded-lg font-medium transition-all ${reportPeriod === period
+                      ? 'bg-primary text-white shadow-[0_4px_0_0_#15803d] hover:shadow-[0_2px_0_0_#15803d] hover:translate-y-[2px]'
+                      : 'bg-slate-100 text-slate-600 hover:bg-slate-200'
+                      }`}
                   >
                     <Calendar className="w-4 h-4 inline mr-2" />
                     {periodLabels[period]}

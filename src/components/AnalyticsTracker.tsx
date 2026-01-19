@@ -2,7 +2,7 @@ import { useEffect } from 'react';
 import { useLocation } from 'react-router-dom';
 import { useAuth } from '@/contexts/AuthContext';
 
-const API_URL = `http://${window.location.hostname}:3001`;
+import { API_URL } from "@/config";
 
 const AnalyticsTracker = () => {
   const location = useLocation();

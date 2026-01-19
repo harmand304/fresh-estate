@@ -25,7 +25,7 @@ import { ChevronLeft, ChevronRight, Search, ChevronDown, SlidersHorizontal, Layo
 import { toast } from "sonner";
 import OnboardingModal from "@/components/OnboardingModal";
 
-const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:3001';
+import { API_URL } from "@/config";
 const ITEMS_PER_PAGE = 8;
 
 const Properties = () => {
@@ -42,7 +42,7 @@ const Properties = () => {
   const [personalizedMessage, setPersonalizedMessage] = useState<string | null>(null);
   const [loadingPersonalized, setLoadingPersonalized] = useState(false);
   const [showOnboarding, setShowOnboarding] = useState(false);
-  
+
   // Initial loading delay to let images load
   useEffect(() => {
     const timer = setTimeout(() => {
@@ -92,16 +92,16 @@ const Properties = () => {
   // Toggle favorite
   const handleToggleFavorite = async (propertyId: string) => {
     if (!isAuthenticated) return;
-    
+
     const isFavorited = favorites.includes(propertyId);
     const method = isFavorited ? 'DELETE' : 'POST';
-    
+
     try {
       const res = await fetch(`${API_URL}/api/favorites/${propertyId}`, {
         method,
         credentials: 'include'
       });
-      
+
       if (res.ok) {
         if (isFavorited) {
           setFavorites(prev => prev.filter(id => id !== propertyId));
@@ -116,7 +116,7 @@ const Properties = () => {
       toast.error('Failed to update favorites');
     }
   };
-  
+
   // Filter States
   const [filters, setFilters] = useState({
     city: "all",
@@ -163,7 +163,7 @@ const Properties = () => {
 
     if (filters.location.trim()) {
       const searchTerm = filters.location.toLowerCase().trim();
-      result = result.filter(p => 
+      result = result.filter(p =>
         (p.city && p.city.toLowerCase().includes(searchTerm)) ||
         (p.area && p.area.toLowerCase().includes(searchTerm)) ||
         (p.title && p.title.toLowerCase().includes(searchTerm))
@@ -217,9 +217,9 @@ const Properties = () => {
   };
 
   useEffect(() => {
-     if (properties.length > 0) {
-         handleFilter();
-     }
+    if (properties.length > 0) {
+      handleFilter();
+    }
   }, [properties, filters.city, filters.purpose, filters.type, filters.bedrooms, filters.bathrooms, filters.minPrice, filters.maxPrice, filters.minArea, filters.maxArea, filters.location]);
 
   // Pagination Logic
@@ -260,7 +260,7 @@ const Properties = () => {
   return (
     <div className="min-h-screen flex flex-col bg-[#f8faf8]">
       <Navbar />
-      
+
       {/* Loading Spinner Overlay */}
       {initialLoading && (
         <div className="fixed inset-0 z-40 flex items-center justify-center bg-white">
@@ -301,7 +301,7 @@ const Properties = () => {
           `}</style>
         </div>
       )}
-      
+
       <main className="flex-1 pt-32 pb-16">
         <div className="max-w-7xl mx-auto px-8">
           {/* Header Section with Search */}
@@ -323,11 +323,11 @@ const Properties = () => {
                   type="text"
                   placeholder={`${displayCity}, IL`}
                   value={filters.location}
-                  onChange={(e) => setFilters({...filters, location: e.target.value})}
+                  onChange={(e) => setFilters({ ...filters, location: e.target.value })}
                   className="pl-10 h-11 rounded-lg border-gray-200 bg-white shadow-sm focus:ring-2 focus:ring-primary/20 text-sm"
                 />
               </div>
-              <Button 
+              <Button
                 onClick={handleFilter}
                 className="h-11 w-11 rounded-lg bg-primary hover:bg-primary/90 shadow-md shrink-0"
               >
@@ -352,10 +352,9 @@ const Properties = () => {
                     {["all", "RENT", "SALE"].map((purpose) => (
                       <button
                         key={purpose}
-                        onClick={() => setFilters({...filters, purpose})}
-                        className={`w-full text-left px-3 py-2 rounded-lg text-sm transition-colors ${
-                          filters.purpose === purpose ? "bg-primary text-white" : "hover:bg-gray-100"
-                        }`}
+                        onClick={() => setFilters({ ...filters, purpose })}
+                        className={`w-full text-left px-3 py-2 rounded-lg text-sm transition-colors ${filters.purpose === purpose ? "bg-primary text-white" : "hover:bg-gray-100"
+                          }`}
                       >
                         {purpose === "all" ? "Any Purpose" : purpose === "RENT" ? "For Rent" : "For Sale"}
                       </button>
@@ -377,10 +376,9 @@ const Properties = () => {
                     {["all", "Erbil", "Sulaymaniyah", "Ranya"].map((city) => (
                       <button
                         key={city}
-                        onClick={() => setFilters({...filters, city})}
-                        className={`w-full text-left px-3 py-2 rounded-lg text-sm transition-colors ${
-                          filters.city === city ? "bg-primary text-white" : "hover:bg-gray-100"
-                        }`}
+                        onClick={() => setFilters({ ...filters, city })}
+                        className={`w-full text-left px-3 py-2 rounded-lg text-sm transition-colors ${filters.city === city ? "bg-primary text-white" : "hover:bg-gray-100"
+                          }`}
                       >
                         {city === "all" ? "All Cities" : city}
                       </button>
@@ -405,7 +403,7 @@ const Properties = () => {
                         type="number"
                         placeholder="Min"
                         value={filters.minPrice}
-                        onChange={(e) => setFilters({...filters, minPrice: e.target.value})}
+                        onChange={(e) => setFilters({ ...filters, minPrice: e.target.value })}
                         className="h-9"
                       />
                       <span className="text-muted-foreground">-</span>
@@ -413,7 +411,7 @@ const Properties = () => {
                         type="number"
                         placeholder="Max"
                         value={filters.maxPrice}
-                        onChange={(e) => setFilters({...filters, maxPrice: e.target.value})}
+                        onChange={(e) => setFilters({ ...filters, maxPrice: e.target.value })}
                         className="h-9"
                       />
                     </div>
@@ -454,10 +452,9 @@ const Properties = () => {
                     {["all", "Apartment", "House", "Villa", "Office", "Commercial", "Land"].map((type) => (
                       <button
                         key={type}
-                        onClick={() => setFilters({...filters, type})}
-                        className={`w-full text-left px-3 py-2 rounded-lg text-sm transition-colors ${
-                          filters.type === type ? "bg-primary text-white" : "hover:bg-gray-100"
-                        }`}
+                        onClick={() => setFilters({ ...filters, type })}
+                        className={`w-full text-left px-3 py-2 rounded-lg text-sm transition-colors ${filters.type === type ? "bg-primary text-white" : "hover:bg-gray-100"
+                          }`}
                       >
                         {type === "all" ? "All Types" : type}
                       </button>
@@ -482,12 +479,11 @@ const Properties = () => {
                         {["any", "1", "2", "3", "4", "5+"].map((bed) => (
                           <button
                             key={bed}
-                            onClick={() => setFilters({...filters, bedrooms: bed})}
-                            className={`flex-1 py-2 text-xs rounded-lg border transition-colors ${
-                              filters.bedrooms === bed 
-                                ? "bg-primary text-white border-primary" 
+                            onClick={() => setFilters({ ...filters, bedrooms: bed })}
+                            className={`flex-1 py-2 text-xs rounded-lg border transition-colors ${filters.bedrooms === bed
+                                ? "bg-primary text-white border-primary"
                                 : "border-gray-200 hover:bg-gray-50"
-                            }`}
+                              }`}
                           >
                             {bed === "any" ? "Any" : bed}
                           </button>
@@ -500,12 +496,11 @@ const Properties = () => {
                         {["any", "1", "2", "3", "4+"].map((bath) => (
                           <button
                             key={bath}
-                            onClick={() => setFilters({...filters, bathrooms: bath})}
-                            className={`flex-1 py-2 text-xs rounded-lg border transition-colors ${
-                              filters.bathrooms === bath 
-                                ? "bg-primary text-white border-primary" 
+                            onClick={() => setFilters({ ...filters, bathrooms: bath })}
+                            className={`flex-1 py-2 text-xs rounded-lg border transition-colors ${filters.bathrooms === bath
+                                ? "bg-primary text-white border-primary"
                                 : "border-gray-200 hover:bg-gray-50"
-                            }`}
+                              }`}
                           >
                             {bath === "any" ? "Any" : bath}
                           </button>
@@ -534,7 +529,7 @@ const Properties = () => {
                           type="number"
                           placeholder="Min"
                           value={filters.minArea}
-                          onChange={(e) => setFilters({...filters, minArea: e.target.value})}
+                          onChange={(e) => setFilters({ ...filters, minArea: e.target.value })}
                           className="h-9"
                         />
                         <span className="text-muted-foreground">-</span>
@@ -542,7 +537,7 @@ const Properties = () => {
                           type="number"
                           placeholder="Max"
                           value={filters.maxArea}
-                          onChange={(e) => setFilters({...filters, maxArea: e.target.value})}
+                          onChange={(e) => setFilters({ ...filters, maxArea: e.target.value })}
                           className="h-9"
                         />
                       </div>
@@ -556,11 +551,10 @@ const Properties = () => {
             {isAuthenticated && (
               <button
                 onClick={() => { setShowFavoritesOnly(!showFavoritesOnly); setShowForYou(false); }}
-                className={`flex items-center gap-2 px-4 py-2 rounded-lg border transition-all ${
-                  showFavoritesOnly 
-                    ? 'bg-red-500 text-white border-red-500' 
+                className={`flex items-center gap-2 px-4 py-2 rounded-lg border transition-all ${showFavoritesOnly
+                    ? 'bg-red-500 text-white border-red-500'
                     : 'bg-white text-gray-700 border-gray-200 hover:border-red-300 hover:text-red-500'
-                }`}
+                  }`}
               >
                 <Heart className={`w-4 h-4 ${showFavoritesOnly ? 'fill-current' : ''}`} />
                 Favorites
@@ -570,18 +564,17 @@ const Properties = () => {
             {/* For You Button */}
             {isAuthenticated && (
               <button
-                onClick={() => { 
-                  setShowForYou(!showForYou); 
+                onClick={() => {
+                  setShowForYou(!showForYou);
                   setShowFavoritesOnly(false);
                   if (!showForYou) {
                     fetchPersonalizedProperties();
                   }
                 }}
-                className={`flex items-center gap-2 px-4 py-2 rounded-lg border transition-all ${
-                  showForYou 
-                    ? 'bg-gradient-to-r from-emerald-500 to-teal-500 text-white border-emerald-500' 
+                className={`flex items-center gap-2 px-4 py-2 rounded-lg border transition-all ${showForYou
+                    ? 'bg-gradient-to-r from-emerald-500 to-teal-500 text-white border-emerald-500'
                     : 'bg-white text-gray-700 border-gray-200 hover:border-emerald-300 hover:text-emerald-600'
-                }`}
+                  }`}
               >
                 <Sparkles className={`w-4 h-4 ${showForYou ? 'fill-current' : ''}`} />
                 For You
@@ -592,17 +585,15 @@ const Properties = () => {
             <div className="flex items-center gap-1 bg-white rounded-lg p-1 border border-gray-200">
               <button
                 onClick={() => setViewMode("grid")}
-                className={`p-2 rounded-lg transition-colors ${
-                  viewMode === "grid" ? "bg-gray-100" : "hover:bg-gray-50"
-                }`}
+                className={`p-2 rounded-lg transition-colors ${viewMode === "grid" ? "bg-gray-100" : "hover:bg-gray-50"
+                  }`}
               >
                 <LayoutGrid className="w-4 h-4" />
               </button>
               <button
                 onClick={() => setViewMode("list")}
-                className={`p-2 rounded-lg transition-colors ${
-                  viewMode === "list" ? "bg-gray-100" : "hover:bg-gray-50"
-                }`}
+                className={`p-2 rounded-lg transition-colors ${viewMode === "list" ? "bg-gray-100" : "hover:bg-gray-50"
+                  }`}
               >
                 <List className="w-4 h-4" />
               </button>
@@ -651,9 +642,9 @@ const Properties = () => {
               {personalizedProperties.length > 0 ? (
                 <div className={`grid gap-4 ${viewMode === "grid" ? "grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4" : "grid-cols-1"}`}>
                   {personalizedProperties.map((property) => (
-                    <PropertyCard 
-                      key={property.id} 
-                      {...property} 
+                    <PropertyCard
+                      key={property.id}
+                      {...property}
                       isFavorited={favorites.includes(property.id)}
                       onToggleFavorite={handleToggleFavorite}
                     />
@@ -669,14 +660,14 @@ const Properties = () => {
                   </h3>
                   <p className="text-slate-500 mt-2">Try browsing all properties or update your preferences</p>
                   <div className="flex items-center justify-center gap-3 mt-4">
-                    <Button 
-                      onClick={() => setShowForYou(false)} 
+                    <Button
+                      onClick={() => setShowForYou(false)}
                       variant="outline"
                     >
                       Browse All Properties
                     </Button>
-                    <Button 
-                      onClick={() => setShowOnboarding(true)} 
+                    <Button
+                      onClick={() => setShowOnboarding(true)}
                       className="bg-emerald-600 hover:bg-emerald-700"
                     >
                       <RefreshCw className="w-4 h-4 mr-2" />
@@ -692,9 +683,9 @@ const Properties = () => {
                 {currentProperties
                   .filter(p => !showFavoritesOnly || favorites.includes(p.id))
                   .map((property) => (
-                    <PropertyCard 
-                      key={property.id} 
-                      {...property} 
+                    <PropertyCard
+                      key={property.id}
+                      {...property}
                       isFavorited={favorites.includes(property.id)}
                       onToggleFavorite={handleToggleFavorite}
                     />
@@ -722,7 +713,7 @@ const Properties = () => {
                   >
                     <ChevronLeft className="w-4 h-4" />
                   </Button>
-                  
+
                   {getPageNumbers().map((page, idx) => (
                     typeof page === "number" ? (
                       <Button
@@ -730,11 +721,10 @@ const Properties = () => {
                         variant={currentPage === page ? "default" : "outline"}
                         size="sm"
                         onClick={() => handlePageChange(page)}
-                        className={`w-10 h-10 rounded-lg transition-all duration-150 ${
-                          currentPage === page 
-                            ? "bg-primary shadow-[0_4px_0_0_#15803d] translate-y-0 hover:shadow-[0_2px_0_0_#15803d] hover:translate-y-[2px] active:shadow-none active:translate-y-[4px]" 
+                        className={`w-10 h-10 rounded-lg transition-all duration-150 ${currentPage === page
+                            ? "bg-primary shadow-[0_4px_0_0_#15803d] translate-y-0 hover:shadow-[0_2px_0_0_#15803d] hover:translate-y-[2px] active:shadow-none active:translate-y-[4px]"
                             : "hover:bg-gray-50"
-                        }`}
+                          }`}
                       >
                         {page}
                       </Button>
@@ -762,8 +752,8 @@ const Properties = () => {
       <Footer />
 
       {/* Onboarding Modal for updating preferences */}
-      <OnboardingModal 
-        isOpen={showOnboarding} 
+      <OnboardingModal
+        isOpen={showOnboarding}
         onClose={() => {
           setShowOnboarding(false);
           // Refresh personalized properties after updating preferences

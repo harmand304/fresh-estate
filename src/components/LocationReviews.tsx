@@ -28,9 +28,9 @@ export const LocationReviews = ({ locationId, locationName }: LocationReviewsPro
   const [comment, setComment] = useState("");
   const [showForm, setShowForm] = useState(false);
   const [isSubmitting, setIsSubmitting] = useState(false);
-  
+
   // Dynamic API URL based on current hostname
-  const API_URL = `http://${window.location.hostname}:3001`;
+  import { API_URL } from "@/config";
 
   const { data: reviews = [] } = useQuery<Review[]>({
     queryKey: ["location-reviews", locationId],
@@ -50,7 +50,7 @@ export const LocationReviews = ({ locationId, locationName }: LocationReviewsPro
         headers: {
           "Content-Type": "application/json",
         },
-        credentials: "include", 
+        credentials: "include",
         body: JSON.stringify({ rating, comment }),
       });
 
@@ -136,7 +136,7 @@ export const LocationReviews = ({ locationId, locationName }: LocationReviewsPro
                   </div>
                 </div>
               ))}
-              
+
               {!showForm && (
                 <div className="flex justify-center pt-8 border-t border-gray-100">
                   <Button onClick={() => setShowForm(true)} size="lg" className="bg-primary text-white shadow-lg shadow-primary/20">
@@ -167,9 +167,8 @@ export const LocationReviews = ({ locationId, locationName }: LocationReviewsPro
                       className="focus:outline-none transition-transform hover:scale-110"
                     >
                       <Star
-                        className={`w-8 h-8 ${
-                          star <= rating ? "text-yellow-400 fill-yellow-400" : "text-gray-300"
-                        }`}
+                        className={`w-8 h-8 ${star <= rating ? "text-yellow-400 fill-yellow-400" : "text-gray-300"
+                          }`}
                       />
                     </button>
                   ))}
@@ -187,8 +186,8 @@ export const LocationReviews = ({ locationId, locationName }: LocationReviewsPro
                 />
               </div>
 
-              <Button 
-                type="submit" 
+              <Button
+                type="submit"
                 className="w-full bg-primary hover:bg-primary/90 text-white"
                 disabled={isSubmitting}
               >

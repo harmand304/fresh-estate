@@ -16,7 +16,7 @@ interface City {
   name: string;
 }
 
-const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:3001';
+import { API_URL } from "@/config";
 
 const OnboardingModal = ({ isOpen, onClose, skipNavigation = false }: OnboardingModalProps) => {
   const navigate = useNavigate();
@@ -110,11 +110,10 @@ const OnboardingModal = ({ isOpen, onClose, skipNavigation = false }: Onboarding
                 <button
                   key={opt.value}
                   onClick={() => setPreferences({ ...preferences, purpose: opt.value })}
-                  className={`p-4 rounded-xl border-2 transition-all flex items-center justify-center gap-3 text-lg font-medium ${
-                    preferences.purpose === opt.value
+                  className={`p-4 rounded-xl border-2 transition-all flex items-center justify-center gap-3 text-lg font-medium ${preferences.purpose === opt.value
                       ? 'border-emerald-500 bg-emerald-50 text-emerald-700'
                       : 'border-slate-200 hover:border-emerald-300 hover:bg-slate-50'
-                  }`}
+                    }`}
                 >
                   <span>{opt.icon}</span> {opt.label}
                 </button>
@@ -132,11 +131,10 @@ const OnboardingModal = ({ isOpen, onClose, skipNavigation = false }: Onboarding
             <div className="grid gap-3 mt-6">
               <button
                 onClick={() => setPreferences({ ...preferences, cityId: null })}
-                className={`p-4 rounded-xl border-2 transition-all flex items-center justify-center gap-3 text-lg font-medium ${
-                  preferences.cityId === null
+                className={`p-4 rounded-xl border-2 transition-all flex items-center justify-center gap-3 text-lg font-medium ${preferences.cityId === null
                     ? 'border-emerald-500 bg-emerald-50 text-emerald-700'
                     : 'border-slate-200 hover:border-emerald-300 hover:bg-slate-50'
-                }`}
+                  }`}
               >
                 <MapPin className="w-5 h-5" /> All Cities
               </button>
@@ -144,11 +142,10 @@ const OnboardingModal = ({ isOpen, onClose, skipNavigation = false }: Onboarding
                 <button
                   key={city.id}
                   onClick={() => setPreferences({ ...preferences, cityId: city.id })}
-                  className={`p-4 rounded-xl border-2 transition-all flex items-center justify-center gap-3 text-lg font-medium ${
-                    preferences.cityId === city.id
+                  className={`p-4 rounded-xl border-2 transition-all flex items-center justify-center gap-3 text-lg font-medium ${preferences.cityId === city.id
                       ? 'border-emerald-500 bg-emerald-50 text-emerald-700'
                       : 'border-slate-200 hover:border-emerald-300 hover:bg-slate-50'
-                  }`}
+                    }`}
                 >
                   <MapPin className="w-5 h-5" /> {city.name}
                 </button>
@@ -172,11 +169,10 @@ const OnboardingModal = ({ isOpen, onClose, skipNavigation = false }: Onboarding
                 <button
                   key={opt.value}
                   onClick={() => setPreferences({ ...preferences, propertyType: opt.value })}
-                  className={`p-4 rounded-xl border-2 transition-all flex items-center justify-center gap-3 text-lg font-medium ${
-                    preferences.propertyType === opt.value
+                  className={`p-4 rounded-xl border-2 transition-all flex items-center justify-center gap-3 text-lg font-medium ${preferences.propertyType === opt.value
                       ? 'border-emerald-500 bg-emerald-50 text-emerald-700'
                       : 'border-slate-200 hover:border-emerald-300 hover:bg-slate-50'
-                  }`}
+                    }`}
                 >
                   {opt.icon} {opt.label}
                 </button>
@@ -191,7 +187,7 @@ const OnboardingModal = ({ isOpen, onClose, skipNavigation = false }: Onboarding
             <div className="text-6xl mb-4">💰</div>
             <h2 className="text-2xl font-bold text-slate-900">Budget, your comfort zone</h2>
             <p className="text-slate-600 text-lg">Let's stay within what feels comfortable for you.</p>
-            
+
             <div className="mt-8 px-4">
               <div className="flex justify-between text-sm text-slate-600 mb-2">
                 <span>${preferences.minPrice.toLocaleString()}</span>
@@ -214,8 +210,8 @@ const OnboardingModal = ({ isOpen, onClose, skipNavigation = false }: Onboarding
 
             <div className="mt-8 pt-6 border-t border-slate-100">
               <p className="text-xl font-bold text-slate-900 mb-4">Are you ready for your dream home? 🏠</p>
-              <Button 
-                onClick={handleSubmit} 
+              <Button
+                onClick={handleSubmit}
                 disabled={submitting}
                 className="w-full bg-gradient-to-r from-emerald-500 to-teal-500 hover:from-emerald-600 hover:to-teal-600 text-white text-lg py-6 rounded-xl shadow-lg shadow-emerald-200"
                 size="lg"
@@ -239,11 +235,11 @@ const OnboardingModal = ({ isOpen, onClose, skipNavigation = false }: Onboarding
     <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
       {/* Backdrop */}
       <div className="absolute inset-0 bg-black/60 backdrop-blur-sm" onClick={onClose} />
-      
+
       {/* Modal */}
       <div className="relative bg-white rounded-3xl shadow-2xl w-full max-w-lg max-h-[90vh] overflow-auto animate-in fade-in zoom-in duration-300">
         {/* Close button */}
-        <button 
+        <button
           onClick={onClose}
           className="absolute top-4 right-4 p-2 rounded-full hover:bg-slate-100 transition-colors z-10"
         >
@@ -252,7 +248,7 @@ const OnboardingModal = ({ isOpen, onClose, skipNavigation = false }: Onboarding
 
         {/* Progress bar */}
         <div className="absolute top-0 left-0 right-0 h-1 bg-slate-100 rounded-t-3xl overflow-hidden">
-          <div 
+          <div
             className="h-full bg-gradient-to-r from-emerald-500 to-teal-500 transition-all duration-300"
             style={{ width: `${(step / 4) * 100}%` }}
           />
@@ -282,7 +278,7 @@ const OnboardingModal = ({ isOpen, onClose, skipNavigation = false }: Onboarding
             </Button>
           </div>
         )}
-        
+
         {/* Step 1 Navigation - No Back button */}
         {step === 1 && (
           <div className="px-8 pb-8 flex justify-end">
@@ -295,7 +291,7 @@ const OnboardingModal = ({ isOpen, onClose, skipNavigation = false }: Onboarding
             </Button>
           </div>
         )}
-        
+
         {/* Step 4 Navigation - Back button only, Submit is in content */}
         {step === 4 && (
           <div className="px-8 pb-8 flex justify-start">

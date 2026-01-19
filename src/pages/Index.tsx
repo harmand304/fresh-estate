@@ -11,7 +11,7 @@ import OnboardingModal from "@/components/OnboardingModal";
 import { useProperties } from "@/hooks/useProperties";
 import { useAuth } from "@/contexts/AuthContext";
 
-const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:3001';
+import { API_URL } from "@/config";
 
 const Index = () => {
   const { properties, loading } = useProperties();
@@ -22,7 +22,7 @@ const Index = () => {
   useEffect(() => {
     // Check if user just registered (via query param)
     const justRegistered = searchParams.get('registered') === 'true';
-    
+
     if (justRegistered && isAuthenticated) {
       // Check if user already has preferences
       const checkPreferences = async () => {
@@ -31,14 +31,14 @@ const Index = () => {
             credentials: 'include'
           });
           const data = await res.json();
-          
+
           // If no preferences, show onboarding after 5 seconds
           if (!data || !data.id) {
             setTimeout(() => {
               setShowOnboarding(true);
             }, 5000);
           }
-          
+
           // Clear the query param
           searchParams.delete('registered');
           setSearchParams(searchParams);
@@ -46,7 +46,7 @@ const Index = () => {
           console.error('Error checking preferences:', error);
         }
       };
-      
+
       checkPreferences();
     }
   }, [isAuthenticated, searchParams, setSearchParams]);
@@ -62,11 +62,11 @@ const Index = () => {
         <TestimonialsSection />
       </main>
       <Footer />
-      
+
       {/* Onboarding Modal */}
-      <OnboardingModal 
-        isOpen={showOnboarding} 
-        onClose={() => setShowOnboarding(false)} 
+      <OnboardingModal
+        isOpen={showOnboarding}
+        onClose={() => setShowOnboarding(false)}
       />
     </div>
   );

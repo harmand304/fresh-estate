@@ -55,7 +55,7 @@ interface FormData {
   propertyTypeId: string;
 }
 
-const API_URL = `http://${window.location.hostname}:3001`;
+import { API_URL } from "@/config";
 
 const AgentListings = () => {
   const [properties, setProperties] = useState<Property[]>([]);
@@ -68,7 +68,7 @@ const AgentListings = () => {
   const [amenities, setAmenities] = useState<any[]>([]);
   const [selectedAmenities, setSelectedAmenities] = useState<number[]>([]);
   const [uploading, setUploading] = useState(false);
-  const [uploadedImages, setUploadedImages] = useState<{key: string; signedUrl: string; dbId?: number}[]>([]);
+  const [uploadedImages, setUploadedImages] = useState<{ key: string; signedUrl: string; dbId?: number }[]>([]);
   const fileInputRef = useRef<HTMLInputElement>(null);
 
   const [formData, setFormData] = useState<FormData>({
@@ -169,7 +169,7 @@ const AgentListings = () => {
       if (data.shortDescription) {
         setFormData(prev => ({ ...prev, shortDescription: data.shortDescription }));
       }
-      
+
       if (data.hasGarage) setFormData(prev => ({ ...prev, hasGarage: true }));
       if (data.hasBalcony) setFormData(prev => ({ ...prev, hasBalcony: true }));
 
@@ -222,7 +222,7 @@ const AgentListings = () => {
         body: formDataUpload,
       });
       const data = await res.json();
-      
+
       if (data.success) {
         setUploadedImages((prev) => [...prev, ...data.images]);
         if (uploadedImages.length === 0 && data.images.length > 0) {
@@ -242,7 +242,7 @@ const AgentListings = () => {
 
   const removeImage = async (index: number) => {
     const imageToRemove = uploadedImages[index];
-    
+
     if (imageToRemove.dbId) {
       try {
         await fetch(`${API_URL}/api/agent/property-images/${imageToRemove.dbId}`, {
@@ -253,7 +253,7 @@ const AgentListings = () => {
         console.error('Error deleting image:', err);
       }
     }
-    
+
     const newImages = uploadedImages.filter((_, i) => i !== index);
     setUploadedImages(newImages);
     setFormData((prev) => ({ ...prev, imageKey: newImages[0]?.key || "" }));
@@ -281,7 +281,7 @@ const AgentListings = () => {
       const url = editingProperty
         ? `${API_URL}/api/agent/properties/${editingProperty.id}`
         : `${API_URL}/api/agent/properties`;
-      
+
       const res = await fetch(url, {
         method: editingProperty ? "PUT" : "POST",
         headers: { "Content-Type": "application/json" },
@@ -357,7 +357,7 @@ const AgentListings = () => {
           <h1 className="text-3xl font-bold text-slate-900">My Listings</h1>
           <p className="text-slate-600 mt-1">Manage your property listings</p>
         </div>
-        <Button 
+        <Button
           onClick={() => { resetForm(); setIsDialogOpen(true); }}
           className="bg-emerald-600 hover:bg-emerald-700"
         >
@@ -399,12 +399,11 @@ const AgentListings = () => {
                     <Home className="w-12 h-12 text-slate-300" />
                   </div>
                 )}
-                <span className={`absolute top-3 left-3 px-2 py-1 rounded-lg text-xs font-medium ${
-                  property.dealStatus === 'COMPLETED'
-                    ? "bg-red-500 text-white"
-                    : property.purpose === "SALE" ? "bg-emerald-500 text-white" : "bg-blue-500 text-white"
-                }`}>
-                  {property.dealStatus === 'COMPLETED' 
+                <span className={`absolute top-3 left-3 px-2 py-1 rounded-lg text-xs font-medium ${property.dealStatus === 'COMPLETED'
+                  ? "bg-red-500 text-white"
+                  : property.purpose === "SALE" ? "bg-emerald-500 text-white" : "bg-blue-500 text-white"
+                  }`}>
+                  {property.dealStatus === 'COMPLETED'
                     ? (property.completedDealType === 'SALE' ? "Sold" : "Rented")
                     : (property.purpose === "SALE" ? "For Sale" : "For Rent")
                   }
@@ -428,17 +427,17 @@ const AgentListings = () => {
                   {property.sqm && <span>{property.sqm} m²</span>}
                 </div>
                 <div className="flex gap-2 mt-4">
-                  <Button 
-                    variant="outline" 
-                    size="sm" 
+                  <Button
+                    variant="outline"
+                    size="sm"
                     onClick={() => openEditDialog(property)}
                     className="flex-1"
                   >
                     <Pencil className="w-4 h-4 mr-1" /> Edit
                   </Button>
-                  <Button 
-                    variant="outline" 
-                    size="sm" 
+                  <Button
+                    variant="outline"
+                    size="sm"
                     onClick={() => handleDelete(property.id)}
                     className="text-red-500 hover:text-red-600 hover:bg-red-50"
                   >
@@ -459,7 +458,7 @@ const AgentListings = () => {
               {editingProperty ? "Edit Property" : "Add New Property"}
             </DialogTitle>
           </DialogHeader>
-          
+
           <div className="grid grid-cols-2 gap-4 py-4">
             <div className="col-span-2">
               <label className="text-sm font-medium text-slate-700">Title</label>
@@ -493,7 +492,7 @@ const AgentListings = () => {
                 className="mt-1"
               />
             </div>
-            
+
             <div>
               <label className="text-sm font-medium text-slate-700">Price ($)</label>
               <Input
@@ -503,7 +502,7 @@ const AgentListings = () => {
                 placeholder="100000"
               />
             </div>
-            
+
             <div>
               <label className="text-sm font-medium text-slate-700">Purpose</label>
               <Select
@@ -599,7 +598,7 @@ const AgentListings = () => {
                 />
                 <span className="text-sm font-medium text-slate-700">Has Garage</span>
               </label>
-              
+
               <label className="flex items-center gap-2 cursor-pointer">
                 <input
                   type="checkbox"
@@ -617,7 +616,7 @@ const AgentListings = () => {
                 <label className="text-sm font-medium text-slate-700">Property Images (up to 10)</label>
                 <span className="text-xs text-slate-400">{uploadedImages.length}/10</span>
               </div>
-              
+
               {/* Image Previews Grid */}
               {uploadedImages.length > 0 && (
                 <div className="grid grid-cols-5 gap-2 mb-3">
@@ -642,7 +641,7 @@ const AgentListings = () => {
                   ))}
                 </div>
               )}
-              
+
               {/* Upload Button */}
               {uploadedImages.length < 10 && (
                 <div
@@ -654,7 +653,7 @@ const AgentListings = () => {
                   <p className="text-xs text-slate-400">Select multiple files</p>
                 </div>
               )}
-              
+
               <input
                 ref={fileInputRef}
                 type="file"
@@ -663,7 +662,7 @@ const AgentListings = () => {
                 onChange={handleImageUpload}
                 className="hidden"
               />
-              
+
               {uploading && (
                 <p className="text-sm text-primary mt-2 animate-pulse">Uploading...</p>
               )}
@@ -678,11 +677,10 @@ const AgentListings = () => {
                 {amenities.map((amenity) => (
                   <label
                     key={amenity.id}
-                    className={`flex items-center gap-2 p-2 rounded-lg cursor-pointer border transition-colors ${
-                      selectedAmenities.includes(amenity.id)
-                        ? "bg-primary/10 border-primary"
-                        : "bg-white border-gray-200 hover:bg-gray-50"
-                    }`}
+                    className={`flex items-center gap-2 p-2 rounded-lg cursor-pointer border transition-colors ${selectedAmenities.includes(amenity.id)
+                      ? "bg-primary/10 border-primary"
+                      : "bg-white border-gray-200 hover:bg-gray-50"
+                      }`}
                   >
                     <input
                       type="checkbox"

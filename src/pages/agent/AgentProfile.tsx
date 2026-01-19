@@ -26,7 +26,7 @@ const SPECIALTY_OPTIONS = [
   "Rentals",
 ];
 
-const API_URL = `http://${window.location.hostname}:3001`;
+
 
 const AgentProfilePage = () => {
   const [profile, setProfile] = useState<AgentProfile | null>(null);
@@ -75,7 +75,7 @@ const AgentProfilePage = () => {
       });
       if (!res.ok) throw new Error("Failed to fetch");
       const data = await res.json();
-      
+
       let specialties: string[] = [];
       if (data.specialties) {
         try {
@@ -208,7 +208,7 @@ const AgentProfilePage = () => {
 
       <form onSubmit={handleSubmit} className="max-w-3xl">
         <div className="bg-white rounded-2xl p-8 shadow-sm border border-slate-100 space-y-8">
-          
+
           {/* Profile Photo */}
           <div className="flex items-center gap-6">
             <div className="w-24 h-24 rounded-lg bg-slate-100 overflow-hidden flex items-center justify-center">
@@ -328,11 +328,10 @@ const AgentProfilePage = () => {
                   key={specialty}
                   type="button"
                   onClick={() => toggleSpecialty(specialty)}
-                  className={`px-4 py-2 rounded-lg text-sm font-medium transition-colors ${
-                    formData.specialties.includes(specialty)
-                      ? "bg-emerald-600 text-white"
-                      : "bg-slate-100 text-slate-600 hover:bg-slate-200"
-                  }`}
+                  className={`px-4 py-2 rounded-lg text-sm font-medium transition-colors ${formData.specialties.includes(specialty)
+                    ? "bg-emerald-600 text-white"
+                    : "bg-slate-100 text-slate-600 hover:bg-slate-200"
+                    }`}
                 >
                   {specialty}
                 </button>
@@ -342,8 +341,8 @@ const AgentProfilePage = () => {
 
           {/* Save Button */}
           <div className="pt-4 border-t border-slate-100">
-            <Button 
-              type="submit" 
+            <Button
+              type="submit"
               disabled={saving}
               className="bg-emerald-600 hover:bg-emerald-700"
             >

@@ -20,7 +20,7 @@ interface Review {
   createdAt: string;
 }
 
-const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:3001';
+import { API_URL } from "@/config";
 
 const Testimonials = () => {
   const { isAuthenticated, user } = useAuth();
@@ -98,9 +98,8 @@ const Testimonials = () => {
         className={`focus:outline-none transition-colors ${!interactive && 'cursor-default'}`}
       >
         <Star
-          className={`w-5 h-5 ${
-            i < rating ? 'fill-yellow-400 text-yellow-400' : 'text-gray-300'
-          }`}
+          className={`w-5 h-5 ${i < rating ? 'fill-yellow-400 text-yellow-400' : 'text-gray-300'
+            }`}
         />
       </button>
     ));
@@ -109,7 +108,7 @@ const Testimonials = () => {
   return (
     <div className="min-h-screen flex flex-col bg-slate-50">
       <Navbar />
-      
+
       <main className="flex-1 pt-24 pb-16">
         <div className="container mx-auto px-4">
           <Link to="/" className="inline-flex items-center text-slate-500 hover:text-emerald-600 mb-8 transition-colors">
@@ -126,20 +125,20 @@ const Testimonials = () => {
           <div className="grid lg:grid-cols-3 gap-12">
             {/* Reviews List */}
             <div className="lg:col-span-2 space-y-6">
-               <div className="flex items-center justify-between mb-6">
+              <div className="flex items-center justify-between mb-6">
                 <h2 className="text-2xl font-bold text-slate-900 flex items-center gap-2">
                   <div className="bg-emerald-100 p-2 rounded-lg">
-                    <Quote className="w-5 h-5 text-emerald-600" /> 
+                    <Quote className="w-5 h-5 text-emerald-600" />
                   </div>
                   Recent Reviews
                 </h2>
                 <span className="text-slate-500 font-medium">{reviews.length} Stories</span>
-               </div>
+              </div>
 
               {loading ? (
-                 <div className="flex justify-center p-12">
-                    <Loader2 className="w-8 h-8 animate-spin text-emerald-600" />
-                 </div>
+                <div className="flex justify-center p-12">
+                  <Loader2 className="w-8 h-8 animate-spin text-emerald-600" />
+                </div>
               ) : reviews.length === 0 ? (
                 <div className="bg-white p-12 rounded-2xl shadow-sm text-center border dashed border-slate-200">
                   <p className="text-slate-500 text-lg">Be the first to leave a review!</p>
@@ -154,16 +153,16 @@ const Testimonials = () => {
                         </div>
                         <div className="flex-1">
                           <div className="flex justify-between items-start flex-wrap gap-2">
-                             <div>
-                                <h3 className="font-bold text-slate-900 text-lg">{review.name}</h3>
-                                {review.role && <p className="text-emerald-600 text-sm font-medium">{review.role}</p>}
-                             </div>
-                             <div className="flex">{renderStars(review.rating)}</div>
+                            <div>
+                              <h3 className="font-bold text-slate-900 text-lg">{review.name}</h3>
+                              {review.role && <p className="text-emerald-600 text-sm font-medium">{review.role}</p>}
+                            </div>
+                            <div className="flex">{renderStars(review.rating)}</div>
                           </div>
                           <p className="mt-3 text-slate-600 leading-relaxed text-lg">"{review.text}"</p>
                           <p className="mt-4 text-xs text-slate-400">
-                            {new Date(review.createdAt).toLocaleDateString(undefined, { 
-                                year: 'numeric', month: 'long', day: 'numeric' 
+                            {new Date(review.createdAt).toLocaleDateString(undefined, {
+                              year: 'numeric', month: 'long', day: 'numeric'
                             })}
                           </p>
                         </div>
@@ -183,20 +182,20 @@ const Testimonials = () => {
                 </div>
 
                 {!isAuthenticated ? (
-                   <div className="text-center py-8">
-                     <p className="text-slate-600 mb-4">Please log in to share your experience.</p>
-                     <Button asChild className="w-full bg-emerald-600 hover:bg-emerald-700">
-                       <Link to="/login">Log In to Review</Link>
-                     </Button>
-                   </div>
+                  <div className="text-center py-8">
+                    <p className="text-slate-600 mb-4">Please log in to share your experience.</p>
+                    <Button asChild className="w-full bg-emerald-600 hover:bg-emerald-700">
+                      <Link to="/login">Log In to Review</Link>
+                    </Button>
+                  </div>
                 ) : (
                   <form onSubmit={handleSubmit} className="space-y-5">
                     <div>
                       <Label htmlFor="name">Your Name</Label>
-                      <Input 
-                        id="name" 
-                        value={form.name} 
-                        onChange={(e) => setForm({...form, name: e.target.value})}
+                      <Input
+                        id="name"
+                        value={form.name}
+                        onChange={(e) => setForm({ ...form, name: e.target.value })}
                         placeholder="John Doe"
                         className="mt-1 bg-slate-50 border-slate-200 focus:ring-emerald-500"
                         readOnly={!!user?.name}
@@ -205,12 +204,12 @@ const Testimonials = () => {
 
                     <div>
                       <Label htmlFor="role">Role (Optional)</Label>
-                      <Input 
-                        id="role" 
-                        value={form.role} 
-                        onChange={(e) => setForm({...form, role: e.target.value})}
+                      <Input
+                        id="role"
+                        value={form.role}
+                        onChange={(e) => setForm({ ...form, role: e.target.value })}
                         placeholder="e.g. Homeowner, Tenant"
-                         className="mt-1 bg-slate-50 border-slate-200 focus:ring-emerald-500"
+                        className="mt-1 bg-slate-50 border-slate-200 focus:ring-emerald-500"
                       />
                     </div>
 
@@ -223,10 +222,10 @@ const Testimonials = () => {
 
                     <div>
                       <Label htmlFor="message">Your Feedback</Label>
-                      <Textarea 
-                        id="message" 
-                        value={form.text} 
-                        onChange={(e) => setForm({...form, text: e.target.value})}
+                      <Textarea
+                        id="message"
+                        value={form.text}
+                        onChange={(e) => setForm({ ...form, text: e.target.value })}
                         placeholder="Tell us about your experience..."
                         className="mt-1 min-h-[120px] bg-slate-50 border-slate-200 focus:ring-emerald-500"
                       />
@@ -234,13 +233,13 @@ const Testimonials = () => {
 
                     <Button type="submit" className="w-full bg-emerald-600 hover:bg-emerald-700 text-white shadow-lg shadow-emerald-200" size="lg" disabled={submitting}>
                       {submitting ? (
-                          <>
-                              <Loader2 className="w-4 h-4 mr-2 animate-spin" /> Submitting...
-                          </>
+                        <>
+                          <Loader2 className="w-4 h-4 mr-2 animate-spin" /> Submitting...
+                        </>
                       ) : (
-                          <>
-                              Submit Review <Send className="w-4 h-4 ml-2" />
-                          </>
+                        <>
+                          Submit Review <Send className="w-4 h-4 ml-2" />
+                        </>
                       )}
                     </Button>
                   </form>

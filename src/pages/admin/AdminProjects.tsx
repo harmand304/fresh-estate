@@ -19,7 +19,7 @@ import {
 } from "@/components/ui/select";
 import { toast } from "sonner";
 
-const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:3001';
+import { API_URL } from "@/config";
 
 interface Project {
   id: number;
@@ -64,7 +64,7 @@ const AdminProjects = () => {
   const [editingId, setEditingId] = useState<number | null>(null);
   const [uploading, setUploading] = useState(false);
   const [imagePreview, setImagePreview] = useState<string | null>(null);
-  
+
   const [formData, setFormData] = useState<FormData>({
     name: "",
     description: "",
@@ -169,10 +169,10 @@ const AdminProjects = () => {
     }
 
     try {
-      const url = editingId 
+      const url = editingId
         ? `${API_URL}/api/admin/projects/${editingId}`
         : `${API_URL}/api/admin/projects`;
-      
+
       const method = editingId ? 'PUT' : 'POST';
 
       const res = await fetch(url, {

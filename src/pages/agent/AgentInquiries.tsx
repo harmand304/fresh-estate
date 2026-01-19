@@ -28,7 +28,7 @@ interface Inquiry {
   };
 }
 
-const API_URL = `http://${window.location.hostname}:3001`;
+import { API_URL } from "@/config";
 
 const AgentInquiries = () => {
   const [inquiries, setInquiries] = useState<Inquiry[]>([]);
@@ -36,8 +36,8 @@ const AgentInquiries = () => {
   const [selectedInquiry, setSelectedInquiry] = useState<Inquiry | null>(null);
   const [statusFilter, setStatusFilter] = useState<'ALL' | 'PENDING' | 'RESPONDED' | 'CLOSED'>('ALL');
 
-  const filteredInquiries = statusFilter === 'ALL' 
-    ? inquiries 
+  const filteredInquiries = statusFilter === 'ALL'
+    ? inquiries
     : inquiries.filter(i => i.status === statusFilter);
 
   useEffect(() => {
@@ -91,7 +91,7 @@ const AgentInquiries = () => {
   };
 
   const getTypeBadge = (type: string) => {
-    return type === 'TOUR' 
+    return type === 'TOUR'
       ? <span className="px-2 py-1 rounded-lg text-xs font-medium bg-purple-100 text-purple-700">Tour Request</span>
       : <span className="px-2 py-1 rounded-lg text-xs font-medium bg-slate-100 text-slate-700">Message</span>;
   };
@@ -122,43 +122,39 @@ const AgentInquiries = () => {
       <div className="flex gap-2 mb-8">
         <button
           onClick={() => setStatusFilter('ALL')}
-          className={`px-4 py-2 rounded-lg font-medium transition-colors ${
-            statusFilter === 'ALL' 
-              ? 'bg-slate-900 text-white' 
+          className={`px-4 py-2 rounded-lg font-medium transition-colors ${statusFilter === 'ALL'
+              ? 'bg-slate-900 text-white'
               : 'bg-white text-slate-600 hover:bg-slate-50 border border-slate-200'
-          }`}
+            }`}
         >
           All ({inquiries.length})
         </button>
         <button
           onClick={() => setStatusFilter('PENDING')}
-          className={`px-4 py-2 rounded-lg font-medium transition-colors flex items-center gap-2 ${
-            statusFilter === 'PENDING' 
-              ? 'bg-yellow-500 text-white' 
+          className={`px-4 py-2 rounded-lg font-medium transition-colors flex items-center gap-2 ${statusFilter === 'PENDING'
+              ? 'bg-yellow-500 text-white'
               : 'bg-white text-slate-600 hover:bg-yellow-50 border border-slate-200'
-          }`}
+            }`}
         >
           <Clock className="w-4 h-4" />
           Pending ({inquiries.filter(i => i.status === 'PENDING').length})
         </button>
         <button
           onClick={() => setStatusFilter('RESPONDED')}
-          className={`px-4 py-2 rounded-lg font-medium transition-colors flex items-center gap-2 ${
-            statusFilter === 'RESPONDED' 
-              ? 'bg-blue-500 text-white' 
+          className={`px-4 py-2 rounded-lg font-medium transition-colors flex items-center gap-2 ${statusFilter === 'RESPONDED'
+              ? 'bg-blue-500 text-white'
               : 'bg-white text-slate-600 hover:bg-blue-50 border border-slate-200'
-          }`}
+            }`}
         >
           <MessageSquare className="w-4 h-4" />
           Responded ({inquiries.filter(i => i.status === 'RESPONDED').length})
         </button>
         <button
           onClick={() => setStatusFilter('CLOSED')}
-          className={`px-4 py-2 rounded-lg font-medium transition-colors flex items-center gap-2 ${
-            statusFilter === 'CLOSED' 
-              ? 'bg-green-500 text-white' 
+          className={`px-4 py-2 rounded-lg font-medium transition-colors flex items-center gap-2 ${statusFilter === 'CLOSED'
+              ? 'bg-green-500 text-white'
               : 'bg-white text-slate-600 hover:bg-green-50 border border-slate-200'
-          }`}
+            }`}
         >
           <CheckCircle className="w-4 h-4" />
           Closed ({inquiries.filter(i => i.status === 'CLOSED').length})
@@ -172,14 +168,14 @@ const AgentInquiries = () => {
             {statusFilter === 'ALL' ? 'All Inquiries' : `${statusFilter.charAt(0) + statusFilter.slice(1).toLowerCase()} Inquiries`}
           </h2>
         </div>
-        
+
         {filteredInquiries.length === 0 ? (
           <div className="p-12 text-center">
             <MessageSquare className="w-12 h-12 text-slate-300 mx-auto mb-4" />
             <h3 className="text-lg font-semibold text-slate-900 mb-2">No inquiries</h3>
             <p className="text-slate-500">
-              {statusFilter === 'ALL' 
-                ? "When clients request tours or send messages, they'll appear here." 
+              {statusFilter === 'ALL'
+                ? "When clients request tours or send messages, they'll appear here."
                 : `No ${statusFilter.toLowerCase()} inquiries found.`}
             </p>
           </div>
@@ -192,8 +188,8 @@ const AgentInquiries = () => {
                     {/* Property Image */}
                     <div className="w-20 h-20 rounded-lg overflow-hidden bg-slate-100 flex-shrink-0">
                       {inquiry.property.image ? (
-                        <img 
-                          src={inquiry.property.image} 
+                        <img
+                          src={inquiry.property.image}
                           alt={inquiry.property.title}
                           className="w-full h-full object-cover"
                         />
@@ -203,7 +199,7 @@ const AgentInquiries = () => {
                         </div>
                       )}
                     </div>
-                    
+
                     {/* Inquiry Details */}
                     <div className="flex-1 min-w-0">
                       <div className="flex items-center gap-2 mb-2">
@@ -227,18 +223,18 @@ const AgentInquiries = () => {
                       </div>
                     </div>
                   </div>
-                  
+
                   {/* Actions */}
                   <div className="flex items-center gap-2">
-                    <Button 
-                      variant="outline" 
+                    <Button
+                      variant="outline"
                       size="sm"
                       onClick={() => setSelectedInquiry(inquiry)}
                     >
                       View
                     </Button>
                     {inquiry.status === 'PENDING' && (
-                      <Button 
+                      <Button
                         size="sm"
                         onClick={() => updateStatus(inquiry.id, 'RESPONDED')}
                       >
@@ -259,7 +255,7 @@ const AgentInquiries = () => {
           <div className="bg-white rounded-2xl max-w-2xl w-full max-h-[90vh] overflow-y-auto">
             <div className="p-6 border-b border-slate-100 flex items-center justify-between">
               <h2 className="text-xl font-bold text-slate-900">Inquiry Details</h2>
-              <button 
+              <button
                 onClick={() => setSelectedInquiry(null)}
                 className="w-8 h-8 flex items-center justify-center rounded-full hover:bg-red-50 transition-colors"
               >
@@ -274,8 +270,8 @@ const AgentInquiries = () => {
                   {/* Property Image */}
                   <div className="w-32 h-24 rounded-lg overflow-hidden bg-slate-200 flex-shrink-0">
                     {selectedInquiry.property.image ? (
-                      <img 
-                        src={selectedInquiry.property.image} 
+                      <img
+                        src={selectedInquiry.property.image}
                         alt={selectedInquiry.property.title}
                         className="w-full h-full object-cover"
                       />
@@ -310,7 +306,7 @@ const AgentInquiries = () => {
                         ${selectedInquiry.property.price.toLocaleString()}
                         {selectedInquiry.property.purpose === 'RENT' && <span className="text-sm font-normal">/mo</span>}
                       </span>
-                      <Link 
+                      <Link
                         to={`/property/${selectedInquiry.property.id}`}
                         className="text-primary text-sm font-medium flex items-center gap-1 hover:underline"
                         target="_blank"
@@ -359,21 +355,21 @@ const AgentInquiries = () => {
               <div>
                 <label className="text-sm font-medium text-slate-500 mb-2 block">Status</label>
                 <div className="flex gap-2">
-                  <Button 
+                  <Button
                     variant={selectedInquiry.status === 'PENDING' ? 'default' : 'outline'}
                     size="sm"
                     onClick={() => updateStatus(selectedInquiry.id, 'PENDING')}
                   >
                     Pending
                   </Button>
-                  <Button 
+                  <Button
                     variant={selectedInquiry.status === 'RESPONDED' ? 'default' : 'outline'}
                     size="sm"
                     onClick={() => updateStatus(selectedInquiry.id, 'RESPONDED')}
                   >
                     Responded
                   </Button>
-                  <Button 
+                  <Button
                     variant={selectedInquiry.status === 'CLOSED' ? 'default' : 'outline'}
                     size="sm"
                     onClick={() => updateStatus(selectedInquiry.id, 'CLOSED')}
