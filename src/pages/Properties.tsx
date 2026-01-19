@@ -1,3 +1,4 @@
+const API_URL = "https://fresh-estate.onrender.com";
 import { useState, useEffect } from "react";
 import { useParams, useSearchParams } from "react-router-dom";
 import Navbar from "@/components/Navbar";
@@ -25,7 +26,6 @@ import { ChevronLeft, ChevronRight, Search, ChevronDown, SlidersHorizontal, Layo
 import { toast } from "sonner";
 import OnboardingModal from "@/components/OnboardingModal";
 
-import { API_URL } from "@/config";
 const ITEMS_PER_PAGE = 8;
 
 const Properties = () => {

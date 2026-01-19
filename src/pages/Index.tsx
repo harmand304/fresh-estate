@@ -1,3 +1,4 @@
+const API_URL = "https://fresh-estate.onrender.com";
 import { useState, useEffect } from "react";
 import { useSearchParams } from "react-router-dom";
 import Navbar from "@/components/Navbar";
@@ -11,7 +12,6 @@ import OnboardingModal from "@/components/OnboardingModal";
 import { useProperties } from "@/hooks/useProperties";
 import { useAuth } from "@/contexts/AuthContext";
 
-import { API_URL } from "@/config";
 
 const Index = () => {
   const { properties, loading } = useProperties();

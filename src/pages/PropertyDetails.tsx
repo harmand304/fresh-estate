@@ -1,3 +1,4 @@
+const API_URL = "https://fresh-estate.onrender.com";
 import { useEffect, useState } from "react";
 import { useParams, Link, useNavigate } from "react-router-dom";
 import {
@@ -16,7 +17,6 @@ import { Textarea } from "@/components/ui/textarea";
 import { PropertyDetailsSkeleton } from "@/components/PropertyDetailsSkeleton";
 import { LocationReviews } from "@/components/LocationReviews";
 import { toast } from "sonner";
-import { API_URL } from "@/config";
 
 
 // Icon mapping based on database seed values
@@ -233,8 +233,8 @@ const PropertyDetails = () => {
                     {property.purpose === "RENT" && <span className="text-lg text-muted-foreground font-normal">/mo</span>}
                   </span>
                   <span className={`px-3 py-1 text-sm font-medium rounded-lg ${property.dealStatus === 'COMPLETED'
-                      ? "bg-red-500 text-white"
-                      : property.purpose === 'SALE' ? "bg-primary/10 text-primary" : "bg-blue-500 text-white"
+                    ? "bg-red-500 text-white"
+                    : property.purpose === 'SALE' ? "bg-primary/10 text-primary" : "bg-blue-500 text-white"
                     }`}>
                     {property.dealStatus === 'COMPLETED'
                       ? (property.completedDealType === 'SALE' ? "Sold" : "Rented")

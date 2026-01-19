@@ -1,3 +1,4 @@
+const API_URL = "https://fresh-estate.onrender.com";
 import { useEffect, useState } from "react";
 import { Mail, Phone, MessageSquare, Clock, CheckCircle, XCircle, Eye, Bed, Bath, Maximize, MapPin, ExternalLink } from "lucide-react";
 import { toast } from "sonner";
@@ -28,7 +29,6 @@ interface Inquiry {
   };
 }
 
-import { API_URL } from "@/config";
 
 const AgentInquiries = () => {
   const [inquiries, setInquiries] = useState<Inquiry[]>([]);
@@ -123,8 +123,8 @@ const AgentInquiries = () => {
         <button
           onClick={() => setStatusFilter('ALL')}
           className={`px-4 py-2 rounded-lg font-medium transition-colors ${statusFilter === 'ALL'
-              ? 'bg-slate-900 text-white'
-              : 'bg-white text-slate-600 hover:bg-slate-50 border border-slate-200'
+            ? 'bg-slate-900 text-white'
+            : 'bg-white text-slate-600 hover:bg-slate-50 border border-slate-200'
             }`}
         >
           All ({inquiries.length})
@@ -132,8 +132,8 @@ const AgentInquiries = () => {
         <button
           onClick={() => setStatusFilter('PENDING')}
           className={`px-4 py-2 rounded-lg font-medium transition-colors flex items-center gap-2 ${statusFilter === 'PENDING'
-              ? 'bg-yellow-500 text-white'
-              : 'bg-white text-slate-600 hover:bg-yellow-50 border border-slate-200'
+            ? 'bg-yellow-500 text-white'
+            : 'bg-white text-slate-600 hover:bg-yellow-50 border border-slate-200'
             }`}
         >
           <Clock className="w-4 h-4" />
@@ -142,8 +142,8 @@ const AgentInquiries = () => {
         <button
           onClick={() => setStatusFilter('RESPONDED')}
           className={`px-4 py-2 rounded-lg font-medium transition-colors flex items-center gap-2 ${statusFilter === 'RESPONDED'
-              ? 'bg-blue-500 text-white'
-              : 'bg-white text-slate-600 hover:bg-blue-50 border border-slate-200'
+            ? 'bg-blue-500 text-white'
+            : 'bg-white text-slate-600 hover:bg-blue-50 border border-slate-200'
             }`}
         >
           <MessageSquare className="w-4 h-4" />
@@ -152,8 +152,8 @@ const AgentInquiries = () => {
         <button
           onClick={() => setStatusFilter('CLOSED')}
           className={`px-4 py-2 rounded-lg font-medium transition-colors flex items-center gap-2 ${statusFilter === 'CLOSED'
-              ? 'bg-green-500 text-white'
-              : 'bg-white text-slate-600 hover:bg-green-50 border border-slate-200'
+            ? 'bg-green-500 text-white'
+            : 'bg-white text-slate-600 hover:bg-green-50 border border-slate-200'
             }`}
         >
           <CheckCircle className="w-4 h-4" />

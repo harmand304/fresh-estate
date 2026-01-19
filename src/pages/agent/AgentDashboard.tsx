@@ -1,3 +1,4 @@
+const API_URL = "https://fresh-estate.onrender.com";
 import { useEffect, useState } from "react";
 import { Building2, Handshake, CheckCircle, DollarSign, TrendingUp, FileBarChart, X, Calendar } from "lucide-react";
 import { toast } from "sonner";
@@ -27,7 +28,6 @@ interface ReportData {
   totalRevenue: number;
 }
 
-import { API_URL } from "@/config";
 
 const AgentDashboard = () => {
   const [stats, setStats] = useState<DashboardStats | null>(null);

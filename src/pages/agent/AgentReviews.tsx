@@ -10,7 +10,6 @@ interface Review {
   createdAt: string;
 }
 
-import { API_URL } from "@/config";
 
 const AgentReviews = () => {
   const [reviews, setReviews] = useState<Review[]>([]);

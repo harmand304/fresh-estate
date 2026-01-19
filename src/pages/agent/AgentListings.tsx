@@ -56,7 +56,6 @@ interface FormData {
   propertyTypeId: string;
 }
 
-import { API_URL } from "@/config";
 
 const AgentListings = () => {
   const [properties, setProperties] = useState<Property[]>([]);

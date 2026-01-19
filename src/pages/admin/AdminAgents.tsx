@@ -1,4 +1,4 @@
-const API_URL = `http://${window.location.hostname}:3001`;
+const API_URL = "https://fresh-estate.onrender.com";
 import { useEffect, useState } from "react";
 import { Plus, Pencil, Trash2, Search, Upload, Star, Award, X, Image } from "lucide-react";
 import { Button } from "@/components/ui/button";
@@ -50,7 +50,7 @@ interface Language {
   name: string;
 }
 
-import { API_URL } from "@/config";
+
 
 const SPECIALTY_OPTIONS = [
   "Luxury Homes",

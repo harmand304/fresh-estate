@@ -1,3 +1,4 @@
+const API_URL = "https://fresh-estate.onrender.com";
 import { useState, useEffect } from "react";
 import { useAuth } from "@/contexts/AuthContext";
 import Navbar from "@/components/Navbar";
@@ -20,7 +21,6 @@ interface Review {
   createdAt: string;
 }
 
-import { API_URL } from "@/config";
 
 const Testimonials = () => {
   const { isAuthenticated, user } = useAuth();

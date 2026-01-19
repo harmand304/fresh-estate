@@ -1,3 +1,4 @@
+const API_URL = "https://fresh-estate.onrender.com";
 import { useEffect, useState } from "react";
 import { Plus, Pencil, Trash2, Search, Upload, X, Building2 } from "lucide-react";
 import { Button } from "@/components/ui/button";
@@ -19,7 +20,6 @@ import {
 } from "@/components/ui/select";
 import { toast } from "sonner";
 
-import { API_URL } from "@/config";
 
 interface Project {
   id: number;
