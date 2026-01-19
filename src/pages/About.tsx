@@ -7,7 +7,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { toast } from "sonner";
-import erbilBg from "@/assets/abt-bg.jpg";
+import erbilBg from "@/assets/abt-bg.webp";
 import bakoImg from "@/assets/bako.jpg";
 import mohammedImg from "@/assets/mohammed.jpeg";
 import harmandImg from "@/assets/harmand.jpg";
