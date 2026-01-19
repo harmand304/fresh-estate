@@ -19,6 +19,7 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { toast } from "sonner";
+import { compressImage } from "@/utils/compressImage";
 
 interface Agent {
   id: number;
@@ -234,8 +235,12 @@ const AdminAgents = () => {
     setUploading(true);
 
     try {
+      // Compress image before upload
+      toast.info('Compressing image...');
+      const compressedFile = await compressImage(file);
+
       const uploadFormData = new FormData();
-      uploadFormData.append('image', file);
+      uploadFormData.append('image', compressedFile);
 
       const res = await fetch(`${API_URL}/api/upload?type=agent`, {
         method: 'POST',

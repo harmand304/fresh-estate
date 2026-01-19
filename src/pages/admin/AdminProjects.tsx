@@ -19,6 +19,7 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { toast } from "sonner";
+import { compressImage } from "@/utils/compressImage";
 
 
 interface Project {
@@ -138,8 +139,12 @@ const AdminProjects = () => {
 
     setUploading(true);
     try {
+      // Compress image before upload
+      toast.info('Compressing image...');
+      const compressedFile = await compressImage(file);
+
       const formDataUpload = new FormData();
-      formDataUpload.append('image', file);
+      formDataUpload.append('image', compressedFile);
 
       const res = await fetch(`${API_URL}/api/upload?type=projects`, {
         method: 'POST',

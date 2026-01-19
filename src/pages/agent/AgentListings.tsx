@@ -4,6 +4,7 @@ import { Plus, Pencil, Trash2, Home, Search, Upload, X } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { toast } from "sonner";
+import { compressImages } from "@/utils/compressImage";
 import {
   Select,
   SelectContent,
@@ -211,12 +212,18 @@ const AgentListings = () => {
     }
 
     setUploading(true);
-    const formDataUpload = new FormData();
-    for (let i = 0; i < files.length; i++) {
-      formDataUpload.append("images", files[i]);
-    }
 
     try {
+      // Compress images before upload
+      toast.info('Compressing images...');
+      const filesArray = Array.from(files);
+      const compressedFiles = await compressImages(filesArray);
+
+      const formDataUpload = new FormData();
+      for (let i = 0; i < compressedFiles.length; i++) {
+        formDataUpload.append("images", compressedFiles[i]);
+      }
+
       const res = await fetch(`${API_URL}/api/upload/multiple`, {
         method: "POST",
         body: formDataUpload,

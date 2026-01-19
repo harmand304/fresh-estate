@@ -3,6 +3,7 @@ import { User, Upload, Save, X } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { toast } from "sonner";
+import { compressImage } from "@/utils/compressImage";
 import { API_URL } from "@/config";
 
 interface AgentProfile {
@@ -128,8 +129,12 @@ const AgentProfilePage = () => {
     setUploading(true);
 
     try {
+      // Compress image before upload
+      toast.info('Compressing image...');
+      const compressedFile = await compressImage(file);
+
       const uploadFormData = new FormData();
-      uploadFormData.append("image", file);
+      uploadFormData.append("image", compressedFile);
 
       const res = await fetch(`${API_URL}/api/upload?type=agent`, {
         method: "POST",
