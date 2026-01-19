@@ -411,19 +411,25 @@ const Agents = () => {
                     key={agent.id}
                     className="bg-white rounded-2xl shadow-sm overflow-hidden hover:shadow-lg transition-all border border-slate-100 flex flex-col h-full"
                   >
-                    {/* Agent Photo */}
-                    <div className="relative aspect-[4/3] bg-slate-100">
-                      {agent.image ? (
-                        <img
-                          src={agent.image}
-                          alt={agent.name}
-                          className="w-full h-full object-cover"
-                        />
-                      ) : (
-                        <div className="w-full h-full flex items-center justify-center bg-gradient-to-br from-primary/10 to-primary/5">
-                          <User className="w-20 h-20 text-primary/30" />
-                        </div>
-                      )}
+                    {/* Agent Image */}
+                    <div className="relative aspect-square w-full overflow-hidden rounded-t-2xl bg-slate-100">
+                      <Link to={`/agents/${agent.id}`} className="block w-full h-full">
+                        {agent.image ? (
+                          <img
+                            src={agent.image}
+                            alt={agent.name}
+                            className="w-full h-full object-cover transition-transform duration-300 hover:scale-105"
+                            onError={(e) => {
+                              e.currentTarget.style.display = 'none';
+                              e.currentTarget.nextElementSibling?.classList.remove('hidden');
+                            }}
+                          />
+                        ) : (
+                          <div className="w-full h-full flex items-center justify-center bg-gradient-to-br from-primary/20 to-primary/5">
+                            <User className="w-20 h-20 text-primary/40" />
+                          </div>
+                        )}
+                      </Link>
 
                       {/* Rating Badge */}
                       {agent.rating > 0 && (
