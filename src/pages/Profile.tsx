@@ -1,15 +1,16 @@
+const API_URL = "https://fresh-estate.onrender.com";
 import { Link } from 'react-router-dom';
 import { useAuth } from '@/contexts/AuthContext';
 import { useRecentlyViewed } from '@/hooks/useRecentlyViewed';
 import Navbar from '@/components/Navbar';
 import Footer from '@/components/Footer';
-import { 
-  User, 
-  Mail, 
-  Shield, 
-  Clock, 
-  Cookie, 
-  Trash2, 
+import {
+  User,
+  Mail,
+  Shield,
+  Clock,
+  Cookie,
+  Trash2,
   Home,
   Eye
 } from 'lucide-react';
@@ -62,7 +63,7 @@ const Profile = () => {
       <main className="flex-1 bg-slate-100 pt-28 pb-16">
         <div className="container mx-auto px-4">
           <h1 className="text-3xl font-bold text-slate-900 mb-8">My Profile</h1>
-          
+
           <div className="grid lg:grid-cols-3 gap-8">
             {/* User Info Card */}
             <div className="lg:col-span-1">
@@ -82,19 +83,18 @@ const Profile = () => {
                   </div>
                   <div className="flex items-center gap-3 text-slate-600">
                     <Shield className="w-5 h-5" />
-                    <span className={`px-2 py-1 rounded-lg text-xs font-medium ${
-                      user?.role === 'ADMIN' 
-                        ? 'bg-amber-100 text-amber-700' 
+                    <span className={`px-2 py-1 rounded-lg text-xs font-medium ${user?.role === 'ADMIN'
+                        ? 'bg-amber-100 text-amber-700'
                         : 'bg-slate-100 text-slate-600'
-                    }`}>
+                      }`}>
                       {user?.role}
                     </span>
                   </div>
                 </div>
 
                 <div className="mt-6 pt-6 border-t">
-                  <Button 
-                    variant="destructive" 
+                  <Button
+                    variant="destructive"
                     className="w-full"
                     onClick={() => logout()}
                   >
@@ -110,12 +110,12 @@ const Profile = () => {
                   Cookie Settings
                 </h3>
                 <p className="text-sm text-slate-600 mb-4">
-                  Cookies are {cookiesAccepted ? 'enabled' : 'disabled'}. 
+                  Cookies are {cookiesAccepted ? 'enabled' : 'disabled'}.
                   {cookiesAccepted && ' We use cookies to remember your preferences and viewing history.'}
                 </p>
-                <Button 
-                  variant="outline" 
-                  size="sm" 
+                <Button
+                  variant="outline"
+                  size="sm"
                   onClick={handleClearCookies}
                   className="w-full"
                 >
@@ -133,8 +133,8 @@ const Profile = () => {
                     Recently Viewed Properties
                   </h3>
                   {recentlyViewed.length > 0 && (
-                    <Button 
-                      variant="ghost" 
+                    <Button
+                      variant="ghost"
                       size="sm"
                       onClick={handleClearHistory}
                       className="text-red-600 hover:text-red-700"

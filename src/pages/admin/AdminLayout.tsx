@@ -1,9 +1,10 @@
+const API_URL = "https://fresh-estate.onrender.com";
 import { NavLink, Outlet } from "react-router-dom";
-import { 
-  LayoutDashboard, 
-  Building2, 
-  Users, 
-  MapPin, 
+import {
+  LayoutDashboard,
+  Building2,
+  Users,
+  MapPin,
   ArrowLeft,
   Home,
   Layers
@@ -29,7 +30,7 @@ const AdminLayout = () => {
             Admin Panel
           </h1>
         </div>
-        
+
         <nav className="flex-1 p-4 space-y-2 overflow-y-auto">
           {navItems.map((item) => (
             <NavLink
@@ -37,10 +38,9 @@ const AdminLayout = () => {
               to={item.to}
               end={item.end}
               className={({ isActive }) =>
-                `flex items-center gap-3 px-4 py-3 rounded-lg transition-colors ${
-                  isActive
-                    ? "bg-primary text-white"
-                    : "text-slate-300 hover:bg-slate-800 hover:text-white"
+                `flex items-center gap-3 px-4 py-3 rounded-lg transition-colors ${isActive
+                  ? "bg-primary text-white"
+                  : "text-slate-300 hover:bg-slate-800 hover:text-white"
                 }`
               }
             >

@@ -1,3 +1,4 @@
+const API_URL = "https://fresh-estate.onrender.com";
 import { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import Navbar from '@/components/Navbar';
@@ -40,7 +41,6 @@ interface Agent {
   languages: string[];
 }
 
-import { API_URL } from "@/config";
 
 // Static data for filters (will be dynamic later)
 const SPECIALIZATIONS = [

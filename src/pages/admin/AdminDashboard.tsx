@@ -1,5 +1,4 @@
-const API_URL = `http://${window.location.hostname}:3001`;
-import { useEffect, useState } from "react";
+const API_URL = "https://fresh-estate.onrender.com"; import { useEffect, useState } from "react";
 import { Building2, Users, MapPin, Globe, TrendingUp } from "lucide-react";
 
 interface Stats {

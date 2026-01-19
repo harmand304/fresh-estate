@@ -1,3 +1,4 @@
+const API_URL = "https://fresh-estate.onrender.com";
 import { useEffect, useState } from "react";
 import { Plus, Pencil, Trash2, MapPin, Globe } from "lucide-react";
 import { Button } from "@/components/ui/button";
@@ -37,7 +38,7 @@ const AdminLocations = () => {
   const [cities, setCities] = useState<City[]>([]);
   const [locations, setLocations] = useState<Location[]>([]);
   const [loading, setLoading] = useState(true);
-  
+
   // City dialog
   const [isCityDialogOpen, setIsCityDialogOpen] = useState(false);
   const [editingCity, setEditingCity] = useState<City | null>(null);
@@ -82,7 +83,7 @@ const AdminLocations = () => {
       const url = editingCity
         ? `http://localhost:3001/api/cities/${editingCity.id}`
         : "http://localhost:3001/api/cities";
-      
+
       const res = await fetch(url, {
         method: editingCity ? "PUT" : "POST",
         headers: { "Content-Type": "application/json" },
@@ -101,7 +102,7 @@ const AdminLocations = () => {
 
   const handleCityDelete = async (id: number) => {
     if (!confirm("Delete this city? All locations in this city will also be deleted.")) return;
-    
+
     try {
       await fetch(`http://localhost:3001/api/cities/${id}`, { method: "DELETE" });
       toast.success("City deleted!");
@@ -129,7 +130,7 @@ const AdminLocations = () => {
       const url = editingLocation
         ? `http://localhost:3001/api/locations/${editingLocation.id}`
         : "http://localhost:3001/api/locations";
-      
+
       const res = await fetch(url, {
         method: editingLocation ? "PUT" : "POST",
         headers: { "Content-Type": "application/json" },
@@ -151,7 +152,7 @@ const AdminLocations = () => {
 
   const handleLocationDelete = async (id: number) => {
     if (!confirm("Delete this location?")) return;
-    
+
     try {
       await fetch(`http://localhost:3001/api/locations/${id}`, { method: "DELETE" });
       toast.success("Location deleted!");

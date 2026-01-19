@@ -1,3 +1,4 @@
+const API_URL = "https://fresh-estate.onrender.com";
 import { useState, useEffect } from 'react';
 import { useParams, Link } from 'react-router-dom';
 import { useAuth } from '@/contexts/AuthContext';
@@ -71,7 +72,6 @@ interface Agent {
   reviews: Review[];
 }
 
-import { API_URL } from "@/config";
 
 const AgentProfile = () => {
   const { id } = useParams();

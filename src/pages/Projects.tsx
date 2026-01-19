@@ -1,3 +1,4 @@
+const API_URL = "https://fresh-estate.onrender.com";
 import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import Navbar from "@/components/Navbar";
@@ -19,7 +20,6 @@ import {
   PopoverTrigger,
 } from "@/components/ui/popover";
 
-import { API_URL } from "@/config";
 
 interface Project {
   id: number;
