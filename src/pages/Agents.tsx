@@ -19,6 +19,7 @@ import {
 import { toast } from "sonner";
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
+import { AgentCardSkeleton } from '@/components/AgentCardSkeleton';
 import {
   Popover,
   PopoverContent,
@@ -192,18 +193,6 @@ const Agents = () => {
   const loadMore = () => {
     setVisibleCount(prev => prev + 6);
   };
-
-  if (loading) {
-    return (
-      <div className="min-h-screen flex flex-col bg-[#f8faf8]">
-        <Navbar />
-        <main className="flex-1 flex items-center justify-center">
-          <div className="animate-spin rounded-lg h-12 w-12 border-t-2 border-b-2 border-primary"></div>
-        </main>
-        <Footer />
-      </div>
-    );
-  }
 
   return (
     <div className="min-h-screen flex flex-col bg-[#f8faf8]">
