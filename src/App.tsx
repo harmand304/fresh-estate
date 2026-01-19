@@ -42,7 +42,15 @@ const AgentDeals = lazy(() => import("./pages/agent/AgentDeals"));
 const AgentProfilePage = lazy(() => import("./pages/agent/AgentProfile"));
 const AgentReviews = lazy(() => import("./pages/agent/AgentReviews"));
 
-const queryClient = new QueryClient();
+const queryClient = new QueryClient({
+  defaultOptions: {
+    queries: {
+      staleTime: 60000, // 1 minute - data stays fresh for 1 minute
+      gcTime: 300000, // 5 minutes - cached data kept in memory for 5 minutes
+      refetchOnWindowFocus: false, // Don't refetch when window regains focus
+    },
+  },
+});
 
 const App = () => {
   const [isLoading, setIsLoading] = useState(true);

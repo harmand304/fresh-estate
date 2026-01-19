@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useQuery } from "@tanstack/react-query";
 import { toast } from "sonner";
 
 export interface Property {
@@ -24,55 +24,38 @@ export interface Property {
 
 import { API_URL } from "@/config";
 
+const fetchProperties = async (): Promise<Property[]> => {
+  const response = await fetch(`${API_URL}/api/properties`);
+
+  if (!response.ok) {
+    throw new Error('Failed to fetch properties');
+  }
+
+  const data = await response.json();
+
+  if (Array.isArray(data)) {
+    return data;
+  } else {
+    console.warn("Properties data is not an array:", data);
+    return [];
+  }
+};
+
 export const useProperties = () => {
-  const [properties, setProperties] = useState<Property[]>([]);
-  const [loading, setLoading] = useState(true);
+  const { data: properties = [], isLoading, error } = useQuery({
+    queryKey: ['properties'],
+    queryFn: fetchProperties,
+    retry: 2,
+  });
 
-  useEffect(() => {
-    const loadProperties = async () => {
-      try {
-        const response = await fetch(`${API_URL}/api/properties`);
+  // Show error toast if fetch fails
+  if (error) {
+    console.error("Failed to fetch properties:", error);
+    toast.error("Failed to load property data. Make sure the API server is running.");
+  }
 
-        if (!response.ok) {
-          throw new Error('Failed to fetch properties');
-        }
-
-        const data = await response.json();
-        if (Array.isArray(data)) {
-          setProperties(data);
-        } else {
-          console.warn("Properties data is not an array:", data);
-          setProperties([]);
-        }
-      } catch (error) {
-        console.error("Failed to fetch properties:", error);
-        toast.error("Failed to load property data. Make sure the API server is running.");
-      } finally {
-        setLoading(false);
-      }
-    };
-
-    loadProperties();
-  }, []);
-
-  const addProperty = async (property: Omit<Property, "id">) => {
-    // For now, just add locally - can implement POST endpoint later
-    const newProperty = { ...property, id: crypto.randomUUID() };
-    setProperties(prev => [newProperty, ...prev]);
-    toast.success("Property added successfully");
+  return {
+    properties,
+    loading: isLoading,
   };
-
-  const updateProperty = (id: string, updates: Partial<Property>) => {
-    const updated = properties.map((p) => (p.id === id ? { ...p, ...updates } : p));
-    setProperties(updated);
-    toast.success("Property updated successfully");
-  };
-
-  const deleteProperty = (id: string) => {
-    const updated = properties.filter((p) => p.id !== id);
-    setProperties(updated);
-    toast.success("Property deleted successfully");
-  };
-
-  return { properties, addProperty, updateProperty, deleteProperty, loading };
 };

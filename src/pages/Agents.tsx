@@ -1,4 +1,5 @@
 import { useState, useEffect } from 'react';
+import { useQuery } from '@tanstack/react-query';
 import { API_URL } from "@/config";
 import { Link } from 'react-router-dom';
 import Navbar from '@/components/Navbar';
@@ -67,10 +68,7 @@ const EXPERIENCE_OPTIONS = [
 ];
 
 const Agents = () => {
-  const [agents, setAgents] = useState<Agent[]>([]);
   const [filteredAgents, setFilteredAgents] = useState<Agent[]>([]);
-  const [languages, setLanguages] = useState<string[]>([]);
-  const [loading, setLoading] = useState(true);
   const [searchQuery, setSearchQuery] = useState('');
   const [visibleCount, setVisibleCount] = useState(6);
 
@@ -83,35 +81,30 @@ const Agents = () => {
     topRated: false
   });
 
-  useEffect(() => {
-    const fetchData = async () => {
-      try {
-        const [agentsRes, languagesRes] = await Promise.all([
-          fetch(`${API_URL}/api/agents`),
-          fetch(`${API_URL}/api/languages`)
-        ]);
+  // Fetch agents with React Query
+  const { data: agents = [], isLoading: loadingAgents } = useQuery({
+    queryKey: ['agents'],
+    queryFn: async () => {
+      const response = await fetch(`${API_URL}/api/agents`);
+      if (!response.ok) throw new Error('Failed to fetch agents');
+      return response.json();
+    },
+    retry: 2,
+  });
 
-        if (agentsRes.ok) {
-          const agentsData = await agentsRes.json();
-          setAgents(agentsData);
-          setFilteredAgents(agentsData);
-        }
+  // Fetch languages with React Query
+  const { data: languages = [] } = useQuery({
+    queryKey: ['languages'],
+    queryFn: async () => {
+      const response = await fetch(`${API_URL}/api/languages`);
+      if (!response.ok) throw new Error('Failed to fetch languages');
+      const data = await response.json();
+      return Array.isArray(data) ? data.map((l: any) => l.name) : [];
+    },
+    retry: 2,
+  });
 
-        if (languagesRes.ok) {
-          const languagesData = await languagesRes.json();
-          if (Array.isArray(languagesData)) {
-            setLanguages(languagesData.map((l: any) => l.name));
-          }
-        }
-      } catch (error) {
-        console.error('Error fetching data:', error);
-      } finally {
-        setLoading(false);
-      }
-    };
-
-    fetchData();
-  }, []);
+  const loading = loadingAgents;
 
   // Filter agents when search or filters change
   useEffect(() => {
