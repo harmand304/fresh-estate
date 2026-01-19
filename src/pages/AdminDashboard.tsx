@@ -1,5 +1,5 @@
-const API_URL = "https://fresh-estate.onrender.com";
 import { useState } from "react";
+import { API_URL } from "@/config";
 import { Plus, Pencil, Trash2, ArrowLeft } from "lucide-react";
 import { Link } from "react-router-dom";
 import { Button } from "@/components/ui/button";
@@ -94,60 +94,59 @@ const AdminDashboard = () => {
                 </TableRow>
               ))
             ) : (
-                properties.map((property) => (
-              <TableRow key={property.id}>
-                <TableCell>
-                  <img
-                    src={property.image}
-                    alt={property.title}
-                    className="w-16 h-12 object-cover rounded-md"
-                  />
-                </TableCell>
-                <TableCell className="font-medium">{property.title}</TableCell>
-                <TableCell>{property.type}</TableCell>
-                <TableCell>
-                  <span
-                    className={`px-2 py-1 text-xs font-semibold rounded-lg ${
-                      property.purpose === "RENT"
-                        ? "bg-primary/10 text-primary"
-                        : "bg-amber-500/10 text-amber-600"
-                    }`}
-                  >
-                    {property.purpose}
-                  </span>
-                </TableCell>
-                <TableCell>
-                  {new Intl.NumberFormat("en-US", {
-                    style: "currency",
-                    currency: "USD",
-                    minimumFractionDigits: 0,
-                  }).format(property.price)}
-                  {property.purpose === "RENT" && "/mo"}
-                </TableCell>
-                <TableCell>
-                  {property.area}, {property.city}
-                </TableCell>
-                <TableCell className="text-right space-x-2">
-                  <div className="flex items-center justify-end gap-2">
-                    <Button
-                      variant="ghost"
-                      size="icon"
-                      onClick={() => openEditDialog(property)}
+              properties.map((property) => (
+                <TableRow key={property.id}>
+                  <TableCell>
+                    <img
+                      src={property.image}
+                      alt={property.title}
+                      className="w-16 h-12 object-cover rounded-md"
+                    />
+                  </TableCell>
+                  <TableCell className="font-medium">{property.title}</TableCell>
+                  <TableCell>{property.type}</TableCell>
+                  <TableCell>
+                    <span
+                      className={`px-2 py-1 text-xs font-semibold rounded-lg ${property.purpose === "RENT"
+                          ? "bg-primary/10 text-primary"
+                          : "bg-amber-500/10 text-amber-600"
+                        }`}
                     >
-                      <Pencil className="w-4 h-4 text-muted-foreground" />
-                    </Button>
-                    <Button
-                      variant="ghost"
-                      size="icon"
-                      className="text-destructive hover:text-destructive"
-                      onClick={() => deleteProperty(property.id)}
-                    >
-                      <Trash2 className="w-4 h-4" />
-                    </Button>
-                  </div>
-                </TableCell>
-              </TableRow>
-            ))
+                      {property.purpose}
+                    </span>
+                  </TableCell>
+                  <TableCell>
+                    {new Intl.NumberFormat("en-US", {
+                      style: "currency",
+                      currency: "USD",
+                      minimumFractionDigits: 0,
+                    }).format(property.price)}
+                    {property.purpose === "RENT" && "/mo"}
+                  </TableCell>
+                  <TableCell>
+                    {property.area}, {property.city}
+                  </TableCell>
+                  <TableCell className="text-right space-x-2">
+                    <div className="flex items-center justify-end gap-2">
+                      <Button
+                        variant="ghost"
+                        size="icon"
+                        onClick={() => openEditDialog(property)}
+                      >
+                        <Pencil className="w-4 h-4 text-muted-foreground" />
+                      </Button>
+                      <Button
+                        variant="ghost"
+                        size="icon"
+                        className="text-destructive hover:text-destructive"
+                        onClick={() => deleteProperty(property.id)}
+                      >
+                        <Trash2 className="w-4 h-4" />
+                      </Button>
+                    </div>
+                  </TableCell>
+                </TableRow>
+              ))
             )}
             {properties.length === 0 && (
               <TableRow>

@@ -1,5 +1,5 @@
-const API_URL = "https://fresh-estate.onrender.com";
 import { useState } from 'react';
+import { API_URL } from "@/config";
 import { Link, useNavigate } from 'react-router-dom';
 import { useAuth } from '@/contexts/AuthContext';
 import { Button } from '@/components/ui/button';

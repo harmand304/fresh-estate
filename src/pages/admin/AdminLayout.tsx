@@ -1,5 +1,5 @@
-const API_URL = "https://fresh-estate.onrender.com";
 import { NavLink, Outlet } from "react-router-dom";
+import { API_URL } from "@/config";
 import {
   LayoutDashboard,
   Building2,

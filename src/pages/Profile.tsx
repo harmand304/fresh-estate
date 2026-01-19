@@ -1,5 +1,5 @@
-const API_URL = "https://fresh-estate.onrender.com";
 import { Link } from 'react-router-dom';
+import { API_URL } from "@/config";
 import { useAuth } from '@/contexts/AuthContext';
 import { useRecentlyViewed } from '@/hooks/useRecentlyViewed';
 import Navbar from '@/components/Navbar';
@@ -84,8 +84,8 @@ const Profile = () => {
                   <div className="flex items-center gap-3 text-slate-600">
                     <Shield className="w-5 h-5" />
                     <span className={`px-2 py-1 rounded-lg text-xs font-medium ${user?.role === 'ADMIN'
-                        ? 'bg-amber-100 text-amber-700'
-                        : 'bg-slate-100 text-slate-600'
+                      ? 'bg-amber-100 text-amber-700'
+                      : 'bg-slate-100 text-slate-600'
                       }`}>
                       {user?.role}
                     </span>

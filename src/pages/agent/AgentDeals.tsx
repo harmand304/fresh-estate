@@ -1,5 +1,5 @@
-const API_URL = "https://fresh-estate.onrender.com";
 import { useEffect, useState } from "react";
+import { API_URL } from "@/config";
 import { Plus, CheckCircle, XCircle, Clock, Phone, Mail, Handshake } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";

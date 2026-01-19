@@ -1,5 +1,5 @@
-const API_URL = "https://fresh-estate.onrender.com";
 import { useEffect, useState, useRef } from "react";
+import { API_URL } from "@/config";
 import { Plus, Pencil, Trash2, Search, Upload, X } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -88,7 +88,7 @@ const AdminProperties = () => {
 
   const fetchProperties = () => {
     setLoading(true);
-    fetch("http://localhost:3001/api/properties")
+    fetch(`${API_URL}/api/properties`)
       .then((res) => res.json())
       .then((data) => {
         setProperties(data);
@@ -98,10 +98,10 @@ const AdminProperties = () => {
 
   const fetchDropdowns = () => {
     Promise.all([
-      fetch("http://localhost:3001/api/locations").then((r) => r.json()),
-      fetch("http://localhost:3001/api/agents").then((r) => r.json()),
-      fetch("http://localhost:3001/api/property-types").then((r) => r.json()),
-      fetch("http://localhost:3001/api/amenities").then((r) => r.json()),
+      fetch(`${API_URL}/api/locations`).then((r) => r.json()),
+      fetch(`${API_URL}/api/agents`).then((r) => r.json()),
+      fetch(`${API_URL}/api/property-types`).then((r) => r.json()),
+      fetch(`${API_URL}/api/amenities`).then((r) => r.json()),
     ]).then(([locs, agts, types, ams]) => {
       setLocations(locs);
       setAgents(agts);
@@ -164,7 +164,7 @@ const AdminProperties = () => {
 
     // Fetch all images, description, and amenities for this property
     try {
-      const res = await fetch(`http://localhost:3001/api/properties/${property.id}`);
+      const res = await fetch(`${API_URL}/api/properties/${property.id}`);
       const data = await res.json();
 
       // Update description from API
@@ -223,7 +223,7 @@ const AdminProperties = () => {
     }
 
     try {
-      const res = await fetch("http://localhost:3001/api/upload/multiple", {
+      const res = await fetch(`${API_URL}/api/upload/multiple`, {
         method: "POST",
         body: formDataUpload,
       });
@@ -253,7 +253,7 @@ const AdminProperties = () => {
     // Delete from database if it has a dbId
     if (imageToRemove.dbId) {
       try {
-        await fetch(`http://localhost:3001/api/admin/property-images/${imageToRemove.dbId}`, {
+        await fetch(`${API_URL}/api/admin/property-images/${imageToRemove.dbId}`, {
           method: 'DELETE'
         });
       } catch (err) {
@@ -288,8 +288,8 @@ const AdminProperties = () => {
 
     try {
       const url = editingProperty
-        ? `http://localhost:3001/api/properties/${editingProperty.id}`
-        : "http://localhost:3001/api/properties";
+        ? `${API_URL}/api/properties/${editingProperty.id}`
+        : `${API_URL}/api/properties`;
 
       const res = await fetch(url, {
         method: editingProperty ? "PUT" : "POST",
@@ -309,7 +309,7 @@ const AdminProperties = () => {
             sortOrder: uploadedImages.findIndex(i => i.key === img.key) // Keep original order
           }));
 
-          await fetch(`http://localhost:3001/api/admin/properties/${propertyId}/images`, {
+          await fetch(`${API_URL}/api/admin/properties/${propertyId}/images`, {
             method: "POST",
             headers: { "Content-Type": "application/json" },
             body: JSON.stringify({ images: imagesPayload }),
@@ -318,7 +318,7 @@ const AdminProperties = () => {
 
         // Save amenities to property
         if (selectedAmenities.length > 0 && propertyId) {
-          await fetch(`http://localhost:3001/api/admin/properties/${propertyId}/amenities`, {
+          await fetch(`${API_URL}/api/admin/properties/${propertyId}/amenities`, {
             method: "POST",
             headers: { "Content-Type": "application/json" },
             body: JSON.stringify({ amenityIds: selectedAmenities }),
@@ -341,7 +341,7 @@ const AdminProperties = () => {
     if (!confirm("Are you sure you want to delete this property?")) return;
 
     try {
-      const res = await fetch(`http://localhost:3001/api/properties/${id}`, {
+      const res = await fetch(`${API_URL}/api/properties/${id}`, {
         method: "DELETE",
       });
       if (res.ok) {
@@ -426,8 +426,8 @@ const AdminProperties = () => {
                   <td className="p-4">
                     <span
                       className={`px-2 py-1 rounded-lg text-xs font-medium ${property.purpose === "SALE"
-                          ? "bg-amber-100 text-amber-700"
-                          : "bg-blue-100 text-blue-700"
+                        ? "bg-amber-100 text-amber-700"
+                        : "bg-blue-100 text-blue-700"
                         }`}
                     >
                       {property.purpose}
@@ -707,8 +707,8 @@ const AdminProperties = () => {
                   <label
                     key={amenity.id}
                     className={`flex items-center gap-2 p-2 rounded-lg cursor-pointer border transition-colors ${selectedAmenities.includes(amenity.id)
-                        ? "bg-primary/10 border-primary"
-                        : "bg-white border-gray-200 hover:bg-gray-50"
+                      ? "bg-primary/10 border-primary"
+                      : "bg-white border-gray-200 hover:bg-gray-50"
                       }`}
                   >
                     <input

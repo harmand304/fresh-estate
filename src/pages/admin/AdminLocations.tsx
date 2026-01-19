@@ -1,5 +1,5 @@
-const API_URL = "https://fresh-estate.onrender.com";
 import { useEffect, useState } from "react";
+import { API_URL } from "@/config";
 import { Plus, Pencil, Trash2, MapPin, Globe } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -52,8 +52,8 @@ const AdminLocations = () => {
   const fetchData = () => {
     setLoading(true);
     Promise.all([
-      fetch("http://localhost:3001/api/cities").then((r) => r.json()),
-      fetch("http://localhost:3001/api/locations").then((r) => r.json()),
+      fetch(`${API_URL}/api/cities`).then((r) => r.json()),
+      fetch(`${API_URL}/api/locations`).then((r) => r.json()),
     ]).then(([citiesData, locationsData]) => {
       setCities(citiesData);
       setLocations(locationsData);
@@ -81,8 +81,8 @@ const AdminLocations = () => {
   const handleCitySubmit = async () => {
     try {
       const url = editingCity
-        ? `http://localhost:3001/api/cities/${editingCity.id}`
-        : "http://localhost:3001/api/cities";
+        ? `${API_URL}/api/cities/${editingCity.id}`
+        : `${API_URL}/api/cities`;
 
       const res = await fetch(url, {
         method: editingCity ? "PUT" : "POST",
@@ -104,7 +104,7 @@ const AdminLocations = () => {
     if (!confirm("Delete this city? All locations in this city will also be deleted.")) return;
 
     try {
-      await fetch(`http://localhost:3001/api/cities/${id}`, { method: "DELETE" });
+      await fetch(`${API_URL}/api/cities/${id}`, { method: "DELETE" });
       toast.success("City deleted!");
       fetchData();
     } catch {
@@ -128,8 +128,8 @@ const AdminLocations = () => {
   const handleLocationSubmit = async () => {
     try {
       const url = editingLocation
-        ? `http://localhost:3001/api/locations/${editingLocation.id}`
-        : "http://localhost:3001/api/locations";
+        ? `${API_URL}/api/locations/${editingLocation.id}`
+        : `${API_URL}/api/locations`;
 
       const res = await fetch(url, {
         method: editingLocation ? "PUT" : "POST",
@@ -154,7 +154,7 @@ const AdminLocations = () => {
     if (!confirm("Delete this location?")) return;
 
     try {
-      await fetch(`http://localhost:3001/api/locations/${id}`, { method: "DELETE" });
+      await fetch(`${API_URL}/api/locations/${id}`, { method: "DELETE" });
       toast.success("Location deleted!");
       fetchData();
     } catch {

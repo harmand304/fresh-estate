@@ -1,5 +1,5 @@
-const API_URL = "https://fresh-estate.onrender.com";
 import { useState } from "react";
+import { API_URL } from "@/config";
 import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
 import { Users, Award, Building2, TrendingUp, Phone, Mail, MapPin, Send } from "lucide-react";

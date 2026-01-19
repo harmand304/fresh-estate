@@ -1,5 +1,5 @@
-const API_URL = "https://fresh-estate.onrender.com";
 import { useEffect, useState } from "react";
+import { API_URL } from "@/config";
 import { useParams, Link, useNavigate } from "react-router-dom";
 import {
   MapPin, Bed, Bath, Maximize, Car, Home, Star, ChevronRight,
