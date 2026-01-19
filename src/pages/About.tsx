@@ -72,11 +72,15 @@ const About = () => {
                 <img
                   src="https://images.unsplash.com/photo-1560518883-ce09059eeffa?auto=format&fit=crop&q=80"
                   alt="Modern Office"
+                  loading="lazy"
+                  decoding="async"
                   className="rounded-2xl shadow-lg w-full h-64 object-cover"
                 />
                 <img
                   src="https://images.unsplash.com/photo-1556761175-5973dc0f32e7?auto=format&fit=crop&q=80"
                   alt="Team Meeting"
+                  loading="lazy"
+                  decoding="async"
                   className="rounded-2xl shadow-lg w-full h-48 object-cover"
                 />
               </div>
@@ -84,11 +88,15 @@ const About = () => {
                 <img
                   src="https://images.unsplash.com/photo-1577412647305-991150c7d163?auto=format&fit=crop&q=80"
                   alt="Handshake"
+                  loading="lazy"
+                  decoding="async"
                   className="rounded-2xl shadow-lg w-full h-48 object-cover"
                 />
                 <img
                   src="https://images.unsplash.com/photo-1600880292203-757bb62b4baf?auto=format&fit=crop&q=80"
                   alt="Happy Clients"
+                  loading="lazy"
+                  decoding="async"
                   className="rounded-2xl shadow-lg w-full h-64 object-cover"
                 />
               </div>
@@ -161,6 +169,8 @@ const About = () => {
                   <img
                     src={member.image}
                     alt={member.name}
+                    loading="lazy"
+                    decoding="async"
                     className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105"
                   />
                 </div>
@@ -234,6 +244,8 @@ const About = () => {
                   <img
                     src="https://images.unsplash.com/photo-1524661135-423995f22d0b?auto=format&fit=crop&q=80"
                     alt="Map Location"
+                    loading="lazy"
+                    decoding="async"
                     className="w-full h-full object-cover opacity-80 group-hover:opacity-100 transition-opacity"
                   />
                   <div className="absolute inset-0 flex items-center justify-center">
