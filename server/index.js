@@ -31,13 +31,12 @@ import { prisma, PORT } from './config/db.js';
 
 const app = express();
 
-app.use(cors({
-  origin: 'https://fresh-estate.netlify.app', // Your actual Netlify URL
-  credentials: true
-}));
+// Trust proxy - REQUIRED for Render (sits behind proxy)
+app.set('trust proxy', 1);
 
-// Middleware
+// CORS Configuration
 const allowedOrigins = [
+  'https://fresh-estate.netlify.app',
   'http://localhost:5173',
   'http://localhost:3000',
   'http://localhost:8080',
@@ -53,6 +52,7 @@ app.use(cors({
   origin: allowedOrigins,
   credentials: true
 }));
+
 app.use(express.json());
 app.use(cookieParser());
 
