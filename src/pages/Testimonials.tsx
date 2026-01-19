@@ -3,7 +3,6 @@ import { API_URL } from "@/config";
 import { useAuth } from "@/contexts/AuthContext";
 import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
-import { TestimonialSkeleton } from "@/components/TestimonialSkeleton";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -93,7 +92,7 @@ const Testimonials = () => {
     return [...Array(5)].map((_, i) => (
       <button
         key={i}
-        type="button"
+        type={interactive ? "button" : "button"}
         disabled={!interactive}
         onClick={() => interactive && setForm({ ...form, rating: i + 1 })}
         className={`focus:outline-none transition-colors ${!interactive && 'cursor-default'}`}
@@ -137,10 +136,8 @@ const Testimonials = () => {
               </div>
 
               {loading ? (
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                  {[...Array(4)].map((_, i) => (
-                    <TestimonialSkeleton key={i} />
-                  ))}
+                <div className="flex justify-center p-12">
+                  <Loader2 className="w-8 h-8 animate-spin text-emerald-600" />
                 </div>
               ) : reviews.length === 0 ? (
                 <div className="bg-white p-12 rounded-2xl shadow-sm text-center border dashed border-slate-200">

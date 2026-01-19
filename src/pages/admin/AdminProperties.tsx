@@ -3,7 +3,6 @@ import { API_URL } from "@/config";
 import { Plus, Pencil, Trash2, Search, Upload, X } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { Skeleton } from "@/components/ui/skeleton";
 import {
   Dialog,
   DialogContent,
@@ -402,16 +401,11 @@ const AdminProperties = () => {
           </thead>
           <tbody className="divide-y divide-slate-100">
             {loading ? (
-              [...Array(5)].map((_, i) => (
-                <tr key={i}>
-                  <td className="p-4"><Skeleton className="h-4 w-full" /></td>
-                  <td className="p-4"><Skeleton className="h-4 w-full" /></td>
-                  <td className="p-4"><Skeleton className="h-4 w-full" /></td>
-                  <td className="p-4"><Skeleton className="h-4 w-full" /></td>
-                  <td className="p-4"><Skeleton className="h-4 w-full" /></td>
-                  <td className="p-4 text-right"><Skeleton className="h-8 w-20 ml-auto" /></td>
-                </tr>
-              ))
+              <tr>
+                <td colSpan={6} className="p-8 text-center text-slate-500">
+                  Loading...
+                </td>
+              </tr>
             ) : filteredProperties.length === 0 ? (
               <tr>
                 <td colSpan={6} className="p-8 text-center text-slate-500">

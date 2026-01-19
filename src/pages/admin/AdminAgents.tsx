@@ -4,7 +4,6 @@ import { Plus, Pencil, Trash2, Search, Upload, Star, Award, X, Image } from "luc
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { Skeleton } from "@/components/ui/skeleton";
 import {
   Dialog,
   DialogContent,
@@ -391,15 +390,9 @@ const AdminAgents = () => {
           </thead>
           <tbody className="divide-y divide-slate-100">
             {loading ? (
-              [...Array(5)].map((_, i) => (
-                <tr key={i}>
-                  <td className="p-4"><Skeleton className="h-10 w-full" /></td>
-                  <td className="p-4"><Skeleton className="h-4 w-full" /></td>
-                  <td className="p-4"><Skeleton className="h-4 w-full" /></td>
-                  <td className="p-4"><Skeleton className="h-4 w-full" /></td>
-                  <td className="p-4 text-right"><Skeleton className="h-8 w-20 ml-auto" /></td>
-                </tr>
-              ))
+              <tr>
+                <td colSpan={5} className="p-8 text-center text-slate-500">Loading...</td>
+              </tr>
             ) : filteredAgents.length === 0 ? (
               <tr>
                 <td colSpan={5} className="p-8 text-center text-slate-500">No agents found</td>

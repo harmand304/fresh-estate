@@ -8,7 +8,6 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { toast } from 'sonner';
-import { Skeleton } from "@/components/ui/skeleton";
 import {
   Phone,
   Mail,
@@ -26,23 +25,7 @@ import {
   User,
   Send,
   Loader2,
-  Share2,
-  MessageCircle,
-  Clock,
-  Building2,
-  Heart,
-  Search,
-  CheckCircle2,
-  Quote,
-  Facebook,
-  Twitter,
-  Instagram,
-  Linkedin,
-  Map,
-  X,
-  Target,
-  Trophy,
-  Briefcase
+  Share2
 } from 'lucide-react';
 
 interface Property {
@@ -228,41 +211,8 @@ const AgentProfile = () => {
 
   if (loading) {
     return (
-      <div className="min-h-screen bg-slate-50 flex flex-col">
-        <Navbar />
-        <div className="flex-1 container mx-auto px-4 py-8">
-          <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
-            <div className="lg:col-span-1 space-y-6">
-              <div className="bg-white rounded-3xl p-6 shadow-soft space-y-6">
-                <Skeleton className="w-32 h-32 rounded-2xl mx-auto" />
-                <div className="space-y-3 text-center">
-                  <Skeleton className="h-8 w-48 mx-auto" />
-                  <Skeleton className="h-4 w-32 mx-auto" />
-                </div>
-                <div className="space-y-4 pt-6 border-t border-slate-100">
-                  <Skeleton className="h-12 w-full rounded-xl" />
-                  <Skeleton className="h-12 w-full rounded-xl" />
-                </div>
-              </div>
-            </div>
-            <div className="lg:col-span-2 space-y-8">
-              <div className="bg-white rounded-3xl p-8 shadow-soft space-y-6">
-                <Skeleton className="h-10 w-48" />
-                <div className="space-y-3">
-                  <Skeleton className="h-4 w-full" />
-                  <Skeleton className="h-4 w-full" />
-                  <Skeleton className="h-4 w-3/4" />
-                </div>
-              </div>
-              <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-                {[...Array(4)].map((_, i) => (
-                  <Skeleton key={i} className="h-24 rounded-2xl" />
-                ))}
-              </div>
-            </div>
-          </div>
-        </div>
-        <Footer />
+      <div className="min-h-screen flex items-center justify-center">
+        <div className="animate-spin rounded-lg h-12 w-12 border-t-2 border-b-2 border-primary"></div>
       </div>
     );
   }

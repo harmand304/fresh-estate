@@ -17,7 +17,6 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import { Skeleton } from "@/components/ui/skeleton";
 import { toast } from "sonner";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 
@@ -196,13 +195,9 @@ const AdminLocations = () => {
               </thead>
               <tbody className="divide-y divide-slate-100">
                 {loading ? (
-                  [...Array(3)].map((_, i) => (
-                    <tr key={i}>
-                      <td className="p-4"><Skeleton className="h-4 w-3/4" /></td>
-                      <td className="p-4"><Skeleton className="h-4 w-1/4" /></td>
-                      <td className="p-4 text-right"><Skeleton className="h-8 w-20 ml-auto" /></td>
-                    </tr>
-                  ))
+                  <tr>
+                    <td colSpan={3} className="p-8 text-center text-slate-500">Loading...</td>
+                  </tr>
                 ) : cities.length === 0 ? (
                   <tr>
                     <td colSpan={3} className="p-8 text-center text-slate-500">No cities found</td>
@@ -257,14 +252,9 @@ const AdminLocations = () => {
               </thead>
               <tbody className="divide-y divide-slate-100">
                 {loading ? (
-                  [...Array(5)].map((_, i) => (
-                    <tr key={i}>
-                      <td className="p-4"><Skeleton className="h-4 w-full" /></td>
-                      <td className="p-4"><Skeleton className="h-4 w-full" /></td>
-                      <td className="p-4"><Skeleton className="h-4 w-full" /></td>
-                      <td className="p-4 text-right"><Skeleton className="h-8 w-20 ml-auto" /></td>
-                    </tr>
-                  ))
+                  <tr>
+                    <td colSpan={4} className="p-8 text-center text-slate-500">Loading...</td>
+                  </tr>
                 ) : locations.length === 0 ? (
                   <tr>
                     <td colSpan={4} className="p-8 text-center text-slate-500">No locations found</td>

@@ -4,7 +4,6 @@ import { Plus, Pencil, Trash2, Search, Upload, X, Building2 } from "lucide-react
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
-import { Skeleton } from "@/components/ui/skeleton";
 import {
   Dialog,
   DialogContent,
@@ -280,21 +279,7 @@ const AdminProjects = () => {
 
       {/* Projects Grid */}
       {loading ? (
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-          {[...Array(6)].map((_, i) => (
-            <div key={i} className="bg-white rounded-xl shadow-sm border overflow-hidden p-0">
-              <Skeleton className="h-40 w-full" />
-              <div className="p-4 space-y-3">
-                <Skeleton className="h-6 w-3/4" />
-                <Skeleton className="h-4 w-full" />
-                <div className="pt-4 flex justify-between">
-                  <Skeleton className="h-4 w-20" />
-                  <Skeleton className="h-4 w-24" />
-                </div>
-              </div>
-            </div>
-          ))}
-        </div>
+        <div className="text-center py-12 text-slate-500">Loading...</div>
       ) : filteredProjects.length === 0 ? (
         <div className="text-center py-12">
           <Building2 className="w-16 h-16 text-slate-300 mx-auto mb-4" />
