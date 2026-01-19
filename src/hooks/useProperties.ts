@@ -22,7 +22,7 @@ export interface Property {
   shortDescription?: string;
 }
 
-const API_URL = `http://${window.location.hostname}:3001/api`;
+const API_URL = `${import.meta.env.VITE_API_URL || `http://${window.location.hostname}:3001`}/api`;
 
 export const useProperties = () => {
   const [properties, setProperties] = useState<Property[]>([]);
@@ -32,11 +32,11 @@ export const useProperties = () => {
     const loadProperties = async () => {
       try {
         const response = await fetch(`${API_URL}/properties`);
-        
+
         if (!response.ok) {
           throw new Error('Failed to fetch properties');
         }
-        
+
         const data = await response.json();
         if (Array.isArray(data)) {
           setProperties(data);
