@@ -31,7 +31,7 @@ export const useProperties = () => {
   useEffect(() => {
     const loadProperties = async () => {
       try {
-        const response = await fetch(`${API_URL}/properties`);
+        const response = await fetch(`${API_URL}/api/properties`);
 
         if (!response.ok) {
           throw new Error('Failed to fetch properties');

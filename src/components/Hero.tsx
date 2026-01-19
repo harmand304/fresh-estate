@@ -63,7 +63,7 @@ const Hero = () => {
   useEffect(() => {
     const fetchStats = async () => {
       try {
-        const response = await fetch(`${API_URL}/properties`);
+        const response = await fetch(`${API_URL}/api/properties`);
         if (response.ok) {
           const properties = await response.json();
           const propertyCount = properties.length;
