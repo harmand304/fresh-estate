@@ -28,6 +28,34 @@ import OnboardingModal from "@/components/OnboardingModal";
 
 const ITEMS_PER_PAGE = 12;
 
+interface Property {
+  id: string;
+  title: string;
+  price: number;
+  purpose: "SALE" | "RENT";
+  sqm: number;
+  bedrooms: number;
+  bathrooms: number;
+  city: string;
+  area: string;
+  type: "Apartment" | "House" | "Villa" | "Office" | "Commercial" | "Land" | "Plot";
+  image: string;
+  imageKey?: string;
+  locationId: number | null;
+  agentId: number | null;
+  propertyTypeId: number | null;
+  description?: string;
+  shortDescription?: string;
+  images?: string[];
+  amenities?: { id: number; name: string }[];
+  agent?: {
+    id: number;
+    name: string;
+    image: string;
+    phone: string;
+  };
+}
+
 const Properties = () => {
 
   const [searchParams] = useSearchParams();
@@ -37,7 +65,7 @@ const Properties = () => {
   const [favorites, setFavorites] = useState<string[]>([]);
   const [showFavoritesOnly, setShowFavoritesOnly] = useState(false);
   const [showForYou, setShowForYou] = useState(false);
-  const [personalizedProperties, setPersonalizedProperties] = useState<any[]>([]);
+  const [personalizedProperties, setPersonalizedProperties] = useState<Property[]>([]);
   const [personalizedMessage, setPersonalizedMessage] = useState<string | null>(null);
   const [loadingPersonalized, setLoadingPersonalized] = useState(false);
   const [showOnboarding, setShowOnboarding] = useState(false);
@@ -76,7 +104,7 @@ const Properties = () => {
     if (searchParams.get("location")) { newFilters.location = searchParams.get("location") || ""; hasChanges = true; }
 
     if (hasChanges) setFilters(newFilters);
-  }, [cityName, searchParams]);
+  }, [cityName, searchParams, filters]);
 
   // Use the hook with filters and pagination
   const { properties, loading, pagination } = useProperties({
@@ -413,7 +441,7 @@ const Properties = () => {
                 <PopoverContent className="w-64 p-4" align="start">
                   <div className="space-y-4">
                     <div>
-                      <h4 className="font-medium text-sm mb-2">Bedrooms</h4>
+                      <h2 className="font-medium text-sm mb-2 text-slate-700">Bedrooms</h2>
                       <div className="flex gap-1">
                         {["any", "1", "2", "3", "4", "5+"].map((bed) => (
                           <button
@@ -421,7 +449,7 @@ const Properties = () => {
                             onClick={() => setFilters({ ...filters, bedrooms: bed })}
                             className={`flex-1 py-2 text-xs rounded-lg border transition-colors ${filters.bedrooms === bed
                               ? "bg-primary text-white border-primary"
-                              : "border-gray-200 hover:bg-gray-50"
+                              : "border-gray-200 hover:bg-gray-50 text-slate-600"
                               }`}
                           >
                             {bed === "any" ? "Any" : bed}
@@ -430,7 +458,7 @@ const Properties = () => {
                       </div>
                     </div>
                     <div>
-                      <h4 className="font-medium text-sm mb-2">Bathrooms</h4>
+                      <h2 className="font-medium text-sm mb-2 text-slate-700">Bathrooms</h2>
                       <div className="flex gap-1">
                         {["any", "1", "2", "3", "4+"].map((bath) => (
                           <button
@@ -438,7 +466,7 @@ const Properties = () => {
                             onClick={() => setFilters({ ...filters, bathrooms: bath })}
                             className={`flex-1 py-2 text-xs rounded-lg border transition-colors ${filters.bathrooms === bath
                               ? "bg-primary text-white border-primary"
-                              : "border-gray-200 hover:bg-gray-50"
+                              : "border-gray-200 hover:bg-gray-50 text-slate-600"
                               }`}
                           >
                             {bath === "any" ? "Any" : bath}

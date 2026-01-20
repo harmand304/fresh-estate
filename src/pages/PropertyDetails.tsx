@@ -20,7 +20,7 @@ import { toast } from "sonner";
 
 
 // Icon mapping based on database seed values
-const amenityIcons: Record<string, any> = {
+const amenityIcons: Record<string, React.ElementType> = {
   'waves': Waves,
   'dumbbell': Dumbbell,
   'snowflake': Snowflake,
@@ -42,10 +42,36 @@ const amenityIcons: Record<string, any> = {
   'archive': Archive,
 };
 
+interface Property {
+  id: string;
+  title: string;
+  price: number;
+  purpose: "SALE" | "RENT";
+  sqm: number;
+  bedrooms: number;
+  bathrooms: number;
+  description: string;
+  city: string;
+  area: string;
+  images: string[];
+  image?: string;
+  agentId?: number;
+  agent?: string;
+  agentImage?: string;
+  agentRating?: number;
+  agentReviewCount?: number;
+  dealStatus?: string;
+  completedDealType?: string;
+  hasGarage?: boolean;
+  hasBalcony?: boolean;
+  amenities?: { name: string; icon?: string }[];
+  locationId?: number;
+}
+
 const PropertyDetails = () => {
   const { id } = useParams();
   const navigate = useNavigate();
-  const [property, setProperty] = useState<any>(null);
+  const [property, setProperty] = useState<Property | null>(null);
   const [loading, setLoading] = useState(true);
   const [initialLoading, setInitialLoading] = useState(true);
   const [showFullDescription, setShowFullDescription] = useState(false);
@@ -366,7 +392,7 @@ const PropertyDetails = () => {
                 <div className="grid grid-cols-2 md:grid-cols-3 gap-4">
                   {/* Show database amenities if available */}
                   {property.amenities && property.amenities.length > 0 ? (
-                    property.amenities.map((amenity: any, idx: number) => {
+                    property.amenities.map((amenity: { name: string; icon?: string }, idx: number) => {
                       const IconComponent = amenity.icon ? amenityIcons[amenity.icon] : null;
                       return (
                         <div key={idx} className="flex items-center gap-3 text-foreground">

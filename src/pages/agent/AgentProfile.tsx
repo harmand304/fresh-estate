@@ -35,7 +35,7 @@ const AgentProfilePage = () => {
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
   const [uploading, setUploading] = useState(false);
-  const [cities, setCities] = useState<any[]>([]);
+  const [cities, setCities] = useState<{ id: number; name: string }[]>([]);
   const [availableSpecialties, setAvailableSpecialties] = useState<string[]>([]);
   const [imagePreview, setImagePreview] = useState<string | null>(null);
   const [formData, setFormData] = useState({
@@ -61,7 +61,7 @@ const AgentProfilePage = () => {
       const res = await fetch(`${API_URL}/api/specializations`);
       const data = await res.json();
       if (Array.isArray(data)) {
-        setAvailableSpecialties(data.map((s: any) => s.name));
+        setAvailableSpecialties(data.map((s: { name: string }) => s.name));
       }
     } catch (error) {
       console.error("Failed to fetch specializations");
@@ -318,7 +318,7 @@ const AgentProfilePage = () => {
                 className="w-full h-10 px-3 rounded-md border border-slate-200"
               >
                 <option value="">Select City</option>
-                {cities.map((city: any) => (
+                {cities.map((city) => (
                   <option key={city.id} value={city.id}>{city.name}</option>
                 ))}
               </select>

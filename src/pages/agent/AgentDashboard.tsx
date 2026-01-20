@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useEffect, useState, useCallback } from "react";
 import { API_URL } from "@/config";
 import { Building2, Handshake, CheckCircle, DollarSign, TrendingUp, FileBarChart, X, Calendar } from "lucide-react";
 import { toast } from "sonner";
@@ -37,16 +37,6 @@ const AgentDashboard = () => {
   const [reportData, setReportData] = useState<ReportData | null>(null);
   const [loadingReport, setLoadingReport] = useState(false);
 
-  useEffect(() => {
-    fetchDashboard();
-  }, []);
-
-  useEffect(() => {
-    if (showReport) {
-      fetchReportData();
-    }
-  }, [showReport, reportPeriod]);
-
   const fetchDashboard = async () => {
     try {
       const res = await fetch(`${API_URL}/api/agent/dashboard`, {
@@ -79,7 +69,7 @@ const AgentDashboard = () => {
     }
   };
 
-  const fetchReportData = async () => {
+  const fetchReportData = useCallback(async () => {
     setLoadingReport(true);
     try {
       const res = await fetch(`${API_URL}/api/agent/reports?period=${reportPeriod}`, {
@@ -93,7 +83,17 @@ const AgentDashboard = () => {
     } finally {
       setLoadingReport(false);
     }
-  };
+  }, [reportPeriod]);
+
+  useEffect(() => {
+    fetchDashboard();
+  }, []);
+
+  useEffect(() => {
+    if (showReport) {
+      fetchReportData();
+    }
+  }, [showReport, reportPeriod, fetchReportData]);
 
   if (loading) {
     return (

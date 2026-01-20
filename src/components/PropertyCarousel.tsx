@@ -95,6 +95,7 @@ const PropertyCarousel = ({ properties, loading }: PropertyCarouselProps) => {
             <button
               onClick={prevSlide}
               disabled={isAnimating}
+              aria-label="Previous slide"
               className="w-10 h-10 rounded-full border border-border flex items-center justify-center hover:bg-slate-100 transition-all duration-300 hover:scale-110 disabled:opacity-50"
             >
               <ChevronLeft className="w-5 h-5 text-muted-foreground" />
@@ -102,6 +103,7 @@ const PropertyCarousel = ({ properties, loading }: PropertyCarouselProps) => {
             <button
               onClick={nextSlide}
               disabled={isAnimating}
+              aria-label="Next slide"
               className="w-10 h-10 rounded-full bg-primary text-white flex items-center justify-center hover:bg-primary/90 transition-all duration-300 hover:scale-110 disabled:opacity-50"
             >
               <ChevronRight className="w-5 h-5" />

@@ -99,7 +99,7 @@ const Agents = () => {
       const response = await fetch(`${API_URL}/api/languages`);
       if (!response.ok) throw new Error('Failed to fetch languages');
       const data = await response.json();
-      return Array.isArray(data) ? data.map((l: any) => l.name) : [];
+      return Array.isArray(data) ? data.map((l: { name: string }) => l.name) : [];
     },
     retry: 2,
   });
@@ -224,7 +224,7 @@ const Agents = () => {
             {/* Search Bar */}
             <div className="mb-6">
               <div className="relative">
-                <Search className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-slate-400" />
+                <Search className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-slate-500" />
                 <Input
                   type="text"
                   placeholder="Search by agent name, city, or zip code"
@@ -435,7 +435,7 @@ const Agents = () => {
 
                     {/* Agent Info */}
                     <div className="p-5 flex flex-col flex-1">
-                      <h3 className="text-lg font-bold text-slate-900">{agent.name}</h3>
+                      <h2 className="text-lg font-bold text-slate-900">{agent.name}</h2>
                       <p className="text-primary text-sm font-medium mt-0.5">
                         {Array.isArray(agent.specialties) ? (agent.specialties[0] || 'Real Estate Agent') : (agent.specialties || 'Real Estate Agent')}
                       </p>

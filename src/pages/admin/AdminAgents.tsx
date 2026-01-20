@@ -148,7 +148,7 @@ const AdminAgents = () => {
       .then((res) => res.json())
       .then((data) => {
         if (Array.isArray(data)) {
-          setAvailableSpecialties(data.map((s: any) => s.name));
+          setAvailableSpecialties(data.map((s: { name: string }) => s.name));
         }
       })
       .catch((err) => console.error("Error fetching specialties:", err));

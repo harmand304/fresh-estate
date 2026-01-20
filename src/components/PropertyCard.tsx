@@ -73,7 +73,7 @@ const PropertyCard = ({
           ) : null}
           {/* Placeholder for null or broken images */}
           <div className={`image-placeholder w-full h-full bg-gradient-to-br from-slate-100 to-slate-200 flex flex-col items-center justify-center ${image ? 'hidden' : ''}`}>
-            <svg xmlns="http://www.w3.org/2000/svg" className="w-8 h-8 text-slate-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            <svg xmlns="http://www.w3.org/2000/svg" className="w-8 h-8 text-slate-500" fill="none" viewBox="0 0 24 24" stroke="currentColor">
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6" />
             </svg>
           </div>
@@ -87,9 +87,10 @@ const PropertyCard = ({
           {isAuthenticated && (
             <button
               onClick={handleFavoriteClick}
+              aria-label={isFavorited ? "Remove from favorites" : "Add to favorites"}
               className={`absolute top-2 right-2 w-7 h-7 rounded-full flex items-center justify-center transition-all duration-200 ${isFavorited
-                  ? 'bg-red-500 text-white'
-                  : 'bg-white/90 text-gray-500 hover:bg-white hover:text-red-500'
+                ? 'bg-red-500 text-white'
+                : 'bg-white/90 text-gray-500 hover:bg-white hover:text-red-500'
                 }`}
             >
               <Heart className={`w-4 h-4 ${isFavorited ? 'fill-current' : ''}`} />

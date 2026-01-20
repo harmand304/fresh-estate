@@ -250,6 +250,7 @@ const Navbar = () => {
           {/* Mobile Menu Toggle */}
           <button
             onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
+            aria-label="Toggle mobile menu"
             className={`md:hidden flex items-center justify-center w-11 h-11 rounded-full transition-all duration-500 hover:scale-105 ${useDarkText
               ? "bg-slate-100/80 hover:bg-slate-200"
               : `${glassWhite} hover:bg-white/30`

@@ -78,8 +78,8 @@ export const PropertyForm = ({ initialData, onSubmit, onCancel }: PropertyFormPr
       if (!res.ok) throw new Error("Upload failed");
 
       const data = await res.json();
-      
-      const newImages = data.images.map((img: any, idx: number) => ({
+
+      const newImages = data.images.map((img: { key: string; signedUrl: string }, idx: number) => ({
         ...img,
         sortOrder: uploadedImages.length + idx,
       }));
@@ -99,7 +99,7 @@ export const PropertyForm = ({ initialData, onSubmit, onCancel }: PropertyFormPr
     setUploadedImages(uploadedImages.filter((_, i) => i !== index));
   };
 
-  const handleFormSubmit = (data: any) => {
+  const handleFormSubmit = (data: Omit<Property, "id"> & { description?: string, shortDescription?: string }) => {
     // Include gallery images in submission
     onSubmit({
       ...data,
@@ -115,7 +115,7 @@ export const PropertyForm = ({ initialData, onSubmit, onCancel }: PropertyFormPr
       {/* Image Upload Section */}
       <div className="space-y-3">
         <Label>Property Images (up to 10)</Label>
-        
+
         {/* Upload Button */}
         <div className="flex items-center gap-4">
           <input
@@ -179,7 +179,7 @@ export const PropertyForm = ({ initialData, onSubmit, onCancel }: PropertyFormPr
 
         {/* Empty State */}
         {uploadedImages.length === 0 && (
-          <div 
+          <div
             onClick={() => fileInputRef.current?.click()}
             className="border-2 border-dashed border-gray-200 rounded-lg p-8 text-center cursor-pointer hover:border-primary/50 transition-colors"
           >
@@ -192,9 +192,9 @@ export const PropertyForm = ({ initialData, onSubmit, onCancel }: PropertyFormPr
       {/* Description */}
       <div className="space-y-2">
         <Label htmlFor="description">Description / Bio</Label>
-        <Textarea 
-          id="description" 
-          {...register("description")} 
+        <Textarea
+          id="description"
+          {...register("description")}
           placeholder="Describe the property..."
           className="min-h-[100px]"
         />
@@ -202,9 +202,9 @@ export const PropertyForm = ({ initialData, onSubmit, onCancel }: PropertyFormPr
 
       <div className="space-y-2">
         <Label htmlFor="shortDescription">Short Description (for Carousel)</Label>
-        <Input 
-          id="shortDescription" 
-          {...register("shortDescription")} 
+        <Input
+          id="shortDescription"
+          {...register("shortDescription")}
           placeholder="Brief summary (max 255 chars)..."
           maxLength={255}
         />
@@ -218,7 +218,7 @@ export const PropertyForm = ({ initialData, onSubmit, onCancel }: PropertyFormPr
 
         <div className="space-y-2">
           <Label>Type</Label>
-          <Select value={type} onValueChange={(val) => setValue("type", val as any)}>
+          <Select value={type} onValueChange={(val) => setValue("type", val as Property["type"])}>
             <SelectTrigger>
               <SelectValue />
             </SelectTrigger>
@@ -235,7 +235,7 @@ export const PropertyForm = ({ initialData, onSubmit, onCancel }: PropertyFormPr
 
         <div className="space-y-2">
           <Label>Purpose</Label>
-          <Select value={purpose} onValueChange={(val) => setValue("purpose", val as any)}>
+          <Select value={purpose} onValueChange={(val) => setValue("purpose", val as Property["purpose"])}>
             <SelectTrigger>
               <SelectValue />
             </SelectTrigger>
@@ -286,7 +286,7 @@ export const PropertyForm = ({ initialData, onSubmit, onCancel }: PropertyFormPr
           />
           <Label htmlFor="garage">Has Garage</Label>
         </div>
-        
+
         <div className="flex items-center space-x-2">
           <Switch
             id="balcony"

@@ -36,6 +36,8 @@ interface Property {
   locationId: number | null;
   agentId: number | null;
   propertyTypeId: number | null;
+  description?: string;
+  shortDescription?: string;
 }
 
 interface FormData {
@@ -61,10 +63,10 @@ const AdminProperties = () => {
   const [search, setSearch] = useState("");
   const [isDialogOpen, setIsDialogOpen] = useState(false);
   const [editingProperty, setEditingProperty] = useState<Property | null>(null);
-  const [locations, setLocations] = useState<any[]>([]);
-  const [agents, setAgents] = useState<any[]>([]);
-  const [propertyTypes, setPropertyTypes] = useState<any[]>([]);
-  const [amenities, setAmenities] = useState<any[]>([]);
+  const [locations, setLocations] = useState<{ id: number; name: string; cityName: string }[]>([]);
+  const [agents, setAgents] = useState<{ id: number; name: string }[]>([]);
+  const [propertyTypes, setPropertyTypes] = useState<{ id: number; name: string }[]>([]);
+  const [amenities, setAmenities] = useState<{ id: number; name: string }[]>([]);
   const [selectedAmenities, setSelectedAmenities] = useState<number[]>([]);
   const [uploading, setUploading] = useState(false);
   const [uploadedImages, setUploadedImages] = useState<{ key: string; signedUrl: string; dbId?: number }[]>([]);
@@ -148,8 +150,8 @@ const AdminProperties = () => {
     setEditingProperty(property);
     setFormData({
       title: property.title,
-      description: (property as any).description || "",
-      shortDescription: (property as any).shortDescription || "",
+      description: property.description || "",
+      shortDescription: property.shortDescription || "",
       price: property.price.toString(),
       purpose: property.purpose,
       sqm: property.sqm?.toString() || "",
@@ -193,7 +195,7 @@ const AdminProperties = () => {
 
       // Load amenities
       if (data.amenities && data.amenities.length > 0) {
-        setSelectedAmenities(data.amenities.map((a: any) => a.id));
+        setSelectedAmenities(data.amenities.map((a: { id: number }) => a.id));
       } else {
         setSelectedAmenities([]);
       }
