@@ -26,11 +26,10 @@ import { ChevronLeft, ChevronRight, Search, ChevronDown, SlidersHorizontal, Layo
 import { toast } from "sonner";
 import OnboardingModal from "@/components/OnboardingModal";
 
-const ITEMS_PER_PAGE = 8;
+const ITEMS_PER_PAGE = 12;
 
 const Properties = () => {
-  const { properties, loading } = useProperties();
-  const { isAuthenticated } = useAuth();
+
   const [searchParams] = useSearchParams();
   const { cityName } = useParams();
   const [viewMode, setViewMode] = useState<"grid" | "list">("grid");
@@ -42,6 +41,51 @@ const Properties = () => {
   const [personalizedMessage, setPersonalizedMessage] = useState<string | null>(null);
   const [loadingPersonalized, setLoadingPersonalized] = useState(false);
   const [showOnboarding, setShowOnboarding] = useState(false);
+
+  // Filter States
+  const [currentPage, setCurrentPage] = useState(1);
+  const [filters, setFilters] = useState({
+    city: "all",
+    purpose: "all",
+    type: "all",
+    bedrooms: "any",
+    bathrooms: "any",
+    minPrice: "",
+    maxPrice: "",
+    minArea: "",
+    maxArea: "",
+    location: "",
+  });
+
+  // Initialize filters from URL params
+  useEffect(() => {
+    const newFilters = { ...filters };
+    let hasChanges = false;
+
+    const cityParam = cityName || searchParams.get("city");
+    if (cityParam && cityParam !== filters.city) { newFilters.city = cityParam; hasChanges = true; }
+
+    if (searchParams.get("purpose")) { newFilters.purpose = searchParams.get("purpose") || "all"; hasChanges = true; }
+    if (searchParams.get("type")) { newFilters.type = searchParams.get("type") || "all"; hasChanges = true; }
+    if (searchParams.get("bedrooms")) { newFilters.bedrooms = searchParams.get("bedrooms") || "any"; hasChanges = true; }
+    if (searchParams.get("bathrooms")) { newFilters.bathrooms = searchParams.get("bathrooms") || "any"; hasChanges = true; }
+    if (searchParams.get("minPrice")) { newFilters.minPrice = searchParams.get("minPrice") || ""; hasChanges = true; }
+    if (searchParams.get("maxPrice")) { newFilters.maxPrice = searchParams.get("maxPrice") || ""; hasChanges = true; }
+    if (searchParams.get("minArea")) { newFilters.minArea = searchParams.get("minArea") || ""; hasChanges = true; }
+    if (searchParams.get("maxArea")) { newFilters.maxArea = searchParams.get("maxArea") || ""; hasChanges = true; }
+    if (searchParams.get("location")) { newFilters.location = searchParams.get("location") || ""; hasChanges = true; }
+
+    if (hasChanges) setFilters(newFilters);
+  }, [cityName, searchParams]);
+
+  // Use the hook with filters and pagination
+  const { properties, loading, pagination } = useProperties({
+    ...filters,
+    page: currentPage,
+    limit: ITEMS_PER_PAGE
+  });
+
+  const { isAuthenticated } = useAuth();
 
   // Initial loading delay to let images load
   useEffect(() => {
@@ -117,115 +161,10 @@ const Properties = () => {
     }
   };
 
-  // Filter States
-  const [filters, setFilters] = useState({
-    city: "all",
-    purpose: "all",
-    type: "all",
-    bedrooms: "any",
-    bathrooms: "any",
-    minPrice: "",
-    maxPrice: "",
-    minArea: "",
-    maxArea: "",
-    location: "",
-  });
-
-  const [filteredProperties, setFilteredProperties] = useState(properties);
-  const [currentPage, setCurrentPage] = useState(1);
-
-  // Initialize filters from URL params
+  // Reset page when filters change
   useEffect(() => {
-    setFilters(prev => ({
-      ...prev,
-      city: cityName || searchParams.get("city") || "all",
-      purpose: searchParams.get("purpose") || "all",
-      type: searchParams.get("type") || "all",
-      bedrooms: searchParams.get("bedrooms") || "any",
-      bathrooms: searchParams.get("bathrooms") || "any",
-      minPrice: searchParams.get("minPrice") || "",
-      maxPrice: searchParams.get("maxPrice") || "",
-      minArea: searchParams.get("minArea") || "",
-      maxArea: searchParams.get("maxArea") || "",
-      location: searchParams.get("location") || "",
-    }));
-  }, [cityName, searchParams]);
-
-  // Main Filtering Logic
-  const handleFilter = () => {
-    if (!Array.isArray(properties)) {
-      console.warn("Properties is not an array:", properties);
-      setFilteredProperties([]);
-      return;
-    }
-
-    let result = [...properties].filter(p => p && typeof p === 'object'); // Filter out null/undefined
-
-    if (filters.location.trim()) {
-      const searchTerm = filters.location.toLowerCase().trim();
-      result = result.filter(p =>
-        (p.city && p.city.toLowerCase().includes(searchTerm)) ||
-        (p.area && p.area.toLowerCase().includes(searchTerm)) ||
-        (p.title && p.title.toLowerCase().includes(searchTerm))
-      );
-    }
-
-    if (filters.city !== "all") {
-      result = result.filter(p => p.city && p.city.toLowerCase() === filters.city.toLowerCase());
-    }
-
-    if (filters.purpose !== "all") {
-      result = result.filter(p => p.purpose === filters.purpose);
-    }
-
-    if (filters.type !== "all") {
-      result = result.filter(p => p.type === filters.type);
-    }
-
-    if (filters.bedrooms !== "any") {
-      if (filters.bedrooms === "5+") {
-        result = result.filter(p => (p.bedrooms || 0) >= 5);
-      } else {
-        result = result.filter(p => p.bedrooms === parseInt(filters.bedrooms));
-      }
-    }
-
-    if (filters.bathrooms !== "any") {
-      if (filters.bathrooms === "4+") {
-        result = result.filter(p => (p.bathrooms || 0) >= 4);
-      } else {
-        result = result.filter(p => p.bathrooms === parseInt(filters.bathrooms));
-      }
-    }
-
-    if (filters.minPrice) {
-      result = result.filter(p => (p.price || 0) >= parseInt(filters.minPrice));
-    }
-    if (filters.maxPrice) {
-      result = result.filter(p => (p.price || 0) <= parseInt(filters.maxPrice));
-    }
-
-    if (filters.minArea) {
-      result = result.filter(p => (p.sqm || 0) >= parseInt(filters.minArea));
-    }
-    if (filters.maxArea) {
-      result = result.filter(p => (p.sqm || 0) <= parseInt(filters.maxArea));
-    }
-
-    setFilteredProperties(result);
     setCurrentPage(1);
-  };
-
-  useEffect(() => {
-    if (properties.length > 0) {
-      handleFilter();
-    }
-  }, [properties, filters.city, filters.purpose, filters.type, filters.bedrooms, filters.bathrooms, filters.minPrice, filters.maxPrice, filters.minArea, filters.maxArea, filters.location]);
-
-  // Pagination Logic
-  const totalPages = Math.ceil(filteredProperties.length / ITEMS_PER_PAGE);
-  const startIndex = (currentPage - 1) * ITEMS_PER_PAGE;
-  const currentProperties = filteredProperties.slice(startIndex, startIndex + ITEMS_PER_PAGE);
+  }, [filters]);
 
   const scrollToTop = () => {
     window.scrollTo({ top: 0, behavior: "smooth" });
@@ -242,6 +181,7 @@ const Properties = () => {
 
   // Generate page numbers for pagination
   const getPageNumbers = () => {
+    const { totalPages } = pagination || { totalPages: 1 };
     const pages: (number | string)[] = [];
     if (totalPages <= 7) {
       for (let i = 1; i <= totalPages; i++) pages.push(i);
@@ -311,7 +251,7 @@ const Properties = () => {
                 Find your dream home in <span className="text-primary">{displayCity}</span>
               </h1>
               <p className="text-muted-foreground text-sm">
-                Showing {filteredProperties.length} homes {purposeText}
+                Showing {pagination?.total || 0} homes {purposeText}
               </p>
             </div>
 
@@ -328,7 +268,6 @@ const Properties = () => {
                 />
               </div>
               <Button
-                onClick={handleFilter}
                 className="h-11 w-11 rounded-lg bg-primary hover:bg-primary/90 shadow-md shrink-0"
               >
                 <ChevronRight className="w-5 h-5" />
@@ -680,7 +619,7 @@ const Properties = () => {
           ) : (
             <>
               <div className={`grid gap-4 ${viewMode === "grid" ? "grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4" : "grid-cols-1"}`}>
-                {currentProperties
+                {properties
                   .filter(p => !showFavoritesOnly || favorites.includes(p.id))
                   .map((property) => (
                     <PropertyCard
@@ -692,7 +631,7 @@ const Properties = () => {
                   ))}
               </div>
 
-              {filteredProperties.length === 0 && (
+              {properties.length === 0 && (
                 <div className="text-center py-20 bg-white rounded-2xl">
                   <h3 className="text-xl font-medium text-muted-foreground">
                     No properties found matching your criteria.
@@ -702,7 +641,7 @@ const Properties = () => {
               )}
 
               {/* Pagination */}
-              {totalPages > 1 && (
+              {(pagination?.totalPages || 1) > 1 && (
                 <div className="mt-12 flex items-center justify-center gap-1">
                   <Button
                     variant="outline"
@@ -736,8 +675,8 @@ const Properties = () => {
                   <Button
                     variant="outline"
                     size="icon"
-                    onClick={() => handlePageChange(Math.min(totalPages, currentPage + 1))}
-                    disabled={currentPage === totalPages}
+                    onClick={() => handlePageChange(Math.min(pagination?.totalPages || 1, currentPage + 1))}
+                    disabled={currentPage === (pagination?.totalPages || 1)}
                     className="rounded-lg w-10 h-10"
                   >
                     <ChevronRight className="w-4 h-4" />

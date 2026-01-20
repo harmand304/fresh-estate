@@ -5,50 +5,133 @@ import { getSignedImageUrl } from '../utils/imageUtils.js';
 
 const router = express.Router();
 
-// GET all properties
+// GET all properties with filtering and pagination
 router.get('/', async (req, res) => {
   try {
-    const properties = await prisma.property.findMany({
-      where: {
-        deals: {
-          none: { status: 'COMPLETED' }
+    const page = parseInt(req.query.page) || 1;
+    const limit = parseInt(req.query.limit) || 12;
+    const skip = (page - 1) * limit;
+
+    // Build filter conditions
+    const where = {
+      deals: {
+        none: { status: 'COMPLETED' }
+      }
+    };
+
+    if (req.query.city && req.query.city !== 'all') {
+      where.location = {
+        city: {
+          name: { equals: req.query.city, mode: 'insensitive' }
         }
+      };
+    }
+
+    if (req.query.purpose && req.query.purpose !== 'all') {
+      where.purpose = req.query.purpose;
+    }
+
+    if (req.query.type && req.query.type !== 'all') {
+      where.propertyType = {
+        name: { equals: req.query.type, mode: 'insensitive' }
+      };
+    }
+
+    if (req.query.bedrooms && req.query.bedrooms !== 'any') {
+      if (req.query.bedrooms === '5+') {
+        where.bedrooms = { gte: 5 };
+      } else {
+        where.bedrooms = parseInt(req.query.bedrooms);
+      }
+    }
+
+    if (req.query.bathrooms && req.query.bathrooms !== 'any') {
+      if (req.query.bathrooms === '4+') {
+        where.bathrooms = { gte: 4 };
+      } else {
+        where.bathrooms = parseInt(req.query.bathrooms);
+      }
+    }
+
+    if (req.query.minPrice) {
+      where.price = { ...where.price, gte: parseFloat(req.query.minPrice) };
+    }
+    if (req.query.maxPrice) {
+      where.price = { ...where.price, lte: parseFloat(req.query.maxPrice) };
+    }
+
+    if (req.query.minArea) {
+      where.areaSqm = { ...where.areaSqm, gte: parseFloat(req.query.minArea) };
+    }
+    if (req.query.maxArea) {
+      where.areaSqm = { ...where.areaSqm, lte: parseFloat(req.query.maxArea) };
+    }
+
+    if (req.query.location) {
+      const searchTerm = req.query.location.toLowerCase();
+      where.OR = [
+        { title: { contains: searchTerm, mode: 'insensitive' } },
+        { location: { name: { contains: searchTerm, mode: 'insensitive' } } },
+        { location: { city: { name: { contains: searchTerm, mode: 'insensitive' } } } }
+      ];
+    }
+
+    // Get total count for pagination
+    const total = await prisma.property.count({ where });
+
+    // Fetch properties with specific fields only
+    const properties = await prisma.property.findMany({
+      where,
+      select: {
+        id: true,
+        title: true,
+        price: true,
+        purpose: true,
+        areaSqm: true,
+        bedrooms: true,
+        bathrooms: true,
+        imageUrl: true,
+        hasGarage: true,
+        hasBalcony: true,
+        location: {
+          select: {
+            name: true,
+            city: { select: { name: true } }
+          }
+        },
+        propertyType: { select: { name: true } }
       },
-      include: {
-        location: { include: { city: true } },
-        agent: true,
-        propertyType: true
-      },
-      orderBy: { createdAt: 'desc' }
+      orderBy: { createdAt: 'desc' },
+      skip,
+      take: limit
     });
 
-    // Generate signed URLs for all images
+    // Generate signed URLs for images
     const result = await Promise.all(properties.map(async (p) => ({
       id: p.id,
-      projectName: p.projectName,
       title: p.title,
       price: Number(p.price),
       purpose: p.purpose,
       sqm: p.areaSqm,
-      shortDescription: p.shortDescription || '',
       bedrooms: p.bedrooms,
-      rooms: p.rooms,
       bathrooms: p.bathrooms,
       hasGarage: p.hasGarage,
       hasBalcony: p.hasBalcony,
       image: await getSignedImageUrl(p.imageUrl),
-      imageKey: p.imageUrl,
-      locationId: p.locationId,
-      agentId: p.agentId,
-      propertyTypeId: p.propertyTypeId,
       area: p.location?.name || '',
       city: p.location?.city?.name || '',
-      agent: p.agent?.name || '',
-      agentPhone: p.agent?.phone || '',
       type: p.propertyType?.name || 'House'
     })));
 
-    res.json(result);
+    res.json({
+      properties: result,
+      pagination: {
+        page,
+        limit,
+        total,
+        totalPages: Math.ceil(total / limit)
+      }
+    });
   } catch (error) {
     console.error('Error fetching properties:', error);
     res.status(500).json({ error: 'Failed to fetch properties' });
@@ -59,7 +142,7 @@ router.get('/', async (req, res) => {
 router.get('/personalized', authenticateToken, async (req, res) => {
   try {
     const userId = req.user.id;
-    
+
     const preference = await prisma.userPreference.findUnique({
       where: { userId }
     });
@@ -125,7 +208,7 @@ router.get('/personalized', authenticateToken, async (req, res) => {
         orderBy: { createdAt: 'desc' },
         take: 20
       });
-      
+
       if (properties.length > 0) isNearMatch = true;
     }
 
@@ -149,14 +232,14 @@ router.get('/personalized', authenticateToken, async (req, res) => {
         hasBalcony: p.hasBalcony,
         image,
         createdAt: p.createdAt,
-        city: p.location?.city?.name || '', 
+        city: p.location?.city?.name || '',
         area: p.location?.name || '',
         type: p.propertyType?.name || 'House'
       };
     }));
 
-    res.json({ 
-      properties: propertiesWithImages, 
+    res.json({
+      properties: propertiesWithImages,
       isNearMatch,
       message: isNearMatch ? 'No exact matches found, but here are some options within your price range.' : null
     });
@@ -178,9 +261,9 @@ router.get('/:id', async (req, res) => {
         images: { orderBy: { sortOrder: 'asc' } },
         amenities: { include: { amenity: true } },
         deals: {
-            where: { status: 'COMPLETED' },
-            select: { dealType: true },
-            take: 1
+          where: { status: 'COMPLETED' },
+          select: { dealType: true },
+          take: 1
         }
       }
     });
@@ -193,7 +276,7 @@ router.get('/:id', async (req, res) => {
     const validGalleryImages = galleryImageUrls.filter(url => url);
 
     const mainImageUrl = await getSignedImageUrl(property.imageUrl);
-    
+
     let allImages = [];
     if (mainImageUrl) allImages.push(mainImageUrl);
     for (const url of validGalleryImages) {
@@ -202,8 +285,8 @@ router.get('/:id', async (req, res) => {
 
     let agentImageUrl = null;
     if (property.agent?.image) {
-      agentImageUrl = property.agent.image.startsWith('http') 
-        ? property.agent.image 
+      agentImageUrl = property.agent.image.startsWith('http')
+        ? property.agent.image
         : await getSignedImageUrl(property.agent.image);
     }
 
@@ -265,7 +348,7 @@ router.get('/:id/amenities', async (req, res) => {
 router.post('/', async (req, res) => {
   try {
     const { title, description, shortDescription, price, purpose, sqm, bedrooms, rooms, bathrooms, hasGarage, hasBalcony, image, locationId, agentId, propertyTypeId, projectName } = req.body;
-    
+
     const property = await prisma.property.create({
       data: {
         title,
@@ -297,7 +380,7 @@ router.post('/', async (req, res) => {
 router.put('/:id', async (req, res) => {
   try {
     const { title, description, shortDescription, price, purpose, sqm, bedrooms, rooms, bathrooms, hasGarage, hasBalcony, image, locationId, agentId, propertyTypeId, projectName } = req.body;
-    
+
     const property = await prisma.property.update({
       where: { id: req.params.id },
       data: {

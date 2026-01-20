@@ -24,28 +24,59 @@ export interface Property {
 
 import { API_URL } from "@/config";
 
-const fetchProperties = async (): Promise<Property[]> => {
-  const response = await fetch(`${API_URL}/api/properties`);
+
+export interface PropertyFilters {
+  city?: string;
+  purpose?: string;
+  type?: string;
+  bedrooms?: string;
+  bathrooms?: string;
+  minPrice?: string;
+  maxPrice?: string;
+  minArea?: string;
+  maxArea?: string;
+  location?: string;
+  page?: number;
+  limit?: number;
+}
+
+export interface PaginationMeta {
+  page: number;
+  limit: number;
+  total: number;
+  totalPages: number;
+}
+
+export interface PropertiesResponse {
+  properties: Property[];
+  pagination: PaginationMeta;
+}
+
+const fetchProperties = async (filters: PropertyFilters = {}): Promise<PropertiesResponse> => {
+  const params = new URLSearchParams();
+
+  Object.entries(filters).forEach(([key, value]) => {
+    if (value !== undefined && value !== null && value !== '') {
+      params.append(key, value.toString());
+    }
+  });
+
+  const response = await fetch(`${API_URL}/api/properties?${params.toString()}`);
 
   if (!response.ok) {
     throw new Error('Failed to fetch properties');
   }
 
   const data = await response.json();
-
-  if (Array.isArray(data)) {
-    return data;
-  } else {
-    console.warn("Properties data is not an array:", data);
-    return [];
-  }
+  return data;
 };
 
-export const useProperties = () => {
-  const { data: properties = [], isLoading, error } = useQuery({
-    queryKey: ['properties'],
-    queryFn: fetchProperties,
-    retry: 2,
+export const useProperties = (filters: PropertyFilters = {}) => {
+  const { data, isLoading, error } = useQuery({
+    queryKey: ['properties', filters],
+    queryFn: () => fetchProperties(filters),
+    retry: 1,
+    placeholderData: (previousData) => previousData, // Keep data while fetching new page
   });
 
   // Show error toast if fetch fails
@@ -55,7 +86,8 @@ export const useProperties = () => {
   }
 
   return {
-    properties,
+    properties: data?.properties || [],
+    pagination: data?.pagination || { page: 1, limit: 12, total: 0, totalPages: 0 },
     loading: isLoading,
   };
 };

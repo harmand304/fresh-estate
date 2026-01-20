@@ -89,7 +89,7 @@ const PropertyCarousel = ({ properties, loading }: PropertyCarouselProps) => {
               Featured Highlights
             </h2>
           </div>
-          
+
           {/* Navigation Arrows */}
           <div className="flex items-center gap-2">
             <button
@@ -118,42 +118,42 @@ const PropertyCarousel = ({ properties, loading }: PropertyCarouselProps) => {
           <div className="flex gap-6 overflow-hidden">
             {/* Main Featured Card */}
             <div className="flex-[2] min-w-0">
-              <div 
-                className={`relative h-[280px] md:h-[350px] rounded-3xl overflow-hidden group transition-all duration-500 ease-out ${
-                  isAnimating 
-                    ? slideDirection === "next" 
-                      ? "opacity-0 translate-x-8 scale-95" 
-                      : "opacity-0 -translate-x-8 scale-95"
-                    : "opacity-100 translate-x-0 scale-100"
-                }`}
+              <div
+                className={`relative h-[280px] md:h-[350px] rounded-3xl overflow-hidden group transition-all duration-500 ease-out ${isAnimating
+                  ? slideDirection === "next"
+                    ? "opacity-0 translate-x-8 scale-95"
+                    : "opacity-0 -translate-x-8 scale-95"
+                  : "opacity-100 translate-x-0 scale-100"
+                  }`}
               >
                 <img
                   src={currentProperty.image}
                   alt={currentProperty.title}
+                  loading="lazy"
+                  decoding="async"
                   className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-105"
                 />
                 {/* Gradient Overlay */}
                 <div className="absolute inset-0 bg-gradient-to-t from-black/70 via-black/20 to-transparent" />
-                
+
                 {/* Content */}
-                <div className={`absolute bottom-0 left-0 right-0 p-6 md:p-8 transition-all duration-500 delay-100 ${
-                  isAnimating ? "opacity-0 translate-y-4" : "opacity-100 translate-y-0"
-                }`}>
+                <div className={`absolute bottom-0 left-0 right-0 p-6 md:p-8 transition-all duration-500 delay-100 ${isAnimating ? "opacity-0 translate-y-4" : "opacity-100 translate-y-0"
+                  }`}>
                   {/* Badge */}
                   <span className="inline-block px-3 py-1 bg-primary text-white text-xs font-bold uppercase rounded-lg mb-4 animate-fade-up">
                     Exclusive
                   </span>
-                  
+
                   {/* Title */}
                   <h3 className="text-2xl md:text-3xl font-display font-bold text-white mb-3">
                     {currentProperty.title}
                   </h3>
-                  
+
                   {/* Description */}
                   <p className="text-white/80 text-sm mb-4 max-w-md line-clamp-2">
-                     {currentProperty.shortDescription || currentProperty.description || "An architectural triumph blending luxury with modern living. Features premium amenities and stunning views."}
+                    {currentProperty.shortDescription || currentProperty.description || "An architectural triumph blending luxury with modern living. Features premium amenities and stunning views."}
                   </p>
-                  
+
                   {/* View Property Button */}
                   <Link
                     to={`/property/${currentProperty.id}`}
@@ -168,29 +168,29 @@ const PropertyCarousel = ({ properties, loading }: PropertyCarouselProps) => {
 
             {/* Next Property Preview */}
             <div className="hidden lg:block flex-1 min-w-0">
-              <div 
-                className={`relative h-[280px] md:h-[350px] rounded-3xl overflow-hidden group cursor-pointer transition-all duration-500 ease-out delay-150 ${
-                  isAnimating 
-                    ? "opacity-0 translate-x-12 scale-95" 
-                    : "opacity-100 translate-x-0 scale-100"
-                }`}
+              <div
+                className={`relative h-[280px] md:h-[350px] rounded-3xl overflow-hidden group cursor-pointer transition-all duration-500 ease-out delay-150 ${isAnimating
+                  ? "opacity-0 translate-x-12 scale-95"
+                  : "opacity-100 translate-x-0 scale-100"
+                  }`}
                 onClick={nextSlide}
               >
                 <img
                   src={nextProperty.image}
                   alt={nextProperty.title}
+                  loading="lazy"
+                  decoding="async"
                   className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-105"
                 />
                 {/* Subtle Overlay */}
                 <div className="absolute inset-0 bg-gradient-to-t from-black/40 to-transparent" />
-                
+
                 {/* Hover Overlay */}
                 <div className="absolute inset-0 bg-primary/0 group-hover:bg-primary/10 transition-colors duration-300" />
-                
+
                 {/* Minimal Content */}
-                <div className={`absolute bottom-0 left-0 right-0 p-6 transition-all duration-500 delay-200 ${
-                  isAnimating ? "opacity-0 translate-y-4" : "opacity-100 translate-y-0"
-                }`}>
+                <div className={`absolute bottom-0 left-0 right-0 p-6 transition-all duration-500 delay-200 ${isAnimating ? "opacity-0 translate-y-4" : "opacity-100 translate-y-0"
+                  }`}>
                   <span className="inline-block px-3 py-1 bg-primary text-white text-xs font-bold uppercase rounded-lg mb-3">
                     {nextProperty.purpose === "SALE" ? "For Sale" : "For Rent"}
                   </span>
@@ -198,7 +198,7 @@ const PropertyCarousel = ({ properties, loading }: PropertyCarouselProps) => {
                     {nextProperty.title}
                   </h4>
                 </div>
-                
+
                 {/* Click Indicator */}
                 <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-16 h-16 rounded-full bg-white/20 backdrop-blur-sm flex items-center justify-center opacity-0 group-hover:opacity-100 transition-all duration-300 scale-75 group-hover:scale-100">
                   <ChevronRight className="w-8 h-8 text-white" />
@@ -213,11 +213,10 @@ const PropertyCarousel = ({ properties, loading }: PropertyCarouselProps) => {
               <button
                 key={index}
                 onClick={() => goToSlide(index)}
-                className={`h-2 rounded-full transition-all duration-500 ease-out ${
-                  currentSlide === index
-                    ? "bg-primary w-8"
-                    : "bg-slate-300 w-2 hover:bg-slate-400 hover:w-4"
-                }`}
+                className={`h-2 rounded-full transition-all duration-500 ease-out ${currentSlide === index
+                  ? "bg-primary w-8"
+                  : "bg-slate-300 w-2 hover:bg-slate-400 hover:w-4"
+                  }`}
               />
             ))}
           </div>

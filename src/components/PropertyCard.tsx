@@ -36,7 +36,7 @@ const PropertyCard = ({
   onToggleFavorite,
 }: PropertyCardProps) => {
   const { isAuthenticated } = useAuth();
-  
+
   const formattedPrice = new Intl.NumberFormat("en-US", {
     style: "currency",
     currency: "USD",
@@ -60,6 +60,8 @@ const PropertyCard = ({
             <img
               src={image}
               alt={title}
+              loading="lazy"
+              decoding="async"
               className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105"
               onError={(e) => {
                 const target = e.target as HTMLImageElement;
@@ -75,7 +77,7 @@ const PropertyCard = ({
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6" />
             </svg>
           </div>
-          
+
           {/* NEW Badge */}
           <span className="absolute top-2 left-2 px-2 py-0.5 text-xs font-bold rounded-md bg-primary text-white uppercase">
             {purpose === "SALE" ? "NEW" : "RENT"}
@@ -85,11 +87,10 @@ const PropertyCard = ({
           {isAuthenticated && (
             <button
               onClick={handleFavoriteClick}
-              className={`absolute top-2 right-2 w-7 h-7 rounded-full flex items-center justify-center transition-all duration-200 ${
-                isFavorited 
-                  ? 'bg-red-500 text-white' 
+              className={`absolute top-2 right-2 w-7 h-7 rounded-full flex items-center justify-center transition-all duration-200 ${isFavorited
+                  ? 'bg-red-500 text-white'
                   : 'bg-white/90 text-gray-500 hover:bg-white hover:text-red-500'
-              }`}
+                }`}
             >
               <Heart className={`w-4 h-4 ${isFavorited ? 'fill-current' : ''}`} />
             </button>

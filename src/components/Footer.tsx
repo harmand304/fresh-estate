@@ -10,7 +10,15 @@ const Footer = () => {
           {/* Brand */}
           <div>
             <Link to="/" className="inline-block mb-4">
-              <img src={logo} alt="Mood Real Estate" className="h-16 w-auto object-contain brightness-0 invert" />
+              <img
+                src={logo}
+                alt="Mood Real Estate"
+                className="h-16 w-auto object-contain brightness-0 invert"
+                loading="lazy"
+                decoding="async"
+                width={150}
+                height={64}
+              />
             </Link>
             <p className="text-primary-foreground/70 mb-6">
               Your trusted partner for finding the perfect property in Kurdistan.
