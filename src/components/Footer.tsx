@@ -1,6 +1,6 @@
 import { Link } from "react-router-dom";
 import { MapPin, Phone, Mail, Facebook, Instagram, Twitter } from "lucide-react";
-import logo from "@/assets/Logo - Edited.png";
+import logo from "@/assets/Logo - Edited.webp";
 
 const Footer = () => {
   return (
@@ -10,7 +10,7 @@ const Footer = () => {
           {/* Brand */}
           <div>
             <Link to="/" className="inline-block mb-4">
-               <img src={logo} alt="Mood Real Estate" className="h-16 w-auto object-contain brightness-0 invert" />
+              <img src={logo} alt="Mood Real Estate" className="h-16 w-auto object-contain brightness-0 invert" />
             </Link>
             <p className="text-primary-foreground/70 mb-6">
               Your trusted partner for finding the perfect property in Kurdistan.
@@ -25,7 +25,7 @@ const Footer = () => {
                 </a>
                 <span className="tooltip">Facebook</span>
               </div>
-              
+
               {/* Instagram */}
               <div className="icon-content">
                 <a href="#" data-social="instagram" aria-label="Instagram">
@@ -34,7 +34,7 @@ const Footer = () => {
                 </a>
                 <span className="tooltip">Instagram</span>
               </div>
-              
+
               {/* Twitter */}
               <div className="icon-content">
                 <a href="#" data-social="twitter" aria-label="Twitter">

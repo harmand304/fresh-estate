@@ -1,10 +1,10 @@
 import { useState, useEffect, useRef } from "react";
 import { Link, useLocation, useNavigate } from "react-router-dom";
-import { 
-  Home, 
-  Building2, 
-  Users, 
-  Phone, 
+import {
+  Home,
+  Building2,
+  Users,
+  Phone,
   Settings,
   Search,
   User,
@@ -16,7 +16,7 @@ import {
   ChevronDown,
   Layers
 } from "lucide-react";
-import logo from "@/assets/Logo - Edited.png";
+import logo from "@/assets/Logo - Edited.webp";
 import { useAuth } from "@/contexts/AuthContext";
 import LogoutModal from "./LogoutModal";
 
@@ -29,10 +29,10 @@ const Navbar = () => {
   const location = useLocation();
   const navigate = useNavigate();
   const { user, isAuthenticated, isAdmin, isAgent, logout } = useAuth();
-  
+
   // Check if we're on the home page (has dark hero background)
   const isHomePage = location.pathname === "/";
-  
+
   // Use dark text styling if NOT on home page OR if scrolled
   const useDarkText = !isHomePage || scrolled;
 
@@ -52,10 +52,10 @@ const Navbar = () => {
     const handleScroll = () => {
       setScrolled(window.scrollY > 50);
     };
-    
+
     window.addEventListener("scroll", handleScroll);
     handleScroll();
-    
+
     return () => window.removeEventListener("scroll", handleScroll);
   }, []);
 
@@ -107,15 +107,15 @@ const Navbar = () => {
     navigate('/');
   };
 
-  const utilityIcons = isAuthenticated 
+  const utilityIcons = isAuthenticated
     ? [
-        { icon: Search, title: "Search", onClick: handleSearchClick },
-        { icon: LogOut, title: "Logout", onClick: handleLogout },
-      ]
+      { icon: Search, title: "Search", onClick: handleSearchClick },
+      { icon: LogOut, title: "Logout", onClick: handleLogout },
+    ]
     : [
-        { icon: Search, title: "Search", onClick: handleSearchClick },
-        { icon: User, title: "Login", onClick: () => navigate('/login') },
-      ];
+      { icon: Search, title: "Search", onClick: handleSearchClick },
+      { icon: User, title: "Login", onClick: () => navigate('/login') },
+    ];
 
   // Glass styles
   const glassWhite = "bg-white/20 backdrop-blur-xl border border-white/30 shadow-[0_8px_32px_rgba(255,255,255,0.1),inset_0_1px_1px_rgba(255,255,255,0.4)]";
@@ -151,25 +151,22 @@ const Navbar = () => {
                 <Link
                   key={item.path}
                   to={item.path}
-                  className={`group flex flex-row items-center justify-center rounded-full transition-all duration-300 hover:scale-105 px-4 py-2 gap-1.5 ${
-                    active
-                      ? "bg-primary shadow-md"
-                      : "hover:bg-slate-50"
-                  }`}
+                  className={`group flex flex-row items-center justify-center rounded-full transition-all duration-300 hover:scale-105 px-4 py-2 gap-1.5 ${active
+                    ? "bg-primary shadow-md"
+                    : "hover:bg-slate-50"
+                    }`}
                 >
                   <Icon
-                    className={`w-4 h-4 transition-all duration-300 ${
-                      active
-                        ? "text-white"
-                        : "text-slate-500 group-hover:text-primary"
-                    }`}
+                    className={`w-4 h-4 transition-all duration-300 ${active
+                      ? "text-white"
+                      : "text-slate-500 group-hover:text-primary"
+                      }`}
                   />
                   <span
-                    className={`text-sm font-medium transition-all duration-300 ${
-                      active
-                        ? "text-white"
-                        : "text-slate-500 group-hover:text-primary"
-                    }`}
+                    className={`text-sm font-medium transition-all duration-300 ${active
+                      ? "text-white"
+                      : "text-slate-500 group-hover:text-primary"
+                      }`}
                   >
                     {item.label}
                   </span>
@@ -253,11 +250,10 @@ const Navbar = () => {
           {/* Mobile Menu Toggle */}
           <button
             onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
-            className={`md:hidden flex items-center justify-center w-11 h-11 rounded-full transition-all duration-500 hover:scale-105 ${
-              useDarkText
-                ? "bg-slate-100/80 hover:bg-slate-200"
-                : `${glassWhite} hover:bg-white/30`
-            }`}
+            className={`md:hidden flex items-center justify-center w-11 h-11 rounded-full transition-all duration-500 hover:scale-105 ${useDarkText
+              ? "bg-slate-100/80 hover:bg-slate-200"
+              : `${glassWhite} hover:bg-white/30`
+              }`}
           >
             {isMobileMenuOpen ? (
               <X className={`w-5 h-5 ${useDarkText ? "text-slate-600" : "text-white/80"}`} />
@@ -269,12 +265,11 @@ const Navbar = () => {
 
         {/* Mobile Menu */}
         {isMobileMenuOpen && (
-          <div 
-            className={`md:hidden mt-3 rounded-3xl p-5 animate-in slide-in-from-top-3 duration-300 ${
-              useDarkText 
-                ? "bg-white/90 backdrop-blur-xl shadow-xl" 
-                : "bg-slate-900/90 backdrop-blur-xl shadow-[0_8px_32px_rgba(0,0,0,0.4)]"
-            }`}
+          <div
+            className={`md:hidden mt-3 rounded-3xl p-5 animate-in slide-in-from-top-3 duration-300 ${useDarkText
+              ? "bg-white/90 backdrop-blur-xl shadow-xl"
+              : "bg-slate-900/90 backdrop-blur-xl shadow-[0_8px_32px_rgba(0,0,0,0.4)]"
+              }`}
           >
             {/* Navigation Grid */}
             <div className="grid grid-cols-3 gap-3">
@@ -287,30 +282,27 @@ const Navbar = () => {
                     key={item.path}
                     to={item.path}
                     onClick={() => setIsMobileMenuOpen(false)}
-                    className={`group flex flex-col items-center justify-center p-4 rounded-2xl transition-all duration-300 hover:scale-105 ${
-                      active
-                        ? "bg-primary shadow-lg"
-                        : useDarkText 
-                          ? "bg-slate-100 hover:bg-slate-200" 
-                          : "bg-white/5 hover:bg-white/15"
-                    }`}
+                    className={`group flex flex-col items-center justify-center p-4 rounded-2xl transition-all duration-300 hover:scale-105 ${active
+                      ? "bg-primary shadow-lg"
+                      : useDarkText
+                        ? "bg-slate-100 hover:bg-slate-200"
+                        : "bg-white/5 hover:bg-white/15"
+                      }`}
                   >
                     <Icon
-                      className={`w-6 h-6 mb-2 transition-all duration-300 ${
-                        active
-                          ? "text-white"
-                          : useDarkText 
-                            ? "text-slate-600 group-hover:text-primary" 
-                            : "text-white/80 group-hover:text-primary"
-                      }`}
+                      className={`w-6 h-6 mb-2 transition-all duration-300 ${active
+                        ? "text-white"
+                        : useDarkText
+                          ? "text-slate-600 group-hover:text-primary"
+                          : "text-white/80 group-hover:text-primary"
+                        }`}
                     />
-                    <span className={`text-xs font-medium ${
-                      active 
-                        ? "text-white" 
-                        : useDarkText 
-                          ? "text-slate-500 group-hover:text-primary" 
-                          : "text-white/70 group-hover:text-primary"
-                    }`}>
+                    <span className={`text-xs font-medium ${active
+                      ? "text-white"
+                      : useDarkText
+                        ? "text-slate-500 group-hover:text-primary"
+                        : "text-white/70 group-hover:text-primary"
+                      }`}>
                       {item.label}
                     </span>
                   </Link>
@@ -319,36 +311,31 @@ const Navbar = () => {
             </div>
 
             {/* Mobile Auth Buttons */}
-            <div className={`flex justify-center gap-4 mt-5 pt-5 border-t ${
-              useDarkText ? "border-slate-200" : "border-white/10"
-            }`}>
+            <div className={`flex justify-center gap-4 mt-5 pt-5 border-t ${useDarkText ? "border-slate-200" : "border-white/10"
+              }`}>
               {isAuthenticated ? (
                 <button
                   onClick={() => {
                     handleLogout();
                     setIsMobileMenuOpen(false);
                   }}
-                  className={`flex flex-col items-center p-3 rounded-2xl transition-all duration-300 hover:scale-105 ${
-                    useDarkText 
-                      ? "bg-slate-100 hover:bg-slate-200" 
-                      : "bg-white/5 hover:bg-white/15"
-                  }`}
+                  className={`flex flex-col items-center p-3 rounded-2xl transition-all duration-300 hover:scale-105 ${useDarkText
+                    ? "bg-slate-100 hover:bg-slate-200"
+                    : "bg-white/5 hover:bg-white/15"
+                    }`}
                 >
-                  <UserCircle className={`w-5 h-5 mb-1 ${
-                    useDarkText ? "text-slate-600" : "text-white/80"
-                  }`} />
-                  <span className={`text-xs ${
-                    useDarkText ? "text-slate-500" : "text-white/70"
-                  }`}>Logout</span>
+                  <UserCircle className={`w-5 h-5 mb-1 ${useDarkText ? "text-slate-600" : "text-white/80"
+                    }`} />
+                  <span className={`text-xs ${useDarkText ? "text-slate-500" : "text-white/70"
+                    }`}>Logout</span>
                 </button>
               ) : (
                 <>
                   <Link
                     to="/login"
                     onClick={() => setIsMobileMenuOpen(false)}
-                    className={`flex items-center justify-center px-6 py-3 rounded-xl font-semibold transition-all ${
-                       useDarkText ? "bg-slate-100 text-slate-700" : "bg-white/10 text-white"
-                    }`}
+                    className={`flex items-center justify-center px-6 py-3 rounded-xl font-semibold transition-all ${useDarkText ? "bg-slate-100 text-slate-700" : "bg-white/10 text-white"
+                      }`}
                   >
                     Log In
                   </Link>
