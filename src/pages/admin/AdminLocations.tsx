@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import { API_URL } from "@/config";
 import { Plus, Pencil, Trash2, MapPin, Globe } from "lucide-react";
 import { Button } from "@/components/ui/button";
@@ -19,6 +19,7 @@ import {
 } from "@/components/ui/select";
 import { toast } from "sonner";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 
 interface City {
   id: number;
@@ -35,9 +36,7 @@ interface Location {
 }
 
 const AdminLocations = () => {
-  const [cities, setCities] = useState<City[]>([]);
-  const [locations, setLocations] = useState<Location[]>([]);
-  const [loading, setLoading] = useState(true);
+  const queryClient = useQueryClient();
 
   // City dialog
   const [isCityDialogOpen, setIsCityDialogOpen] = useState(false);
@@ -49,21 +48,107 @@ const AdminLocations = () => {
   const [editingLocation, setEditingLocation] = useState<Location | null>(null);
   const [locationForm, setLocationForm] = useState({ name: "", cityId: "" });
 
-  const fetchData = () => {
-    setLoading(true);
-    Promise.all([
-      fetch(`${API_URL}/api/cities`).then((r) => r.json()),
-      fetch(`${API_URL}/api/locations`).then((r) => r.json()),
-    ]).then(([citiesData, locationsData]) => {
-      setCities(citiesData);
-      setLocations(locationsData);
-      setLoading(false);
-    });
-  };
+  const { data: cities = [], isLoading: loadingCities } = useQuery({
+    queryKey: ['cities'],
+    queryFn: async () => {
+      const res = await fetch(`${API_URL}/api/cities`);
+      return res.json() as Promise<City[]>;
+    }
+  });
 
-  useEffect(() => {
-    fetchData();
-  }, []);
+  const { data: locations = [], isLoading: loadingLocations } = useQuery({
+    queryKey: ['locations'],
+    queryFn: async () => {
+      const res = await fetch(`${API_URL}/api/locations`);
+      return res.json() as Promise<Location[]>;
+    }
+  });
+
+  const loading = loadingCities || loadingLocations;
+
+  // City Mutations
+  const cityMutation = useMutation({
+    mutationFn: async (payload: { name: string }) => {
+      const url = editingCity
+        ? `${API_URL}/api/cities/${editingCity.id}`
+        : `${API_URL}/api/cities`;
+
+      const res = await fetch(url, {
+        method: editingCity ? "PUT" : "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(payload),
+      });
+
+      if (!res.ok) throw new Error("Error saving city");
+      return res.json();
+    },
+    onSuccess: () => {
+      toast.success(editingCity ? "City updated!" : "City created!");
+      setIsCityDialogOpen(false);
+      queryClient.invalidateQueries({ queryKey: ['cities'] });
+    },
+    onError: () => {
+      toast.error("Error saving city");
+    }
+  });
+
+  const cityDeleteMutation = useMutation({
+    mutationFn: async (id: number) => {
+      const res = await fetch(`${API_URL}/api/cities/${id}`, { method: "DELETE" });
+      if (!res.ok) throw new Error("Failed to delete city");
+    },
+    onSuccess: () => {
+      toast.success("City deleted!");
+      queryClient.invalidateQueries({ queryKey: ['cities'] });
+      queryClient.invalidateQueries({ queryKey: ['locations'] }); // Locations in that city might be gone
+    },
+    onError: () => {
+      toast.error("Failed to delete city");
+    }
+  });
+
+  // Location Mutations
+  const locationMutation = useMutation({
+    mutationFn: async (payload: { name: string; cityId: number }) => {
+      const url = editingLocation
+        ? `${API_URL}/api/locations/${editingLocation.id}`
+        : `${API_URL}/api/locations`;
+
+      const res = await fetch(url, {
+        method: editingLocation ? "PUT" : "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(payload),
+      });
+
+      if (!res.ok) throw new Error("Error saving location");
+      return res.json();
+    },
+    onSuccess: () => {
+      toast.success(editingLocation ? "Location updated!" : "Location created!");
+      setIsLocationDialogOpen(false);
+      queryClient.invalidateQueries({ queryKey: ['locations'] });
+      queryClient.invalidateQueries({ queryKey: ['cities'] }); // Update counts
+    },
+    onError: () => {
+      toast.error("Error saving location");
+    }
+  });
+
+  const locationDeleteMutation = useMutation({
+    mutationFn: async (id: number) => {
+      const res = await fetch(`${API_URL}/api/locations/${id}`, { method: "DELETE" });
+      if (!res.ok) throw new Error("Failed to delete location");
+    },
+    onSuccess: () => {
+      toast.success("Location deleted!");
+      queryClient.invalidateQueries({ queryKey: ['locations'] });
+      queryClient.invalidateQueries({ queryKey: ['cities'] });
+    },
+    onError: () => {
+      toast.error("Failed to delete location");
+    }
+  });
+
 
   // City handlers
   const openAddCityDialog = () => {
@@ -79,37 +164,12 @@ const AdminLocations = () => {
   };
 
   const handleCitySubmit = async () => {
-    try {
-      const url = editingCity
-        ? `${API_URL}/api/cities/${editingCity.id}`
-        : `${API_URL}/api/cities`;
-
-      const res = await fetch(url, {
-        method: editingCity ? "PUT" : "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ name: cityName }),
-      });
-
-      if (res.ok) {
-        toast.success(editingCity ? "City updated!" : "City created!");
-        setIsCityDialogOpen(false);
-        fetchData();
-      }
-    } catch {
-      toast.error("Error saving city");
-    }
+    cityMutation.mutate({ name: cityName });
   };
 
   const handleCityDelete = async (id: number) => {
     if (!confirm("Delete this city? All locations in this city will also be deleted.")) return;
-
-    try {
-      await fetch(`${API_URL}/api/cities/${id}`, { method: "DELETE" });
-      toast.success("City deleted!");
-      fetchData();
-    } catch {
-      toast.error("Failed to delete city");
-    }
+    cityDeleteMutation.mutate(id);
   };
 
   // Location handlers
@@ -126,40 +186,15 @@ const AdminLocations = () => {
   };
 
   const handleLocationSubmit = async () => {
-    try {
-      const url = editingLocation
-        ? `${API_URL}/api/locations/${editingLocation.id}`
-        : `${API_URL}/api/locations`;
-
-      const res = await fetch(url, {
-        method: editingLocation ? "PUT" : "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          name: locationForm.name,
-          cityId: parseInt(locationForm.cityId),
-        }),
-      });
-
-      if (res.ok) {
-        toast.success(editingLocation ? "Location updated!" : "Location created!");
-        setIsLocationDialogOpen(false);
-        fetchData();
-      }
-    } catch {
-      toast.error("Error saving location");
-    }
+    locationMutation.mutate({
+      name: locationForm.name,
+      cityId: parseInt(locationForm.cityId),
+    });
   };
 
   const handleLocationDelete = async (id: number) => {
     if (!confirm("Delete this location?")) return;
-
-    try {
-      await fetch(`${API_URL}/api/locations/${id}`, { method: "DELETE" });
-      toast.success("Location deleted!");
-      fetchData();
-    } catch {
-      toast.error("Failed to delete location");
-    }
+    locationDeleteMutation.mutate(id);
   };
 
   return (
@@ -307,7 +342,9 @@ const AdminLocations = () => {
           </div>
           <DialogFooter>
             <Button variant="outline" onClick={() => setIsCityDialogOpen(false)}>Cancel</Button>
-            <Button onClick={handleCitySubmit}>{editingCity ? "Update" : "Create"}</Button>
+            <Button onClick={handleCitySubmit} disabled={cityMutation.isPending}>
+              {cityMutation.isPending ? "Saving..." : (editingCity ? "Update" : "Create")}
+            </Button>
           </DialogFooter>
         </DialogContent>
       </Dialog>
@@ -348,7 +385,9 @@ const AdminLocations = () => {
           </div>
           <DialogFooter>
             <Button variant="outline" onClick={() => setIsLocationDialogOpen(false)}>Cancel</Button>
-            <Button onClick={handleLocationSubmit}>{editingLocation ? "Update" : "Create"}</Button>
+            <Button onClick={handleLocationSubmit} disabled={locationMutation.isPending}>
+              {locationMutation.isPending ? "Saving..." : (editingLocation ? "Update" : "Create")}
+            </Button>
           </DialogFooter>
         </DialogContent>
       </Dialog>

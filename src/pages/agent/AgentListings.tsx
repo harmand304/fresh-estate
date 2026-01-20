@@ -1,4 +1,4 @@
-import { useEffect, useState, useRef } from "react";
+import { useState, useRef } from "react";
 import { API_URL } from "@/config";
 import { Plus, Pencil, Trash2, Home, Search, Upload, X } from "lucide-react";
 import { Button } from "@/components/ui/button";
@@ -19,6 +19,7 @@ import {
   DialogTitle,
   DialogFooter,
 } from "@/components/ui/dialog";
+import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 
 interface Property {
   id: string;
@@ -59,16 +60,20 @@ interface FormData {
   propertyTypeId: string;
 }
 
+interface DropdownData {
+  locations: { id: number; name: string; cityName: string }[];
+  propertyTypes: { id: number; name: string }[];
+  amenities: { id: number; name: string }[];
+}
+
 
 const AgentListings = () => {
-  const [properties, setProperties] = useState<Property[]>([]);
-  const [loading, setLoading] = useState(true);
+  const queryClient = useQueryClient();
   const [searchQuery, setSearchQuery] = useState("");
   const [isDialogOpen, setIsDialogOpen] = useState(false);
   const [editingProperty, setEditingProperty] = useState<Property | null>(null);
-  const [locations, setLocations] = useState<{ id: number; name: string; cityName: string }[]>([]);
-  const [propertyTypes, setPropertyTypes] = useState<{ id: number; name: string }[]>([]);
-  const [amenities, setAmenities] = useState<{ id: number; name: string }[]>([]);
+
+  // Form State
   const [selectedAmenities, setSelectedAmenities] = useState<number[]>([]);
   const [uploading, setUploading] = useState(false);
   const [uploadedImages, setUploadedImages] = useState<{ key: string; signedUrl: string; dbId?: number }[]>([]);
@@ -90,37 +95,117 @@ const AgentListings = () => {
     propertyTypeId: "",
   });
 
-  useEffect(() => {
-    fetchProperties();
-    fetchDropdowns();
-  }, []);
-
-  const fetchProperties = async () => {
-    try {
+  // Queries
+  const { data: properties = [], isLoading: loadingProperties } = useQuery({
+    queryKey: ['agent-properties'],
+    queryFn: async () => {
       const res = await fetch(`${API_URL}/api/agent/properties`, {
         credentials: "include",
       });
-      if (!res.ok) throw new Error("Failed to fetch");
-      const data = await res.json();
-      setProperties(data);
-    } catch (error) {
-      toast.error("Failed to load properties");
-    } finally {
-      setLoading(false);
+      if (!res.ok) throw new Error("Failed to fetch properties");
+      return res.json() as Promise<Property[]>;
     }
-  };
+  });
 
-  const fetchDropdowns = () => {
-    Promise.all([
-      fetch(`${API_URL}/api/locations`).then((r) => r.json()),
-      fetch(`${API_URL}/api/property-types`).then((r) => r.json()),
-      fetch(`${API_URL}/api/amenities`).then((r) => r.json()),
-    ]).then(([locs, types, ams]) => {
-      setLocations(locs);
-      setPropertyTypes(types);
-      setAmenities(ams);
-    });
-  };
+  const { data: dropdowns = { locations: [], propertyTypes: [], amenities: [] } } = useQuery({
+    queryKey: ['property-dropdowns'],
+    queryFn: async () => {
+      const [locs, types, ams] = await Promise.all([
+        fetch(`${API_URL}/api/locations`).then((r) => r.json()),
+        fetch(`${API_URL}/api/property-types`).then((r) => r.json()),
+        fetch(`${API_URL}/api/amenities`).then((r) => r.json()),
+      ]);
+      return { locations: locs, propertyTypes: types, amenities: ams } as DropdownData;
+    }
+  });
+
+  // Mutations
+  const savePropertyMutation = useMutation({
+    mutationFn: async (payload: {
+      title: string;
+      description: string | null;
+      shortDescription: string | null;
+      price: number;
+      purpose: string;
+      areaSqm: number;
+      bedrooms: number;
+      bathrooms: number;
+      hasGarage: boolean;
+      hasBalcony: boolean;
+      imageUrl: string | null;
+      locationId: number | null;
+      propertyTypeId: number | null;
+    }) => {
+      const url = editingProperty
+        ? `${API_URL}/api/agent/properties/${editingProperty.id}`
+        : `${API_URL}/api/agent/properties`;
+
+      const res = await fetch(url, {
+        method: editingProperty ? "PUT" : "POST",
+        headers: { "Content-Type": "application/json" },
+        credentials: "include",
+        body: JSON.stringify(payload),
+      });
+
+      if (!res.ok) throw new Error("Failed to save");
+      return res.json();
+    },
+    onSuccess: async (data) => {
+      const propertyId = data.id || editingProperty?.id;
+
+      // Save NEW images
+      const newImages = uploadedImages.filter(img => !img.dbId);
+      if (newImages.length > 0 && propertyId) {
+        const imagesPayload = newImages.map((img, idx) => ({
+          key: img.key,
+          sortOrder: uploadedImages.findIndex(i => i.key === img.key)
+        }));
+
+        await fetch(`${API_URL}/api/agent/properties/${propertyId}/images`, {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          credentials: "include",
+          body: JSON.stringify({ images: imagesPayload }),
+        });
+      }
+
+      // Save amenities
+      if (selectedAmenities.length > 0 && propertyId) {
+        await fetch(`${API_URL}/api/agent/properties/${propertyId}/amenities`, {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          credentials: "include",
+          body: JSON.stringify({ amenityIds: selectedAmenities }),
+        });
+      }
+
+      toast.success(editingProperty ? "Property updated!" : "Property created!");
+      setIsDialogOpen(false);
+      resetForm();
+      queryClient.invalidateQueries({ queryKey: ['agent-properties'] });
+    },
+    onError: () => {
+      toast.error("Failed to save property");
+    }
+  });
+
+  const deletePropertyMutation = useMutation({
+    mutationFn: async (id: string) => {
+      const res = await fetch(`${API_URL}/api/agent/properties/${id}`, {
+        method: "DELETE",
+        credentials: "include",
+      });
+      if (!res.ok) throw new Error("Failed to delete");
+    },
+    onSuccess: () => {
+      toast.success("Property deleted!");
+      queryClient.invalidateQueries({ queryKey: ['agent-properties'] });
+    },
+    onError: () => {
+      toast.error("Failed to delete property");
+    }
+  });
+
 
   const resetForm = () => {
     setEditingProperty(null);
@@ -286,72 +371,12 @@ const AgentListings = () => {
       propertyTypeId: formData.propertyTypeId ? parseInt(formData.propertyTypeId) : null,
     };
 
-    try {
-      const url = editingProperty
-        ? `${API_URL}/api/agent/properties/${editingProperty.id}`
-        : `${API_URL}/api/agent/properties`;
-
-      const res = await fetch(url, {
-        method: editingProperty ? "PUT" : "POST",
-        headers: { "Content-Type": "application/json" },
-        credentials: "include",
-        body: JSON.stringify(payload),
-      });
-
-      if (!res.ok) throw new Error("Failed to save");
-
-      const propertyData = await res.json();
-      const propertyId = propertyData.id || editingProperty?.id;
-
-      // Save NEW images
-      const newImages = uploadedImages.filter(img => !img.dbId);
-      if (newImages.length > 0 && propertyId) {
-        const imagesPayload = newImages.map((img, idx) => ({
-          key: img.key,
-          sortOrder: uploadedImages.findIndex(i => i.key === img.key)
-        }));
-
-        await fetch(`${API_URL}/api/agent/properties/${propertyId}/images`, {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          credentials: "include",
-          body: JSON.stringify({ images: imagesPayload }),
-        });
-      }
-
-      // Save amenities
-      if (selectedAmenities.length > 0 && propertyId) {
-        await fetch(`${API_URL}/api/agent/properties/${propertyId}/amenities`, {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          credentials: "include",
-          body: JSON.stringify({ amenityIds: selectedAmenities }),
-        });
-      }
-
-      toast.success(editingProperty ? "Property updated!" : "Property created!");
-      setIsDialogOpen(false);
-      resetForm();
-      fetchProperties();
-    } catch (error) {
-      toast.error("Failed to save property");
-    }
+    savePropertyMutation.mutate(payload);
   };
 
   const handleDelete = async (id: string) => {
     if (!confirm("Are you sure you want to delete this property?")) return;
-
-    try {
-      const res = await fetch(`${API_URL}/api/agent/properties/${id}`, {
-        method: "DELETE",
-        credentials: "include",
-      });
-      if (!res.ok) throw new Error("Failed to delete");
-      toast.success("Property deleted!");
-      fetchProperties();
-    } catch (error) {
-      toast.error("Failed to delete property");
-    }
+    deletePropertyMutation.mutate(id);
   };
 
   const filteredProperties = properties.filter(p =>
@@ -384,7 +409,7 @@ const AgentListings = () => {
         />
       </div>
 
-      {loading ? (
+      {loadingProperties ? (
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
           {[...Array(6)].map((_, i) => (
             <div key={i} className="h-64 bg-slate-200 rounded-2xl animate-pulse"></div>
@@ -568,7 +593,7 @@ const AgentListings = () => {
                   <SelectValue placeholder="Select location" />
                 </SelectTrigger>
                 <SelectContent>
-                  {locations.map((loc) => (
+                  {dropdowns.locations.map((loc) => (
                     <SelectItem key={loc.id} value={loc.id.toString()}>
                       {loc.name} ({loc.cityName})
                     </SelectItem>
@@ -587,7 +612,7 @@ const AgentListings = () => {
                   <SelectValue placeholder="Select type" />
                 </SelectTrigger>
                 <SelectContent>
-                  {propertyTypes.map((type) => (
+                  {dropdowns.propertyTypes.map((type) => (
                     <SelectItem key={type.id} value={type.id.toString()}>
                       {type.name}
                     </SelectItem>
@@ -683,7 +708,7 @@ const AgentListings = () => {
                 Amenities ({selectedAmenities.length} selected)
               </label>
               <div className="grid grid-cols-3 md:grid-cols-4 gap-2 max-h-48 overflow-y-auto border rounded-lg p-3">
-                {amenities.map((amenity) => (
+                {dropdowns.amenities.map((amenity) => (
                   <label
                     key={amenity.id}
                     className={`flex items-center gap-2 p-2 rounded-lg cursor-pointer border transition-colors ${selectedAmenities.includes(amenity.id)
@@ -714,8 +739,8 @@ const AgentListings = () => {
             <Button variant="outline" onClick={() => setIsDialogOpen(false)}>
               Cancel
             </Button>
-            <Button onClick={handleSubmit} disabled={uploading}>
-              {editingProperty ? "Update" : "Create"}
+            <Button onClick={() => handleSubmit()} disabled={savePropertyMutation.isPending || uploading}>
+              {savePropertyMutation.isPending ? "Saving..." : (editingProperty ? "Update" : "Create")}
             </Button>
           </DialogFooter>
         </DialogContent>
