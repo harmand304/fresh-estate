@@ -85,6 +85,20 @@ const Properties = () => {
     location: "",
   });
 
+  const [cities, setCities] = useState<{ id: number; name: string }[]>([]);
+
+  // Fetch cities for filter
+  useEffect(() => {
+    fetch(`${API_URL}/api/cities`)
+      .then(res => res.json())
+      .then(data => {
+        if (Array.isArray(data)) {
+          setCities(data);
+        }
+      })
+      .catch(err => console.error("Failed to fetch cities:", err));
+  }, []);
+
   // Initialize filters from URL params
   useEffect(() => {
     const newFilters = { ...filters };
@@ -340,16 +354,25 @@ const Properties = () => {
                 </PopoverTrigger>
                 <PopoverContent className="w-48 p-2" align="start">
                   <div className="space-y-1">
-                    {["all", "Erbil", "Sulaymaniyah", "Ranya"].map((city) => (
+                    <div className="space-y-1">
                       <button
-                        key={city}
-                        onClick={() => setFilters({ ...filters, city })}
-                        className={`w-full text-left px-3 py-2 rounded-lg text-sm transition-colors ${filters.city === city ? "bg-primary text-white" : "hover:bg-gray-100"
+                        onClick={() => setFilters({ ...filters, city: "all" })}
+                        className={`w-full text-left px-3 py-2 rounded-lg text-sm transition-colors ${filters.city === "all" ? "bg-primary text-white" : "hover:bg-gray-100"
                           }`}
                       >
-                        {city === "all" ? "All Cities" : city}
+                        All Cities
                       </button>
-                    ))}
+                      {cities.map((city) => (
+                        <button
+                          key={city.id}
+                          onClick={() => setFilters({ ...filters, city: city.name })}
+                          className={`w-full text-left px-3 py-2 rounded-lg text-sm transition-colors ${filters.city === city.name ? "bg-primary text-white" : "hover:bg-gray-100"
+                            }`}
+                        >
+                          {city.name}
+                        </button>
+                      ))}
+                    </div>
                   </div>
                 </PopoverContent>
               </Popover>

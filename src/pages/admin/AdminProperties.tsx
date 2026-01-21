@@ -94,7 +94,20 @@ const AdminProperties = () => {
     fetch(`${API_URL}/api/properties`)
       .then((res) => res.json())
       .then((data) => {
-        setProperties(data);
+        // Fix: Use data.properties because the API returns { properties: [], pagination: {} }
+        if (data.properties && Array.isArray(data.properties)) {
+          setProperties(data.properties);
+        } else if (Array.isArray(data)) {
+          // Fallback in case API structure changes
+          setProperties(data);
+        } else {
+          setProperties([]);
+        }
+        setLoading(false);
+      })
+      .catch((err) => {
+        console.error("Failed to load properties:", err);
+        setProperties([]);
         setLoading(false);
       });
   };
@@ -364,8 +377,8 @@ const AdminProperties = () => {
 
   const filteredProperties = properties.filter(
     (p) =>
-      p.title.toLowerCase().includes(search.toLowerCase()) ||
-      p.city.toLowerCase().includes(search.toLowerCase())
+      (p.title && p.title.toLowerCase().includes(search.toLowerCase())) ||
+      (p.city && p.city.toLowerCase().includes(search.toLowerCase()))
   );
 
   return (

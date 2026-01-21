@@ -4,24 +4,34 @@ import bcrypt from 'bcryptjs';
 const prisma = new PrismaClient();
 
 const PROPERTY_IMAGES = [
-  'https://images.unsplash.com/photo-1600596542815-2495db98dada?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80',
-  'https://images.unsplash.com/photo-1600585154340-be6161a56a0c?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80',
-  'https://images.unsplash.com/photo-1600607687939-ce8a6c25118c?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80',
-  'https://images.unsplash.com/photo-1600566753190-17f0baa2a6c3?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80',
-  'https://images.unsplash.com/photo-1600585154526-990dced4db0d?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80',
-  'https://images.unsplash.com/photo-1600573472592-401b489a3cdc?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80',
-  'https://images.unsplash.com/photo-1600093463592-8e36ae95ef56?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80',
-  'https://images.unsplash.com/photo-1602343168117-bb8ffe3e2e9f?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80',
-  'https://images.unsplash.com/photo-1512917774080-9991f1c4c750?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80',
-  'https://images.unsplash.com/photo-1513584685908-95c9e11f7476?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80'
+  '/images/image_50.jpg',
+  '/images/image_51.jpg',
+  '/images/image_52.jpg',
+  '/images/image_53.jpg',
+  '/images/image_54.jpg',
+  '/images/image_55.jpg',
+  '/images/image_56.jpg',
+  '/images/image_57.jpg',
+  '/images/image_58.jpg',
+  '/images/image_59.jpg',
+  '/images/image_60.jpg',
+  '/images/image_61.jpg',
+  '/images/image_62.png',
+  '/images/image_63.jpg',
+  '/images/image_64.jpg',
+  '/images/image_65.jpg',
+  '/images/image_66.jpg',
+  '/images/image_67.jpg',
+  '/images/image_68.jpg',
+  '/images/image_69.jpg'
 ];
 
 const AGENT_IMAGES = [
-  'https://images.unsplash.com/photo-1560250097-0b93528c311a?ixlib=rb-4.0.3&auto=format&fit=crop&w=400&q=80',
-  'https://images.unsplash.com/photo-1573496359142-b8d87734a5a2?ixlib=rb-4.0.3&auto=format&fit=crop&w=400&q=80',
-  'https://images.unsplash.com/photo-1519085360753-af0119f7cbe7?ixlib=rb-4.0.3&auto=format&fit=crop&w=400&q=80',
-  'https://images.unsplash.com/photo-1580489944761-15a19d654956?ixlib=rb-4.0.3&auto=format&fit=crop&w=400&q=80',
-  'https://images.unsplash.com/photo-1500648767791-00dcc994a43e?ixlib=rb-4.0.3&auto=format&fit=crop&w=400&q=80'
+  '/images/image_90.jpg',
+  '/images/image_91.jpg',
+  '/images/image_92.jpg',
+  '/images/image_93.jpg',
+  '/images/image_94.jpg'
 ];
 
 const AMENITIES_DATA = [
@@ -50,11 +60,29 @@ const AMENITIES_DATA = [
 async function main() {
   console.log('🌱 Starting database seed...');
 
+  // CLEANUP: Remove existing data to avoid duplicates
+  console.log('🧹 Cleaning up existing data...');
+  await prisma.deal.deleteMany({});
+  await prisma.inquiry.deleteMany({});
+  await prisma.propertyImage.deleteMany({});
+  await prisma.propertyAmenity.deleteMany({});
+
+  // Delete properties (will cascade delete related items if configured)
+  await prisma.property.deleteMany({});
+
+  // Delete projects (will cascade delete related items if configured)
+  await prisma.project.deleteMany({});
+
+  // Delete website reviews
+  await prisma.websiteReview.deleteMany({});
+
+  console.log('Cleaned up successfully.');
+
   // 1. Create Property Types
   console.log('🏗️ Creating Property Types...');
   const propertyTypes = ['Apartment', 'Villa', 'House', 'Land', 'Office', 'Commercial'];
   const typeMap = {};
-  
+
   for (const type of propertyTypes) {
     const pt = await prisma.propertyType.upsert({
       where: { name: type },
@@ -66,13 +94,13 @@ async function main() {
 
   // 2. Create Amenities
   console.log('🛁 Creating Amenities...');
-  
+
   const existingAmenitiesCount = await prisma.amenity.count();
   if (existingAmenitiesCount === 0) {
-      await prisma.amenity.createMany({ data: AMENITIES_DATA });
-      console.log(`Created ${AMENITIES_DATA.length} amenities.`);
+    await prisma.amenity.createMany({ data: AMENITIES_DATA });
+    console.log(`Created ${AMENITIES_DATA.length} amenities.`);
   } else {
-      console.log('Amenities already exist.');
+    console.log('Amenities already exist.');
   }
   const allAmenities = await prisma.amenity.findMany();
 
@@ -80,17 +108,17 @@ async function main() {
   // 3. Create Cities and Locations
   console.log('🏙️ Creating Cities and Locations...');
   const citiesData = [
-    { 
-      name: 'Erbil', 
-      locations: ['Empire World', 'Dream City', 'Italian City 1', 'Italian City 2', 'Park View', 'English Village'] 
+    {
+      name: 'Erbil',
+      locations: ['Empire World', 'Dream City', 'Italian City 1', 'Italian City 2', 'Park View', 'English Village']
     },
-    { 
-      name: 'Sulaimani', 
-      locations: ['Goizha City', 'Qaiwan City', 'Bakhtyari', 'Sarchnar', 'Raparin'] 
+    {
+      name: 'Sulaimani',
+      locations: ['Goizha City', 'Qaiwan City', 'Bakhtyari', 'Sarchnar', 'Raparin']
     },
-    { 
-      name: 'Duhok', 
-      locations: ['Avro City', 'Masike', 'Kro', 'Malta'] 
+    {
+      name: 'Duhok',
+      locations: ['Avro City', 'Masike', 'Kro', 'Malta']
     }
   ];
 
@@ -148,41 +176,41 @@ async function main() {
     const agentUser = await prisma.user.upsert({
       where: { email: agentData.email },
       update: {},
-      create: { 
-        email: agentData.email, 
-        password, 
-        name: agentData.name, 
-        role: 'AGENT' 
+      create: {
+        email: agentData.email,
+        password,
+        name: agentData.name,
+        role: 'AGENT'
       },
     });
 
     // Agent profile
     const agentProfile = await prisma.agent.upsert({
-        where: { userId: agentUser.id },
-        update: {},
-        create: {
-            userId: agentUser.id,
-            name: agentData.name,
-            email: agentData.email,
-            bio: agentData.bio,
-            image: agentData.image,
-            phone: '+964 750 ' + Math.floor(1000000 + Math.random() * 9000000),
-            experience: Math.floor(Math.random() * 15) + 2,
-            rating: 4.5 + (Math.random() * 0.5),
-            reviewCount: Math.floor(Math.random() * 50) + 10,
-            isTopAgent: Math.random() > 0.5,
-            officeAddress: 'Main St, City Center'
-        }
+      where: { userId: agentUser.id },
+      update: {},
+      create: {
+        userId: agentUser.id,
+        name: agentData.name,
+        email: agentData.email,
+        bio: agentData.bio,
+        image: agentData.image,
+        phone: '+964 750 ' + Math.floor(1000000 + Math.random() * 9000000),
+        experience: Math.floor(Math.random() * 15) + 2,
+        rating: 4.5 + (Math.random() * 0.5),
+        reviewCount: Math.floor(Math.random() * 50) + 10,
+        isTopAgent: Math.random() > 0.5,
+        officeAddress: 'Main St, City Center'
+      }
     });
 
     // Create some reviews for the agent
     await prisma.review.create({
-        data: {
-            agentId: agentProfile.id,
-            name: 'Happy Client',
-            rating: 5,
-            text: 'Great service! Highly recommended.'
-        }
+      data: {
+        agentId: agentProfile.id,
+        name: 'Happy Client',
+        rating: 5,
+        text: 'Great service! Highly recommended.'
+      }
     });
 
     agentIds.push(agentProfile.id);
@@ -198,24 +226,24 @@ async function main() {
 
   const projectIds = [];
   for (const proj of projectsData) {
-      const p = await prisma.project.create({
-          data: {
-              name: proj.name,
-              description: proj.description,
-              image: proj.image,
-              status: proj.status
-          }
-      });
-      projectIds.push(p.id);
+    const p = await prisma.project.create({
+      data: {
+        name: proj.name,
+        description: proj.description,
+        image: proj.image,
+        status: proj.status
+      }
+    });
+    projectIds.push(p.id);
   }
 
   // 6. Create Properties
   console.log('🏠 Creating Properties...');
-  
+
   // Mix of data to generate properties
   const titles = ['Modern Apartment with View', 'Luxury Villa with Pool', 'Cozy Family Home', 'Spacious Office Space', 'Premium Penthouse', 'City Center Loft'];
   const purposes = ['SALE', 'RENT'];
-  
+
   // Create 20 properties
   for (let i = 0; i < 20; i++) {
     const isProject = Math.random() > 0.7;
@@ -224,10 +252,10 @@ async function main() {
     const locationId = locationMap[Math.floor(Math.random() * locationMap.length)];
     const agentId = agentIds[Math.floor(Math.random() * agentIds.length)];
     const image = PROPERTY_IMAGES[i % PROPERTY_IMAGES.length];
-    
+
     const property = await prisma.property.create({
       data: {
-        title: `${titles[Math.floor(Math.random() * titles.length)]} ${i+1}`,
+        title: `${titles[Math.floor(Math.random() * titles.length)]} ${i + 1}`,
         description: 'This is a beautiful property featuring modern amenities, great location, and spacious interiors. Perfect for your needs.',
         shortDescription: 'Beautiful property in a great location.',
         price: Math.floor(Math.random() * 500000) + 50000,
@@ -244,17 +272,17 @@ async function main() {
         propertyTypeId: typeMap[typeName],
         projectId: projectId,
         images: {
-            create: [
-                { imageKey: image, sortOrder: 0 },
-                { imageKey: PROPERTY_IMAGES[(i+1) % PROPERTY_IMAGES.length], sortOrder: 1 },
-                { imageKey: PROPERTY_IMAGES[(i+2) % PROPERTY_IMAGES.length], sortOrder: 2 },
-            ]
+          create: [
+            { imageKey: image, sortOrder: 0 },
+            { imageKey: PROPERTY_IMAGES[(i + 1) % PROPERTY_IMAGES.length], sortOrder: 1 },
+            { imageKey: PROPERTY_IMAGES[(i + 2) % PROPERTY_IMAGES.length], sortOrder: 2 },
+          ]
         },
         amenities: {
-            create: allAmenities
-                .sort(() => 0.5 - Math.random()) // Shuffle
-                .slice(0, 5) // Take 5 random
-                .map(a => ({ amenityId: a.id }))
+          create: allAmenities
+            .sort(() => 0.5 - Math.random()) // Shuffle
+            .slice(0, 5) // Take 5 random
+            .map(a => ({ amenityId: a.id }))
         }
       }
     });
@@ -263,11 +291,11 @@ async function main() {
   // 7. Create Website Reviews (Testimonials)
   console.log('⭐ Creating Testimonials...');
   await prisma.websiteReview.createMany({
-      data: [
-          { name: 'John Doe', role: 'Homeowner', rating: 5, text: 'Found my dream house in weeks! Amazing service.', image: AGENT_IMAGES[0] },
-          { name: 'Jane Smith', role: 'Tenant', rating: 4, text: 'Great experience renting an apartment. Very professional.', image: AGENT_IMAGES[1] },
-          { name: 'Ali Hassan', role: 'Investor', rating: 5, text: 'Best platform for real estate investment in the region.', image: AGENT_IMAGES[2] },
-      ]
+    data: [
+      { name: 'John Doe', role: 'Homeowner', rating: 5, text: 'Found my dream house in weeks! Amazing service.', image: AGENT_IMAGES[0] },
+      { name: 'Jane Smith', role: 'Tenant', rating: 4, text: 'Great experience renting an apartment. Very professional.', image: AGENT_IMAGES[1] },
+      { name: 'Ali Hassan', role: 'Investor', rating: 5, text: 'Best platform for real estate investment in the region.', image: AGENT_IMAGES[2] },
+    ]
   });
 
   console.log('✅ Seeding completed! Database is populated.');
