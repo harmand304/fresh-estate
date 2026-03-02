@@ -35,21 +35,23 @@ const app = express();
 app.set('trust proxy', 1);
 
 // CORS Configuration
-const allowedOrigins = [
-  'https://fresh-estate.netlify.app',
-  'http://localhost:5173',
-  'http://localhost:3000',
-  'http://localhost:8080',
-  'http://localhost:8081'
-];
+// Debug Env
+console.log('DEBUG: DATABASE_URL is', process.env.DATABASE_URL ? 'set' : 'not set');
 
-if (process.env.ALLOWED_ORIGINS) {
-  const envOrigins = process.env.ALLOWED_ORIGINS.split(',').map(origin => origin.trim());
-  allowedOrigins.push(...envOrigins);
-}
+const allowedOrigins = [
+  process.env.FRONTEND_URL,   // Vercel production URL
+  'http://localhost:8080',
+  'http://localhost:5173',
+  'http://localhost:5001',
+].filter(Boolean);
 
 app.use(cors({
-  origin: allowedOrigins,
+  origin: (origin, callback) => {
+    // Allow requests with no origin (e.g., curl, Postman, mobile apps)
+    if (!origin) return callback(null, true);
+    if (allowedOrigins.includes(origin)) return callback(null, true);
+    return callback(new Error('Not allowed by CORS'));
+  },
   credentials: true
 }));
 
@@ -140,3 +142,6 @@ app.listen(PORT, () => {
 process.on('beforeExit', async () => {
   await prisma.$disconnect();
 });
+
+// Keep process alive
+setInterval(() => { }, 1 << 30);
