@@ -39,7 +39,7 @@ app.set('trust proxy', 1);
 console.log('DEBUG: DATABASE_URL is', process.env.DATABASE_URL ? 'set' : 'not set');
 
 const allowedOrigins = [
-  process.env.FRONTEND_URL,   // Vercel production URL
+  process.env.FRONTEND_URL,   // Vercel production URL (if set)
   'http://localhost:8080',
   'http://localhost:5173',
   'http://localhost:5001',
@@ -47,9 +47,12 @@ const allowedOrigins = [
 
 app.use(cors({
   origin: (origin, callback) => {
-    // Allow requests with no origin (e.g., curl, Postman, mobile apps)
+    // Allow requests with no origin (curl, Postman, same-origin Vercel requests)
     if (!origin) return callback(null, true);
+    // Allow if origin matches allowed list
     if (allowedOrigins.includes(origin)) return callback(null, true);
+    // Allow any *.vercel.app origin (covers preview deployments)
+    if (origin.endsWith('.vercel.app')) return callback(null, true);
     return callback(new Error('Not allowed by CORS'));
   },
   credentials: true
@@ -148,6 +151,4 @@ if (process.env.NODE_ENV !== 'production') {
 process.on('beforeExit', async () => {
   await prisma.$disconnect();
 });
-
-// Keep process alive
-setInterval(() => { }, 1 << 30);
+// NOTE: setInterval removed — it blocks Vercel serverless function completion
