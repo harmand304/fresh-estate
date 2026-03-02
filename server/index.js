@@ -131,12 +131,18 @@ app.use((err, req, res, next) => {
 });
 
 // ============================================
-// START SERVER
+// EXPORT + START SERVER
 // ============================================
 
-app.listen(PORT, () => {
-  console.log(`Server running on http://localhost:${PORT}`);
-});
+// Export Express app for Vercel Serverless Function (api/index.js)
+export default app;
+
+// Only bind a port when running locally (not on Vercel)
+if (process.env.NODE_ENV !== 'production') {
+  app.listen(PORT, () => {
+    console.log(`Server running on http://localhost:${PORT}`);
+  });
+}
 
 // Graceful shutdown
 process.on('beforeExit', async () => {
