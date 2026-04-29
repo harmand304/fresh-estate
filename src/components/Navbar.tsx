@@ -216,6 +216,16 @@ const Navbar = () => {
                         {user?.role}
                       </span>
                     </div>
+                    
+                    <Link
+                      to="/profile"
+                      onClick={() => setShowProfileDropdown(false)}
+                      className="w-full flex items-center gap-3 px-4 py-3 text-sm text-slate-700 hover:bg-slate-50 transition-colors border-b border-slate-50"
+                    >
+                      <UserCircle className="w-4 h-4" />
+                      View Profile
+                    </Link>
+                    
                     <button
                       onClick={() => {
                         setShowProfileDropdown(false);

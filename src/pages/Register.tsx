@@ -1,22 +1,67 @@
-import { useState } from 'react';
+import { useState, useRef } from 'react';
 import { API_URL } from "@/config";
 import { Link, useNavigate } from 'react-router-dom';
 import { useAuth } from '@/contexts/AuthContext';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
-import { Mail, Lock, User, AlertCircle, CheckCircle, ArrowLeft } from 'lucide-react';
+import { Mail, Lock, User, AlertCircle, CheckCircle, ArrowLeft, Camera, Loader2, Phone } from 'lucide-react';
+import { toast } from 'sonner';
+import { compressImage } from '@/utils/compressImage';
 
 const Register = () => {
   const [name, setName] = useState('');
   const [email, setEmail] = useState('');
+  const [phone, setPhone] = useState('');
   const [password, setPassword] = useState('');
   const [confirmPassword, setConfirmPassword] = useState('');
+  const [image, setImage] = useState<string | null>(null);
+  const [isUploading, setIsUploading] = useState(false);
   const [error, setError] = useState('');
   const [success, setSuccess] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
+  const fileInputRef = useRef<HTMLInputElement>(null);
   const { register, login } = useAuth();
   const navigate = useNavigate();
+
+  const handleImageUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+
+    if (!file.type.startsWith('image/')) {
+      toast.error('Please select an image file');
+      return;
+    }
+
+    setIsUploading(true);
+    const toastId = toast.loading('Compressing and uploading avatar...');
+
+    try {
+      const compressedFile = await compressImage(file);
+      const uploadFormData = new FormData();
+      uploadFormData.append('image', compressedFile);
+
+      // Upload to B2
+      const res = await fetch(`${API_URL}/api/upload?type=user`, {
+        method: 'POST',
+        body: uploadFormData,
+      });
+
+      const data = await res.json();
+
+      if (data.success && data.key) {
+        setImage(data.signedUrl);
+        toast.success('Avatar ready!', { id: toastId });
+      } else {
+        toast.error('Upload failed', { id: toastId });
+      }
+    } catch (error) {
+      console.error('Upload error:', error);
+      toast.error('Failed to upload image', { id: toastId });
+    } finally {
+      setIsUploading(false);
+    }
+  };
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -34,7 +79,7 @@ const Register = () => {
 
     setIsLoading(true);
 
-    const result = await register(email, password, name);
+    const result = await register(email, password, name, phone, image || undefined);
 
     if (result.success) {
       // Auto-login after registration
@@ -88,7 +133,43 @@ const Register = () => {
             </div>
           )}
 
-          <form onSubmit={handleSubmit} className="space-y-5">
+          <form onSubmit={handleSubmit} className="space-y-4">
+            
+            {/* Profile Image Upload */}
+            <div className="flex flex-col items-center justify-center mb-6">
+              <div className="w-24 h-24 rounded-full overflow-hidden border-4 border-slate-100 shadow-sm flex-shrink-0 relative group bg-white">
+                {image ? (
+                  <img src={image} alt="Avatar Preview" className="w-full h-full object-cover" />
+                ) : (
+                  <div className="w-full h-full bg-slate-50 flex items-center justify-center">
+                    <User className="w-10 h-10 text-slate-300" />
+                  </div>
+                )}
+                
+                {/* Upload Overlay */}
+                <button 
+                  type="button"
+                  onClick={() => fileInputRef.current?.click()}
+                  disabled={isUploading}
+                  className="absolute inset-0 bg-black/50 flex flex-col items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity cursor-pointer disabled:cursor-not-allowed"
+                >
+                  {isUploading ? (
+                     <Loader2 className="w-6 h-6 text-white animate-spin" />
+                  ) : (
+                     <Camera className="w-6 h-6 text-white" />
+                  )}
+                </button>
+                <input
+                  type="file"
+                  ref={fileInputRef}
+                  accept="image/*"
+                  onChange={handleImageUpload}
+                  className="hidden"
+                />
+              </div>
+              <p className="text-xs text-slate-500 mt-2 font-medium">Add a profile photo (optional)</p>
+            </div>
+
             <div className="space-y-2">
               <Label htmlFor="name">Name (optional)</Label>
               <div className="relative">
@@ -116,6 +197,21 @@ const Register = () => {
                   onChange={(e) => setEmail(e.target.value)}
                   className="pl-10"
                   required
+                />
+              </div>
+            </div>
+
+            <div className="space-y-2">
+              <Label htmlFor="phone">Phone Number (optional)</Label>
+              <div className="relative">
+                <Phone className="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-slate-400" />
+                <Input
+                  id="phone"
+                  type="tel"
+                  placeholder="+964 750 XXX XXXX"
+                  value={phone}
+                  onChange={(e) => setPhone(e.target.value)}
+                  className="pl-10"
                 />
               </div>
             </div>

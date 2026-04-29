@@ -63,11 +63,15 @@ const Hero = () => {
   useEffect(() => {
     const fetchStats = async () => {
       try {
-        const response = await fetch(`${API_URL}/api/properties`);
+        const response = await fetch(`${API_URL}/api/properties?limit=1000`);
         if (response.ok) {
-          const properties = await response.json();
-          const propertyCount = properties.length;
-          const uniqueCities = new Set(properties.map((p: { city: string }) => p.city));
+          const data = await response.json();
+          const propertyList = data.properties || [];
+          const propertyCount = data.pagination?.total || propertyList.length;
+          // Filter out null/undefined cities before mapping
+          const validProperties = propertyList.filter((p: any) => p.city);
+          const uniqueCities = new Set(validProperties.map((p: any) => p.city));
+          
           setStats({ propertyCount, cityCount: uniqueCities.size });
         }
       } catch (error) {

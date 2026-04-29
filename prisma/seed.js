@@ -3,35 +3,12 @@ import bcrypt from 'bcryptjs';
 
 const prisma = new PrismaClient();
 
-const PROPERTY_IMAGES = [
-  '/images/image_50.jpg',
-  '/images/image_51.jpg',
-  '/images/image_52.jpg',
-  '/images/image_53.jpg',
-  '/images/image_54.jpg',
-  '/images/image_55.jpg',
-  '/images/image_56.jpg',
-  '/images/image_57.jpg',
-  '/images/image_58.jpg',
-  '/images/image_59.jpg',
-  '/images/image_60.jpg',
-  '/images/image_61.jpg',
-  '/images/image_62.png',
-  '/images/image_63.jpg',
-  '/images/image_64.jpg',
-  '/images/image_65.jpg',
-  '/images/image_66.jpg',
-  '/images/image_67.jpg',
-  '/images/image_68.jpg',
-  '/images/image_69.jpg'
-];
-
 const AGENT_IMAGES = [
   '/images/image_90.jpg',
   '/images/image_91.jpg',
   '/images/image_92.jpg',
   '/images/image_93.jpg',
-  '/images/image_94.jpg'
+  '/images/image_94.jpg',
 ];
 
 const AMENITIES_DATA = [
@@ -57,33 +34,90 @@ const AMENITIES_DATA = [
   { name: 'Storage Unit', icon: 'archive', category: 'Building' },
 ];
 
-async function main() {
-  console.log('🌱 Starting database seed...');
+// Mood-House property data mapped to Fresh-Estates schema
+// title, price, type (house/apartment/land/commercial), purpose (SALE/RENT),
+// bedrooms, bathrooms, areaSqm, location, city, image, featured
+const MOOD_HOUSE_PROPERTIES = [
+  // --- Erbil ---
+  { title: 'Modern House in 5 Hasarok', price: 74000, type: 'House', purpose: 'SALE', bedrooms: 3, bathrooms: 1, areaSqm: 116, location: '5 Hasarok', city: 'Erbil', featured: true, image: 'https://images.unsplash.com/photo-1600596542815-ffad4c1539a9?auto=format&fit=crop&w=800&q=80' },
+  { title: 'Spacious Villa in Andazyaran', price: 230000, type: 'Villa', purpose: 'SALE', bedrooms: 5, bathrooms: 2, areaSqm: 297, location: 'Andazyaran', city: 'Erbil', featured: true, image: 'https://images.unsplash.com/photo-1600585154340-be6161a56a0c?auto=format&fit=crop&w=800&q=80' },
+  { title: 'Family Home in Andazyaran', price: 150000, type: 'House', purpose: 'SALE', bedrooms: 4, bathrooms: 3, areaSqm: 174, location: 'Andazyaran', city: 'Erbil', featured: false, image: 'https://images.unsplash.com/photo-1613490493576-7fde63acd811?auto=format&fit=crop&w=800&q=80' },
+  { title: 'Elegant Villa in Aram Village 2', price: 250000, type: 'Villa', purpose: 'SALE', bedrooms: 4, bathrooms: 1, areaSqm: 225, location: 'Aram Village', city: 'Erbil', featured: true, image: 'https://images.unsplash.com/photo-1512917774080-9991f1c4c750?auto=format&fit=crop&w=800&q=80' },
+  { title: 'Beautiful Home in Ashti City', price: 135000, type: 'House', purpose: 'SALE', bedrooms: 3, bathrooms: 1, areaSqm: 205, location: 'Ashti City', city: 'Erbil', featured: false, image: 'https://images.unsplash.com/photo-1580587771525-78b9dba3b914?auto=format&fit=crop&w=800&q=80' },
+  { title: 'Cozy House in Azadi', price: 165000, type: 'House', purpose: 'SALE', bedrooms: 4, bathrooms: 1, areaSqm: 139, location: 'Azadi', city: 'Erbil', featured: false, image: 'https://images.unsplash.com/photo-1600047509807-ba8f99d2cdde?auto=format&fit=crop&w=800&q=80' },
+  { title: 'Family Home in Badawa', price: 120000, type: 'House', purpose: 'SALE', bedrooms: 4, bathrooms: 2, areaSqm: 186, location: 'Badawa', city: 'Erbil', featured: false, image: 'https://images.unsplash.com/photo-1568605114967-8130f3a36994?auto=format&fit=crop&w=800&q=80' },
+  { title: 'Luxury Villa for Rent in Bafrin City', price: 900, type: 'Villa', purpose: 'RENT', bedrooms: 4, bathrooms: 3, areaSqm: 465, location: 'Bafrin City', city: 'Erbil', featured: true, image: 'https://images.unsplash.com/photo-1583608205776-bfd35f0d9f83?auto=format&fit=crop&w=800&q=80' },
+  { title: 'Modern House in Bakhtyari', price: 122500, type: 'House', purpose: 'SALE', bedrooms: 3, bathrooms: 2, areaSqm: 93, location: 'Bakhtyari', city: 'Erbil', featured: false, image: 'https://images.unsplash.com/photo-1600566753190-17f0baa2a6c3?auto=format&fit=crop&w=800&q=80' },
+  { title: 'Elegant Home in Brayati', price: 250000, type: 'House', purpose: 'SALE', bedrooms: 6, bathrooms: 1, areaSqm: 197, location: 'Brayati', city: 'Erbil', featured: false, image: 'https://images.unsplash.com/photo-1605276374104-dee2a0ed3cd6?auto=format&fit=crop&w=800&q=80' },
+  { title: 'Modern Apartment in Cihan City', price: 700, type: 'Apartment', purpose: 'RENT', bedrooms: 3, bathrooms: 2, areaSqm: 190, location: 'Cihan City', city: 'Erbil', featured: false, image: 'https://images.unsplash.com/photo-1502672260266-1c1ef2d93688?auto=format&fit=crop&w=800&q=80' },
+  { title: 'Spacious Home in Darwazay Hawler', price: 172500, type: 'House', purpose: 'SALE', bedrooms: 4, bathrooms: 4, areaSqm: 223, location: 'Darwazay Hawler', city: 'Erbil', featured: false, image: 'https://images.unsplash.com/photo-1600585154526-990dced4db0d?auto=format&fit=crop&w=800&q=80' },
+  { title: 'Premium Villa in Dolarawa', price: 265000, type: 'Villa', purpose: 'SALE', bedrooms: 5, bathrooms: 4, areaSqm: 186, location: 'Dolarawa', city: 'Erbil', featured: true, image: 'https://images.unsplash.com/photo-1600607687939-ce8a6c25118c?auto=format&fit=crop&w=800&q=80' },
+  { title: 'Dream City Luxury Home', price: 440000, type: 'House', purpose: 'SALE', bedrooms: 4, bathrooms: 1, areaSqm: 232, location: 'Dream City', city: 'Erbil', featured: false, image: 'https://images.unsplash.com/photo-1600566753086-00f18fb6b3ea?auto=format&fit=crop&w=800&q=80' },
+  { title: 'Empire World Apartment', price: 156000, type: 'Apartment', purpose: 'SALE', bedrooms: 2, bathrooms: 1, areaSqm: 133, location: 'Empire World', city: 'Erbil', featured: false, image: 'https://images.unsplash.com/photo-1545324418-cc1a3fa10c00?auto=format&fit=crop&w=800&q=80' },
+  { title: 'Eskan Tower Apartment', price: 55000, type: 'Apartment', purpose: 'SALE', bedrooms: 2, bathrooms: 1, areaSqm: 98, location: 'Eskan Tower', city: 'Erbil', featured: false, image: 'https://images.unsplash.com/photo-1560448204-e02f11c3d0e2?auto=format&fit=crop&w=800&q=80' },
+  { title: 'Family Land Villa for Rent', price: 850, type: 'Villa', purpose: 'RENT', bedrooms: 4, bathrooms: 2, areaSqm: 432, location: 'Family Land', city: 'Erbil', featured: false, image: 'https://images.unsplash.com/photo-1600573472550-8090b5e0745e?auto=format&fit=crop&w=800&q=80' },
+  { title: 'Farmanbaran Family Home', price: 103000, type: 'House', purpose: 'SALE', bedrooms: 4, bathrooms: 5, areaSqm: 139, location: 'Farmanbaran', city: 'Erbil', featured: false, image: 'https://images.unsplash.com/photo-1600585154340-be6161a56a0c?auto=format&fit=crop&w=800&q=80' },
+  { title: 'Firdaws City Villa', price: 250000, type: 'Villa', purpose: 'SALE', bedrooms: 4, bathrooms: 3, areaSqm: 279, location: 'Firdaws City', city: 'Erbil', featured: false, image: 'https://images.unsplash.com/photo-1613977257363-707ba9348227?auto=format&fit=crop&w=800&q=80' },
+  { title: 'FM Plaza Apartment', price: 60000, type: 'Apartment', purpose: 'SALE', bedrooms: 1, bathrooms: 1, areaSqm: 85, location: 'FM Plaza', city: 'Erbil', featured: false, image: 'https://images.unsplash.com/photo-1522708323590-d24dbb6b0267?auto=format&fit=crop&w=800&q=80' },
+  { title: 'Ganjan City Luxury Villa', price: 290000, type: 'Villa', purpose: 'SALE', bedrooms: 5, bathrooms: 4, areaSqm: 418, location: 'Ganjan City', city: 'Erbil', featured: false, image: 'https://images.unsplash.com/photo-1600596542815-ffad4c1539a9?auto=format&fit=crop&w=800&q=80' },
+  { title: 'Ganjan Life Modern Apartment', price: 125000, type: 'Apartment', purpose: 'SALE', bedrooms: 3, bathrooms: 2, areaSqm: 147, location: 'Ganjan Life', city: 'Erbil', featured: false, image: 'https://images.unsplash.com/photo-1493809842364-78817add7ffb?auto=format&fit=crop&w=800&q=80' },
+  { title: 'Hawleri Nwe Family Home', price: 120000, type: 'House', purpose: 'SALE', bedrooms: 4, bathrooms: 2, areaSqm: 139, location: 'Hawleri Nwe', city: 'Erbil', featured: false, image: 'https://images.unsplash.com/photo-1600047509358-9dc75507daeb?auto=format&fit=crop&w=800&q=80' },
+  { title: 'Hiwa City Modern Home', price: 195000, type: 'House', purpose: 'SALE', bedrooms: 5, bathrooms: 4, areaSqm: 181, location: 'Hiwa City', city: 'Erbil', featured: false, image: 'https://images.unsplash.com/photo-1600585154526-990dced4db0d?auto=format&fit=crop&w=800&q=80' },
+  { title: 'Iskan Family Home', price: 130000, type: 'House', purpose: 'SALE', bedrooms: 5, bathrooms: 2, areaSqm: 160, location: 'Iskan', city: 'Erbil', featured: false, image: 'https://images.unsplash.com/photo-1600566753190-17f0baa2a6c3?auto=format&fit=crop&w=800&q=80' },
+  // --- Sulaymaniyah ---
+  { title: 'Altun Premium Home', price: 190000, type: 'House', purpose: 'RENT', bedrooms: 3, bathrooms: 3, areaSqm: 186, location: 'Altun', city: 'Sulaymaniyah', featured: true, image: 'https://images.unsplash.com/photo-1600596542815-ffad4c1539a9?auto=format&fit=crop&w=800&q=80' },
+  { title: 'Bahary Shar Family Home', price: 250000, type: 'House', purpose: 'SALE', bedrooms: 4, bathrooms: 2, areaSqm: 186, location: 'Bahary Shar', city: 'Sulaymaniyah', featured: false, image: 'https://images.unsplash.com/photo-1600585154340-be6161a56a0c?auto=format&fit=crop&w=800&q=80' },
+  { title: 'Bakrajo Spacious Villa', price: 340000, type: 'Villa', purpose: 'SALE', bedrooms: 6, bathrooms: 4, areaSqm: 279, location: 'Bakrajo', city: 'Sulaymaniyah', featured: true, image: 'https://images.unsplash.com/photo-1613490493576-7fde63acd811?auto=format&fit=crop&w=800&q=80' },
+  { title: 'Bakrajo Rental Home', price: 190000, type: 'House', purpose: 'RENT', bedrooms: 5, bathrooms: 2, areaSqm: 186, location: 'Bakrajo', city: 'Sulaymaniyah', featured: false, image: 'https://images.unsplash.com/photo-1512917774080-9991f1c4c750?auto=format&fit=crop&w=800&q=80' },
+  { title: 'Baxtyari Large Villa', price: 300000, type: 'Villa', purpose: 'RENT', bedrooms: 10, bathrooms: 3, areaSqm: 330, location: 'Baxtyari', city: 'Sulaymaniyah', featured: false, image: 'https://images.unsplash.com/photo-1580587771525-78b9dba3b914?auto=format&fit=crop&w=800&q=80' },
+  { title: 'Chwarchra Modern Home', price: 230000, type: 'House', purpose: 'SALE', bedrooms: 4, bathrooms: 2, areaSqm: 149, location: 'Chwarchra', city: 'Sulaymaniyah', featured: false, image: 'https://images.unsplash.com/photo-1600047509807-ba8f99d2cdde?auto=format&fit=crop&w=800&q=80' },
+  { title: 'City Towers Apartment', price: 105000, type: 'Apartment', purpose: 'SALE', bedrooms: 3, bathrooms: 2, areaSqm: 147, location: 'City Towers', city: 'Sulaymaniyah', featured: false, image: 'https://images.unsplash.com/photo-1568605114967-8130f3a36994?auto=format&fit=crop&w=800&q=80' },
+  { title: 'Dania City Premium Apartment', price: 190000, type: 'Apartment', purpose: 'SALE', bedrooms: 3, bathrooms: 2, areaSqm: 214, location: 'Dania City', city: 'Sulaymaniyah', featured: true, image: 'https://images.unsplash.com/photo-1583608205776-bfd35f0d9f83?auto=format&fit=crop&w=800&q=80' },
+  { title: 'Darwaza City Apartment', price: 140000, type: 'Apartment', purpose: 'SALE', bedrooms: 3, bathrooms: 2, areaSqm: 186, location: 'Darwaza City', city: 'Sulaymaniyah', featured: false, image: 'https://images.unsplash.com/photo-1600566753190-17f0baa2a6c3?auto=format&fit=crop&w=800&q=80' },
+  { title: 'Garden City Luxury Apartment', price: 220000, type: 'Apartment', purpose: 'SALE', bedrooms: 3, bathrooms: 1, areaSqm: 216, location: 'Garden City', city: 'Sulaymaniyah', featured: false, image: 'https://images.unsplash.com/photo-1605276374104-dee2a0ed3cd6?auto=format&fit=crop&w=800&q=80' },
+  { title: 'Goizha City Modern Apartment', price: 115000, type: 'Apartment', purpose: 'SALE', bedrooms: 3, bathrooms: 2, areaSqm: 186, location: 'Goizha City', city: 'Sulaymaniyah', featured: false, image: 'https://images.unsplash.com/photo-1502672260266-1c1ef2d93688?auto=format&fit=crop&w=800&q=80' },
+  { title: 'Gundy Almany Apartment', price: 80000, type: 'Apartment', purpose: 'SALE', bedrooms: 2, bathrooms: 1, areaSqm: 98, location: 'Gundy Almany', city: 'Sulaymaniyah', featured: false, image: 'https://images.unsplash.com/photo-1600585154526-990dced4db0d?auto=format&fit=crop&w=800&q=80' },
+  { title: 'Gundy Almany Villa', price: 300000, type: 'Villa', purpose: 'SALE', bedrooms: 5, bathrooms: 2, areaSqm: 223, location: 'Gundy Almany', city: 'Sulaymaniyah', featured: false, image: 'https://images.unsplash.com/photo-1600607687939-ce8a6c25118c?auto=format&fit=crop&w=800&q=80' },
+  { title: 'Hawara Barza Family Home', price: 180000, type: 'House', purpose: 'SALE', bedrooms: 5, bathrooms: 3, areaSqm: 139, location: 'Hawara Barza', city: 'Sulaymaniyah', featured: false, image: 'https://images.unsplash.com/photo-1600566753086-00f18fb6b3ea?auto=format&fit=crop&w=800&q=80' },
+  { title: 'Hiron City Premium Villa', price: 350000, type: 'Villa', purpose: 'SALE', bedrooms: 6, bathrooms: 2, areaSqm: 372, location: 'Hiron City', city: 'Sulaymaniyah', featured: false, image: 'https://images.unsplash.com/photo-1545324418-cc1a3fa10c00?auto=format&fit=crop&w=800&q=80' },
+  { title: 'Kany Kurda Family Home', price: 140000, type: 'House', purpose: 'SALE', bedrooms: 4, bathrooms: 2, areaSqm: 186, location: 'Kany Kurda', city: 'Sulaymaniyah', featured: false, image: 'https://images.unsplash.com/photo-1560448204-e02f11c3d0e2?auto=format&fit=crop&w=800&q=80' },
+  { title: 'Kaziwa Luxury Home', price: 340000, type: 'House', purpose: 'SALE', bedrooms: 6, bathrooms: 3, areaSqm: 186, location: 'Kaziwa', city: 'Sulaymaniyah', featured: false, image: 'https://images.unsplash.com/photo-1600573472550-8090b5e0745e?auto=format&fit=crop&w=800&q=80' },
+  { title: 'Kurdsat Premium Villa', price: 650000, type: 'Villa', purpose: 'SALE', bedrooms: 5, bathrooms: 3, areaSqm: 388, location: 'Kurdsat', city: 'Sulaymaniyah', featured: true, image: 'https://images.unsplash.com/photo-1600585154340-be6161a56a0c?auto=format&fit=crop&w=800&q=80' },
+  { title: 'Mamostayan Modern Home', price: 260000, type: 'House', purpose: 'SALE', bedrooms: 4, bathrooms: 2, areaSqm: 232, location: 'Mamostayan', city: 'Sulaymaniyah', featured: false, image: 'https://images.unsplash.com/photo-1613977257363-707ba9348227?auto=format&fit=crop&w=800&q=80' },
+  { title: 'Miran City Affordable Apartment', price: 66000, type: 'Apartment', purpose: 'SALE', bedrooms: 3, bathrooms: 2, areaSqm: 134, location: 'Miran City', city: 'Sulaymaniyah', featured: false, image: 'https://images.unsplash.com/photo-1522708323590-d24dbb6b0267?auto=format&fit=crop&w=800&q=80' },
+  { title: 'Pak City Modern Apartment', price: 105000, type: 'Apartment', purpose: 'SALE', bedrooms: 3, bathrooms: 1, areaSqm: 178, location: 'Pak City', city: 'Sulaymaniyah', featured: false, image: 'https://images.unsplash.com/photo-1600596542815-ffad4c1539a9?auto=format&fit=crop&w=800&q=80' },
+  { title: 'Pasha City Rental Apartment', price: 300, type: 'Apartment', purpose: 'RENT', bedrooms: 3, bathrooms: 2, areaSqm: 186, location: 'Pasha City', city: 'Sulaymaniyah', featured: false, image: 'https://images.unsplash.com/photo-1493809842364-78817add7ffb?auto=format&fit=crop&w=800&q=80' },
+  { title: 'Qaiwan City Premium Apartment', price: 115000, type: 'Apartment', purpose: 'RENT', bedrooms: 3, bathrooms: 2, areaSqm: 167, location: 'Qaiwan City', city: 'Sulaymaniyah', featured: false, image: 'https://images.unsplash.com/photo-1600047509358-9dc75507daeb?auto=format&fit=crop&w=800&q=80' },
+  { title: 'Raparin Spacious Home', price: 150000, type: 'House', purpose: 'SALE', bedrooms: 2, bathrooms: 2, areaSqm: 186, location: 'Raparin', city: 'Sulaymaniyah', featured: false, image: 'https://images.unsplash.com/photo-1600585154526-990dced4db0d?auto=format&fit=crop&w=800&q=80' },
+  { title: 'Rzgary Premium Home', price: 220000, type: 'House', purpose: 'SALE', bedrooms: 1, bathrooms: 1, areaSqm: 186, location: 'Rzgary', city: 'Sulaymaniyah', featured: false, image: 'https://images.unsplash.com/photo-1600566753190-17f0baa2a6c3?auto=format&fit=crop&w=800&q=80' },
+  // --- Duhok ---
+  { title: 'Avro City Modern Villa', price: 280000, type: 'Villa', purpose: 'SALE', bedrooms: 5, bathrooms: 3, areaSqm: 320, location: 'Avro City', city: 'Duhok', featured: true, image: 'https://images.unsplash.com/photo-1613977257363-707ba9348227?auto=format&fit=crop&w=800&q=80' },
+  { title: 'Masike Cozy Home', price: 98000, type: 'House', purpose: 'SALE', bedrooms: 3, bathrooms: 2, areaSqm: 140, location: 'Masike', city: 'Duhok', featured: false, image: 'https://images.unsplash.com/photo-1600566753190-17f0baa2a6c3?auto=format&fit=crop&w=800&q=80' },
+  { title: 'Kro Family Home', price: 115000, type: 'House', purpose: 'SALE', bedrooms: 4, bathrooms: 2, areaSqm: 160, location: 'Kro', city: 'Duhok', featured: false, image: 'https://images.unsplash.com/photo-1600585154340-be6161a56a0c?auto=format&fit=crop&w=800&q=80' },
+  { title: 'Malta Apartment for Rent', price: 450, type: 'Apartment', purpose: 'RENT', bedrooms: 2, bathrooms: 1, areaSqm: 95, location: 'Malta', city: 'Duhok', featured: false, image: 'https://images.unsplash.com/photo-1502672260266-1c1ef2d93688?auto=format&fit=crop&w=800&q=80' },
+  { title: 'Avro City Luxury Apartment', price: 145000, type: 'Apartment', purpose: 'SALE', bedrooms: 3, bathrooms: 2, areaSqm: 175, location: 'Avro City', city: 'Duhok', featured: false, image: 'https://images.unsplash.com/photo-1545324418-cc1a3fa10c00?auto=format&fit=crop&w=800&q=80' },
+  { title: 'Masike Premium Villa', price: 320000, type: 'Villa', purpose: 'SALE', bedrooms: 6, bathrooms: 3, areaSqm: 380, location: 'Masike', city: 'Duhok', featured: true, image: 'https://images.unsplash.com/photo-1583608205776-bfd35f0d9f83?auto=format&fit=crop&w=800&q=80' },
+];
 
-  // CLEANUP: Remove existing data to avoid duplicates
+async function main() {
+  console.log('🌱 Starting database seed with Mood-House data...');
+
+  // CLEANUP
   console.log('🧹 Cleaning up existing data...');
   await prisma.deal.deleteMany({});
   await prisma.inquiry.deleteMany({});
   await prisma.propertyImage.deleteMany({});
   await prisma.propertyAmenity.deleteMany({});
-
-  // Delete properties (will cascade delete related items if configured)
   await prisma.property.deleteMany({});
-
-  // Delete projects (will cascade delete related items if configured)
   await prisma.project.deleteMany({});
-
-  // Delete website reviews
   await prisma.websiteReview.deleteMany({});
-
   console.log('Cleaned up successfully.');
 
-  // 1. Create Property Types
+  // 1. Property Types
   console.log('🏗️ Creating Property Types...');
-  const propertyTypes = ['Apartment', 'Villa', 'House', 'Land', 'Office', 'Commercial'];
+  const propertyTypeNames = ['Apartment', 'Villa', 'House', 'Land', 'Office', 'Commercial'];
   const typeMap = {};
-
-  for (const type of propertyTypes) {
+  for (const type of propertyTypeNames) {
     const pt = await prisma.propertyType.upsert({
       where: { name: type },
       update: {},
@@ -92,37 +126,45 @@ async function main() {
     typeMap[type] = pt.id;
   }
 
-  // 2. Create Amenities
+  // 2. Amenities
   console.log('🛁 Creating Amenities...');
-
   const existingAmenitiesCount = await prisma.amenity.count();
   if (existingAmenitiesCount === 0) {
     await prisma.amenity.createMany({ data: AMENITIES_DATA });
-    console.log(`Created ${AMENITIES_DATA.length} amenities.`);
-  } else {
-    console.log('Amenities already exist.');
   }
   const allAmenities = await prisma.amenity.findMany();
 
-
-  // 3. Create Cities and Locations
+  // 3. Cities and Locations from Mood-House data
   console.log('🏙️ Creating Cities and Locations...');
   const citiesData = [
     {
       name: 'Erbil',
-      locations: ['Empire World', 'Dream City', 'Italian City 1', 'Italian City 2', 'Park View', 'English Village']
+      locations: [
+        '5 Hasarok', 'Andazyaran', 'Aram Village', 'Ashti City', 'Azadi', 'Badawa',
+        'Bafrin City', 'Bakhtyari', 'Brayati', 'Cihan City', 'Darwazay Hawler',
+        'Dolarawa', 'Dream City', 'Empire World', 'Eskan Tower', 'Family Land',
+        'Farmanbaran', 'Firdaws City', 'FM Plaza', 'Ganjan City', 'Ganjan Life',
+        'Hawleri Nwe', 'Hiwa City', 'Iskan', 'Italian City 1', 'Italian City 2',
+        'Park View', 'English Village',
+      ],
     },
     {
-      name: 'Sulaimani',
-      locations: ['Goizha City', 'Qaiwan City', 'Bakhtyari', 'Sarchnar', 'Raparin']
+      name: 'Sulaymaniyah',
+      locations: [
+        'Altun', 'Bahary Shar', 'Bakrajo', 'Baxtyari', 'Chwarchra', 'City Towers',
+        'Dania City', 'Darwaza City', 'Garden City', 'Goizha City', 'Gundy Almany',
+        'Hawara Barza', 'Hiron City', 'Kany Kurda', 'Kaziwa', 'Kurdsat',
+        'Mamostayan', 'Miran City', 'Pak City', 'Pasha City', 'Qaiwan City',
+        'Raparin', 'Rzgary', 'Sarchnar', 'Bakhtyari',
+      ],
     },
     {
       name: 'Duhok',
-      locations: ['Avro City', 'Masike', 'Kro', 'Malta']
-    }
+      locations: ['Avro City', 'Masike', 'Kro', 'Malta'],
+    },
   ];
 
-  const locationMap = []; // Array of location IDs
+  const locationMap = {}; // { "CityName|LocationName": id }
 
   for (const cityData of citiesData) {
     const city = await prisma.city.upsert({
@@ -137,54 +179,44 @@ async function main() {
         update: {},
         create: { name: locName, cityId: city.id },
       });
-      locationMap.push(loc.id);
+      locationMap[`${cityData.name}|${locName}`] = loc.id;
     }
   }
 
-  // 4. Create Users (Admin, Agent, Regular)
+  // 4. Users
   console.log('👤 Creating Users...');
   const password = await bcrypt.hash('password123', 10);
 
-  // Admin
-  const admin = await prisma.user.upsert({
-    where: { email: 'admin@mood.com' },
+  await prisma.user.upsert({
+    where: { email: 'admin@freshestates.com' },
     update: {},
-    create: { email: 'admin@mood.com', password, name: 'Admin User', role: 'ADMIN' },
+    create: { email: 'admin@freshestates.com', password, name: 'Admin User', role: 'ADMIN' },
   });
 
-  // Regular User
-  const user = await prisma.user.upsert({
-    where: { email: 'user@mood.com' },
+  await prisma.user.upsert({
+    where: { email: 'user@freshestates.com' },
     update: {},
-    create: { email: 'user@mood.com', password, name: 'Regular User', role: 'USER' },
+    create: { email: 'user@freshestates.com', password, name: 'Regular User', role: 'USER' },
   });
 
-  // Agents
+  // 5. Agents
   console.log('🕵️ Creating Agents...');
   const agentsList = [
-    { name: 'Sarah Ahmed', email: 'sarah@mood.com', bio: 'Premium property specialist with 10 years experience.', image: AGENT_IMAGES[0] },
-    { name: 'Mohamad Karim', email: 'mohamad@mood.com', bio: 'Expert in commercial real estate and investment opportunities.', image: AGENT_IMAGES[1] },
-    { name: 'Zainab Ali', email: 'zainab@mood.com', bio: 'Dedicated to finding your dream home in Erbil.', image: AGENT_IMAGES[2] },
-    { name: 'Yousif Hassan', email: 'yousif@mood.com', bio: 'Top rated agent for luxury villas and penthouses.', image: AGENT_IMAGES[3] },
-    { name: 'Dina Omar', email: 'dina@mood.com', bio: 'Modern apartment specialist. I help you find the best views.', image: AGENT_IMAGES[4] },
+    { name: 'Sarah Ahmed', email: 'sarah@freshestates.com', bio: 'Premium property specialist with 10 years experience in the Kurdistan Region.', image: AGENT_IMAGES[0] },
+    { name: 'Mohamad Karim', email: 'mohamad@freshestates.com', bio: 'Expert in commercial real estate and investment opportunities across Erbil.', image: AGENT_IMAGES[1] },
+    { name: 'Zainab Ali', email: 'zainab@freshestates.com', bio: 'Dedicated to finding your dream home in Sulaymaniyah and surrounding areas.', image: AGENT_IMAGES[2] },
+    { name: 'Yousif Hassan', email: 'yousif@freshestates.com', bio: 'Top rated agent for luxury villas and penthouses in Duhok.', image: AGENT_IMAGES[3] },
+    { name: 'Dina Omar', email: 'dina@freshestates.com', bio: 'Modern apartment specialist. I help you find the best views in Kurdistan.', image: AGENT_IMAGES[4] },
   ];
 
   const agentIds = [];
-
   for (const agentData of agentsList) {
-    // User account for agent
     const agentUser = await prisma.user.upsert({
       where: { email: agentData.email },
       update: {},
-      create: {
-        email: agentData.email,
-        password,
-        name: agentData.name,
-        role: 'AGENT'
-      },
+      create: { email: agentData.email, password, name: agentData.name, role: 'AGENT' },
     });
 
-    // Agent profile
     const agentProfile = await prisma.agent.upsert({
       where: { userId: agentUser.id },
       update: {},
@@ -196,110 +228,95 @@ async function main() {
         image: agentData.image,
         phone: '+964 750 ' + Math.floor(1000000 + Math.random() * 9000000),
         experience: Math.floor(Math.random() * 15) + 2,
-        rating: 4.5 + (Math.random() * 0.5),
+        rating: 4.5 + Math.random() * 0.5,
         reviewCount: Math.floor(Math.random() * 50) + 10,
         isTopAgent: Math.random() > 0.5,
-        officeAddress: 'Main St, City Center'
-      }
+        officeAddress: 'Main St, City Center',
+      },
     });
 
-    // Create some reviews for the agent
     await prisma.review.create({
       data: {
         agentId: agentProfile.id,
         name: 'Happy Client',
         rating: 5,
-        text: 'Great service! Highly recommended.'
-      }
+        text: 'Great service! Highly recommended.',
+      },
     });
 
     agentIds.push(agentProfile.id);
   }
 
-  // 5. Create Projects
+  // 6. Projects
   console.log('🏗️ Creating Projects...');
   const projectsData = [
-    { name: 'Sky Towers', description: 'Luxury living in the clouds.', image: PROPERTY_IMAGES[0], status: 'PRE_SELLING' },
-    { name: 'Green Valley', description: 'Eco-friendly community with parks.', image: PROPERTY_IMAGES[1], status: 'COMMERCIAL' },
-    { name: 'Golden Gate', description: 'Premium gated community.', image: PROPERTY_IMAGES[2], status: 'COMPLETED' },
+    { name: 'Sky Towers', description: 'Luxury living in Erbil city center.', image: 'https://images.unsplash.com/photo-1600596542815-ffad4c1539a9?auto=format&fit=crop&w=800&q=80', status: 'PRE_SELLING' },
+    { name: 'Green Valley', description: 'Eco-friendly community with parks in Sulaymaniyah.', image: 'https://images.unsplash.com/photo-1600585154340-be6161a56a0c?auto=format&fit=crop&w=800&q=80', status: 'COMMERCIAL' },
+    { name: 'Golden Gate', description: 'Premium gated community in Duhok.', image: 'https://images.unsplash.com/photo-1613490493576-7fde63acd811?auto=format&fit=crop&w=800&q=80', status: 'COMPLETED' },
   ];
 
   const projectIds = [];
   for (const proj of projectsData) {
-    const p = await prisma.project.create({
-      data: {
-        name: proj.name,
-        description: proj.description,
-        image: proj.image,
-        status: proj.status
-      }
-    });
+    const p = await prisma.project.create({ data: proj });
     projectIds.push(p.id);
   }
 
-  // 6. Create Properties
-  console.log('🏠 Creating Properties...');
+  // 7. Properties from Mood-House data
+  console.log('🏠 Creating Properties from Mood-House data...');
 
-  // Mix of data to generate properties
-  const titles = ['Modern Apartment with View', 'Luxury Villa with Pool', 'Cozy Family Home', 'Spacious Office Space', 'Premium Penthouse', 'City Center Loft'];
-  const purposes = ['SALE', 'RENT'];
+  for (let i = 0; i < MOOD_HOUSE_PROPERTIES.length; i++) {
+    const prop = MOOD_HOUSE_PROPERTIES[i];
+    const locationKey = `${prop.city}|${prop.location}`;
+    const locationId = locationMap[locationKey] || null;
+    const agentId = agentIds[i % agentIds.length];
+    const typeId = typeMap[prop.type] || typeMap['House'];
 
-  // Create 20 properties
-  for (let i = 0; i < 20; i++) {
-    const isProject = Math.random() > 0.7;
-    const projectId = isProject ? projectIds[Math.floor(Math.random() * projectIds.length)] : null;
-    const typeName = Object.keys(typeMap)[Math.floor(Math.random() * Object.keys(typeMap).length)];
-    const locationId = locationMap[Math.floor(Math.random() * locationMap.length)];
-    const agentId = agentIds[Math.floor(Math.random() * agentIds.length)];
-    const image = PROPERTY_IMAGES[i % PROPERTY_IMAGES.length];
-
-    const property = await prisma.property.create({
+    await prisma.property.create({
       data: {
-        title: `${titles[Math.floor(Math.random() * titles.length)]} ${i + 1}`,
-        description: 'This is a beautiful property featuring modern amenities, great location, and spacious interiors. Perfect for your needs.',
-        shortDescription: 'Beautiful property in a great location.',
-        price: Math.floor(Math.random() * 500000) + 50000,
-        purpose: purposes[Math.floor(Math.random() * purposes.length)],
-        areaSqm: Math.floor(Math.random() * 300) + 80,
-        bedrooms: Math.floor(Math.random() * 5) + 1,
-        bathrooms: Math.floor(Math.random() * 4) + 1,
-        rooms: Math.floor(Math.random() * 8) + 3,
-        hasGarage: Math.random() > 0.3,
-        hasBalcony: Math.random() > 0.3,
-        imageUrl: image,
-        locationId: locationId,
-        agentId: agentId,
-        propertyTypeId: typeMap[typeName],
-        projectId: projectId,
+        title: prop.title,
+        description: `${prop.title} is a beautiful property located in ${prop.location}, ${prop.city}. Featuring modern amenities and spacious interiors in Kurdistan Region's most sought-after neighborhoods.`,
+        shortDescription: `${prop.type} for ${prop.purpose === 'SALE' ? 'sale' : 'rent'} in ${prop.location}, ${prop.city}.`,
+        price: prop.price,
+        purpose: prop.purpose,
+        areaSqm: prop.areaSqm,
+        bedrooms: prop.bedrooms,
+        bathrooms: prop.bathrooms,
+        rooms: prop.bedrooms + 2,
+        hasGarage: Math.random() > 0.4,
+        hasBalcony: Math.random() > 0.4,
+        imageUrl: prop.image,
+        locationId,
+        agentId,
+        propertyTypeId: typeId,
+        projectId: Math.random() > 0.75 ? projectIds[Math.floor(Math.random() * projectIds.length)] : null,
         images: {
           create: [
-            { imageKey: image, sortOrder: 0 },
-            { imageKey: PROPERTY_IMAGES[(i + 1) % PROPERTY_IMAGES.length], sortOrder: 1 },
-            { imageKey: PROPERTY_IMAGES[(i + 2) % PROPERTY_IMAGES.length], sortOrder: 2 },
-          ]
+            { imageKey: prop.image, sortOrder: 0 },
+          ],
         },
         amenities: {
           create: allAmenities
-            .sort(() => 0.5 - Math.random()) // Shuffle
-            .slice(0, 5) // Take 5 random
-            .map(a => ({ amenityId: a.id }))
-        }
-      }
+            .sort(() => 0.5 - Math.random())
+            .slice(0, 5)
+            .map(a => ({ amenityId: a.id })),
+        },
+      },
     });
   }
 
-  // 7. Create Website Reviews (Testimonials)
+  // 8. Website Reviews / Testimonials
   console.log('⭐ Creating Testimonials...');
   await prisma.websiteReview.createMany({
     data: [
-      { name: 'John Doe', role: 'Homeowner', rating: 5, text: 'Found my dream house in weeks! Amazing service.', image: AGENT_IMAGES[0] },
-      { name: 'Jane Smith', role: 'Tenant', rating: 4, text: 'Great experience renting an apartment. Very professional.', image: AGENT_IMAGES[1] },
-      { name: 'Ali Hassan', role: 'Investor', rating: 5, text: 'Best platform for real estate investment in the region.', image: AGENT_IMAGES[2] },
-    ]
+      { name: 'Ahmed Hassan', role: 'Homeowner in Erbil', rating: 5, text: 'The team helped us find our dream home in record time. Their knowledge of the local market and dedication to customer service is unmatched.', image: AGENT_IMAGES[0] },
+      { name: 'Sara Mahmoud', role: 'First-time Buyer', rating: 5, text: 'As a first-time buyer, I was nervous about the process. They guided me through every step and made it stress-free. Highly recommend!', image: AGENT_IMAGES[1] },
+      { name: 'Karwan Ali', role: 'Property Investor', rating: 5, text: 'I have worked with many real estate agencies, but none compare to the professionalism and expertise offered here. Exceptional service.', image: AGENT_IMAGES[2] },
+      { name: 'John Doe', role: 'Tenant', rating: 4, text: 'Great experience renting an apartment. Very professional and efficient process.', image: AGENT_IMAGES[3] },
+    ],
   });
 
-  console.log('✅ Seeding completed! Database is populated.');
-  console.log('📝 Login: admin@mood.com / password123');
+  console.log(`✅ Seeding completed! Inserted ${MOOD_HOUSE_PROPERTIES.length} properties from Mood-House data.`);
+  console.log('📝 Admin login: admin@freshestates.com / password123');
 }
 
 main()

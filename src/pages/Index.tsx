@@ -32,11 +32,9 @@ const Index = () => {
           });
           const data = await res.json();
 
-          // If no preferences, show onboarding after 5 seconds
+          // If no preferences, show onboarding immediately
           if (!data || !data.id) {
-            setTimeout(() => {
-              setShowOnboarding(true);
-            }, 5000);
+            setShowOnboarding(true);
           }
 
           // Clear the query param

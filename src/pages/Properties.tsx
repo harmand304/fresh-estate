@@ -28,27 +28,15 @@ import OnboardingModal from "@/components/OnboardingModal";
 
 const ITEMS_PER_PAGE = 12;
 
-interface Property {
-  id: string;
-  title: string;
-  price: number;
-  purpose: "SALE" | "RENT";
-  sqm: number;
-  bedrooms: number;
-  bathrooms: number;
-  city: string;
-  area: string;
-  type: "Apartment" | "House" | "Villa" | "Office" | "Commercial" | "Land" | "Plot";
-  image: string;
+import { Property as UseProperty } from "@/hooks/useProperties";
+
+interface Property extends UseProperty {
+  locationId?: number | null;
+  propertyTypeId?: number | null;
   imageKey?: string;
-  locationId: number | null;
-  agentId: number | null;
-  propertyTypeId: number | null;
-  description?: string;
-  shortDescription?: string;
   images?: string[];
   amenities?: { id: number; name: string }[];
-  agent?: {
+  agentObj?: {
     id: number;
     name: string;
     image: string;
@@ -83,7 +71,24 @@ const Properties = () => {
     minArea: "",
     maxArea: "",
     location: "",
+    projectId: undefined as number | undefined,
   });
+
+  const [searchInput, setSearchInput] = useState("");
+
+  // Sync initial URL param to local search input state
+  useEffect(() => {
+    const locParam = searchParams.get("location") || "";
+    setSearchInput(locParam);
+  }, [searchParams]);
+
+  // Debounce search input to filters
+  useEffect(() => {
+    const timer = setTimeout(() => {
+      setFilters(prev => prev.location !== searchInput ? { ...prev, location: searchInput } : prev);
+    }, 600);
+    return () => clearTimeout(timer);
+  }, [searchInput]);
 
   const [cities, setCities] = useState<{ id: number; name: string }[]>([]);
 
@@ -116,16 +121,80 @@ const Properties = () => {
     if (searchParams.get("minArea")) { newFilters.minArea = searchParams.get("minArea") || ""; hasChanges = true; }
     if (searchParams.get("maxArea")) { newFilters.maxArea = searchParams.get("maxArea") || ""; hasChanges = true; }
     if (searchParams.get("location")) { newFilters.location = searchParams.get("location") || ""; hasChanges = true; }
+    if (searchParams.get("projectId")) { newFilters.projectId = Number(searchParams.get("projectId")); hasChanges = true; }
 
     if (hasChanges) setFilters(newFilters);
   }, [cityName, searchParams, filters]);
 
-  // Use the hook with filters and pagination
-  const { properties, loading, pagination } = useProperties({
-    ...filters,
-    page: currentPage,
-    limit: ITEMS_PER_PAGE
-  });
+  // Fetch all properties once to allow instant local filtering
+  const { properties: allProperties, loading } = useProperties({ limit: 1000 }); // Fetch a large number to ensure we get everything for local filtering
+  const [filteredProperties, setFilteredProperties] = useState<Property[]>([]);
+
+  // Local filtering logic
+  useEffect(() => {
+    if (!allProperties.length) return;
+
+    let result = [...allProperties];
+
+    if (filters.city !== "all") {
+      result = result.filter(p => p.city?.toLowerCase() === filters.city.toLowerCase());
+    }
+    if (filters.purpose !== "all") {
+      result = result.filter(p => p.purpose === filters.purpose);
+    }
+    if (filters.type !== "all") {
+      result = result.filter(p => p.type?.toLowerCase() === filters.type.toLowerCase());
+    }
+    if (filters.bedrooms !== "any") {
+      const beds = parseInt(filters.bedrooms);
+      if (filters.bedrooms === "5+") {
+        result = result.filter(p => p.bedrooms >= 5);
+      } else {
+        result = result.filter(p => p.bedrooms === beds);
+      }
+    }
+    if (filters.bathrooms !== "any") {
+      const baths = parseInt(filters.bathrooms);
+      if (filters.bathrooms === "4+") {
+        result = result.filter(p => p.bathrooms >= 4);
+      } else {
+        result = result.filter(p => p.bathrooms === baths);
+      }
+    }
+    if (filters.minPrice) {
+      result = result.filter(p => p.price >= parseInt(filters.minPrice));
+    }
+    if (filters.maxPrice) {
+      result = result.filter(p => p.price <= parseInt(filters.maxPrice));
+    }
+    if (filters.minArea) {
+      result = result.filter(p => p.sqm >= parseInt(filters.minArea));
+    }
+    if (filters.maxArea) {
+      result = result.filter(p => p.sqm <= parseInt(filters.maxArea));
+    }
+    if (filters.location) {
+      const searchTerm = filters.location.trim().toLowerCase();
+      result = result.filter(p => 
+        (p.title && p.title.toLowerCase().includes(searchTerm)) ||
+        (p.area && p.area.toLowerCase().includes(searchTerm)) ||
+        (p.city && p.city.toLowerCase().includes(searchTerm))
+      );
+    }
+    if (filters.projectId !== undefined) {
+      result = result.filter(p => p.projectId === filters.projectId);
+    }
+
+    setFilteredProperties(result);
+    setCurrentPage(1); // Reset to first page when filters change
+  }, [filters, allProperties]);
+
+  // Pagination derived state
+  const totalPages = Math.ceil(filteredProperties.length / ITEMS_PER_PAGE);
+  const paginatedProperties = filteredProperties.slice(
+    (currentPage - 1) * ITEMS_PER_PAGE,
+    currentPage * ITEMS_PER_PAGE
+  );
 
   const { isAuthenticated } = useAuth();
 
@@ -223,7 +292,6 @@ const Properties = () => {
 
   // Generate page numbers for pagination
   const getPageNumbers = () => {
-    const { totalPages } = pagination || { totalPages: 1 };
     const pages: (number | string)[] = [];
     if (totalPages <= 7) {
       for (let i = 1; i <= totalPages; i++) pages.push(i);
@@ -293,7 +361,7 @@ const Properties = () => {
                 Find your dream home in <span className="text-primary">{displayCity}</span>
               </h1>
               <p className="text-muted-foreground text-sm">
-                Showing {pagination?.total || 0} homes {purposeText}
+                Showing {filteredProperties.length} homes {purposeText}
               </p>
             </div>
 
@@ -304,12 +372,18 @@ const Properties = () => {
                 <Input
                   type="text"
                   placeholder={`${displayCity}, IL`}
-                  value={filters.location}
-                  onChange={(e) => setFilters({ ...filters, location: e.target.value })}
+                  value={searchInput}
+                  onChange={(e) => setSearchInput(e.target.value)}
+                  onKeyDown={(e) => {
+                    if (e.key === 'Enter') {
+                      setFilters(prev => prev.location !== searchInput ? { ...prev, location: searchInput } : prev);
+                    }
+                  }}
                   className="pl-10 h-11 rounded-lg border-gray-200 bg-white shadow-sm focus:ring-2 focus:ring-primary/20 text-sm"
                 />
               </div>
               <Button
+                onClick={() => setFilters(prev => prev.location !== searchInput ? { ...prev, location: searchInput } : prev)}
                 className="h-11 w-11 rounded-lg bg-primary hover:bg-primary/90 shadow-md shrink-0"
               >
                 <ChevronRight className="w-5 h-5" />
@@ -670,7 +744,7 @@ const Properties = () => {
           ) : (
             <>
               <div className={`grid gap-4 ${viewMode === "grid" ? "grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4" : "grid-cols-1"}`}>
-                {properties
+                {paginatedProperties
                   .filter(p => !showFavoritesOnly || favorites.includes(p.id))
                   .map((property) => (
                     <PropertyCard
@@ -682,7 +756,7 @@ const Properties = () => {
                   ))}
               </div>
 
-              {properties.length === 0 && (
+              {paginatedProperties.length === 0 && (
                 <div className="text-center py-20 bg-white rounded-2xl">
                   <h3 className="text-xl font-medium text-muted-foreground">
                     No properties found matching your criteria.
@@ -692,7 +766,7 @@ const Properties = () => {
               )}
 
               {/* Pagination */}
-              {(pagination?.totalPages || 1) > 1 && (
+              {totalPages > 1 && (
                 <div className="mt-12 flex items-center justify-center gap-1">
                   <Button
                     variant="outline"
@@ -726,8 +800,8 @@ const Properties = () => {
                   <Button
                     variant="outline"
                     size="icon"
-                    onClick={() => handlePageChange(Math.min(pagination?.totalPages || 1, currentPage + 1))}
-                    disabled={currentPage === (pagination?.totalPages || 1)}
+                    onClick={() => handlePageChange(Math.min(totalPages, currentPage + 1))}
+                    disabled={currentPage === totalPages}
                     className="rounded-lg w-10 h-10"
                   >
                     <ChevronRight className="w-4 h-4" />
@@ -752,6 +826,7 @@ const Properties = () => {
           }
         }}
         skipNavigation={true}
+        isUpdate={true}
       />
     </div>
   );

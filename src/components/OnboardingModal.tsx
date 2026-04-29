@@ -9,6 +9,7 @@ interface OnboardingModalProps {
   isOpen: boolean;
   onClose: () => void;
   skipNavigation?: boolean; // When true, don't navigate after submission
+  isUpdate?: boolean; // When true, changes the introductory copy
 }
 
 interface City {
@@ -18,7 +19,7 @@ interface City {
 
 import { API_URL } from "@/config";
 
-const OnboardingModal = ({ isOpen, onClose, skipNavigation = false }: OnboardingModalProps) => {
+const OnboardingModal = ({ isOpen, onClose, skipNavigation = false, isUpdate = false }: OnboardingModalProps) => {
   const navigate = useNavigate();
   const [step, setStep] = useState(1);
   const [cities, setCities] = useState<City[]>([]);
@@ -97,9 +98,15 @@ const OnboardingModal = ({ isOpen, onClose, skipNavigation = false }: Onboarding
       case 1:
         return (
           <div className="text-center space-y-6">
-            <div className="text-6xl mb-4">🌸</div>
-            <h2 className="text-2xl font-bold text-slate-900">Welcome!</h2>
-            <p className="text-slate-600 text-lg">Let's find a place that feels right for you.</p>
+            <div className="text-6xl mb-4">{isUpdate ? '⚙️' : '🌸'}</div>
+            <h2 className="text-2xl font-bold text-slate-900">
+              {isUpdate ? 'Update Your Preferences' : 'Welcome!'}
+            </h2>
+            <p className="text-slate-600 text-lg">
+              {isUpdate 
+                ? "Let's refine what you're looking for." 
+                : "Let's find a place that feels right for you."}
+            </p>
             <p className="text-emerald-600 font-medium">👉 What are you here for today?</p>
             <div className="grid gap-3 mt-6">
               {[

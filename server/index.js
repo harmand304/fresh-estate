@@ -25,6 +25,7 @@ import websiteReviewsRoutes from './routes/websiteReviews.js';
 import languagesRoutes from './routes/languages.js';
 import specializationsRoutes from './routes/specializations.js';
 import agentDashboardRoutes from './routes/agentDashboard.js';
+import userRoutes from './routes/user.js';
 
 // Import config
 import { prisma, PORT } from './config/db.js';
@@ -52,7 +53,7 @@ app.use(cors({
     // Allow if origin matches allowed list
     if (allowedOrigins.includes(origin)) return callback(null, true);
     // Allow any *.vercel.app origin (covers preview deployments)
-    if (origin.endsWith('.vercel.app')) return callback(null, true);
+    if (origin.includes('vercel.app')) return callback(null, true);
     return callback(new Error('Not allowed by CORS'));
   },
   credentials: true
@@ -74,6 +75,9 @@ app.use('/api/user/preferences', userPreferencesRoutes);
 
 // File Upload (mount both paths for multiple image upload)
 app.use('/api/upload', uploadRoutes);
+
+// User Profile Routes
+app.use('/api/user', userRoutes);
 
 
 // Properties

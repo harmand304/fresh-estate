@@ -18,8 +18,8 @@ export interface Property {
   agent?: string;
   agentId?: number;
   agentPhone?: string;
-  description?: string;
   shortDescription?: string;
+  projectId?: number;
 }
 
 import { API_URL } from "@/config";
@@ -36,6 +36,7 @@ export interface PropertyFilters {
   minArea?: string;
   maxArea?: string;
   location?: string;
+  projectId?: number;
   page?: number;
   limit?: number;
 }

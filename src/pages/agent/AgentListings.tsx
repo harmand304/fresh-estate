@@ -380,8 +380,8 @@ const AgentListings = () => {
   };
 
   const filteredProperties = properties.filter(p =>
-    p.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
-    p.city.toLowerCase().includes(searchQuery.toLowerCase())
+    (p.title && p.title.toLowerCase().includes(searchQuery.toLowerCase())) ||
+    (p.city && p.city.toLowerCase().includes(searchQuery.toLowerCase()))
   );
 
   return (

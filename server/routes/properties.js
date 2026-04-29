@@ -68,7 +68,7 @@ router.get('/', async (req, res) => {
     }
 
     if (req.query.location) {
-      const searchTerm = req.query.location.toLowerCase();
+      const searchTerm = req.query.location.trim().toLowerCase();
       where.OR = [
         { title: { contains: searchTerm, mode: 'insensitive' } },
         { location: { name: { contains: searchTerm, mode: 'insensitive' } } },
@@ -99,7 +99,8 @@ router.get('/', async (req, res) => {
             city: { select: { name: true } }
           }
         },
-        propertyType: { select: { name: true } }
+        propertyType: { select: { name: true } },
+        projectId: true
       },
       orderBy: { createdAt: 'desc' },
       skip,
@@ -120,7 +121,8 @@ router.get('/', async (req, res) => {
       image: await getSignedImageUrl(p.imageUrl),
       area: p.location?.name || '',
       city: p.location?.city?.name || '',
-      type: p.propertyType?.name || 'House'
+      type: p.propertyType?.name || 'House',
+      projectId: p.projectId
     })));
 
     res.json({

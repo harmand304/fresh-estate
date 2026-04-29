@@ -4,17 +4,20 @@ interface User {
   id: number;
   email: string;
   name: string | null;
+  phone?: string | null;
+  image?: string | null;
   role: 'USER' | 'ADMIN' | 'AGENT';
 }
 
 interface AuthContextType {
   user: User | null;
+  setUser: (user: User | null) => void;
   isLoading: boolean;
   isAuthenticated: boolean;
   isAdmin: boolean;
   isAgent: boolean;
   login: (email: string, password: string) => Promise<{ success: boolean; error?: string }>;
-  register: (email: string, password: string, name?: string) => Promise<{ success: boolean; error?: string }>;
+  register: (email: string, password: string, name?: string, phone?: string, image?: string) => Promise<{ success: boolean; error?: string }>;
   logout: () => Promise<void>;
   checkAuth: () => Promise<void>;
 }
@@ -67,19 +70,20 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
     }
   };
 
-  const register = async (email: string, password: string, name?: string) => {
+  const register = async (email: string, password: string, name?: string, phone?: string, image?: string) => {
     try {
       const response = await fetch(`${API_URL}/api/auth/register`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         credentials: 'include',
-        body: JSON.stringify({ email, password, name })
+        body: JSON.stringify({ email, password, name, phone, image })
       });
 
       const data = await response.json();
 
       if (!response.ok) {
-        return { success: false, error: data.error };
+        const errorMsg = data.details ? `${data.error}: ${data.details}` : data.error;
+        return { success: false, error: errorMsg };
       }
 
       return { success: true };
@@ -104,6 +108,7 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
     <AuthContext.Provider
       value={{
         user,
+        setUser,
         isLoading,
         isAuthenticated: !!user,
         isAdmin: user?.role === 'ADMIN',

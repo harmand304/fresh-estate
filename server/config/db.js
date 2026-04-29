@@ -10,7 +10,7 @@ export const prisma = new PrismaClient();
 export const JWT_SECRET = process.env.JWT_SECRET || 'mood-real-estate-secret-key-2024';
 
 // Server port
-export const PORT = 3001;
+export const PORT = process.env.PORT || 3001;
 
 // Multer setup for memory storage
 export const upload = multer({ storage: multer.memoryStorage() });

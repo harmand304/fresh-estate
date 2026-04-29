@@ -8,7 +8,7 @@ const router = express.Router();
 // Register new user
 router.post('/register', async (req, res) => {
   try {
-    const { email, password, name } = req.body;
+    const { email, password, name, phone, image } = req.body;
 
     if (!email || !password) {
       return res.status(400).json({ error: 'Email and password are required' });
@@ -29,17 +29,21 @@ router.post('/register', async (req, res) => {
         email,
         password: hashedPassword,
         name: name || null,
+        phone: phone || null,
+        image: image || null,
         role: 'USER'
       }
     });
 
     res.status(201).json({
       message: 'User registered successfully',
-      user: { id: user.id, email: user.email, name: user.name, role: user.role }
+      user: { id: user.id, email: user.email, name: user.name, phone: user.phone, image: user.image, role: user.role }
     });
   } catch (error) {
     console.error('Registration error:', error);
-    res.status(500).json({ error: 'Failed to register user' });
+    console.error('Registration error message:', error.message);
+    console.error('Registration error stack:', error.stack);
+    res.status(500).json({ error: 'Failed to register user', details: error.message });
   }
 });
 
@@ -81,7 +85,7 @@ router.post('/login', async (req, res) => {
 
     res.json({
       message: 'Login successful',
-      user: { id: user.id, email: user.email, name: user.name, role: user.role }
+      user: { id: user.id, email: user.email, name: user.name, phone: user.phone, image: user.image, role: user.role }
     });
   } catch (error) {
     console.error('Login error:', error);
@@ -101,7 +105,7 @@ router.get('/me', async (req, res) => {
     const decoded = jwt.verify(token, JWT_SECRET);
     const user = await prisma.user.findUnique({
       where: { id: decoded.id },
-      select: { id: true, email: true, name: true, role: true }
+      select: { id: true, email: true, name: true, phone: true, image: true, role: true }
     });
 
     if (!user) {
